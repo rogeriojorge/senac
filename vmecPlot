@@ -3,7 +3,7 @@
 myfigsize=(14,7)
 
 print
-print("usage: vmecPlot <woutXXX.nc>")
+#print("usage: vmecPlot <woutXXX.nc>")
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -203,7 +203,7 @@ plt.ylabel('Z [meters]')
 
 labels=[r'$\phi=0$',r'1/4 period: $\phi=(1/4)2\pi/N_{fp}$',r'1/2 period: $\phi=(1/2)2\pi/N_{fp}$',r'3/4 period: $\phi=(3/4)2\pi/N_{fp}$']
 
-ntheta = 200
+ntheta = 120
 nphi = 4
 nradius = 10
 theta = np.linspace(0,2*np.pi,num=ntheta)
@@ -246,7 +246,7 @@ fig = plt.figure(figsize=myfigsize)
 fig.patch.set_facecolor('white')
 
 ntheta = 40
-nphi = 100
+nphi = 150
 theta1D = np.linspace(0,2*np.pi,num=ntheta)
 phi1D = np.linspace(0,2*np.pi,num=nphi)
 phi2D, theta2D = np.meshgrid(phi1D,theta1D)

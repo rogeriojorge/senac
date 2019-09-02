@@ -6,7 +6,6 @@
  LFULL3D1OUT = T
  DELT = 0.900
  TCON0 = 2.
- NFP =   5
  NCURR =   1
  MPOL =  12   NTOR =  12
  NZETA =  36
