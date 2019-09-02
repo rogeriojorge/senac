@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 0.1 - R. Jorge IREAP/UMD September 2019
-proj="HSX";   # project name for input/output files, with vmec output VMEC_files/wout_"proj".nc
+proj="W7X";   # project name for input/output files, with vmec output VMEC_files/wout_"proj".nc
 #======SENAC INPUT PARAMETERS=====
 readVMEC=1;
 vmecInput="/Users/rogeriojorge/Dropbox/senac/VMEC_files/VMEC_input_template.txt"; #template VMEC input file
@@ -16,13 +16,13 @@ mucMin=-0.9   #minimum muc0 to help fit
 mucMax=-0.3   #maximum muc0 to help fit
 maxiterations=350; #max number of iterations during fit parameter
 plotFit=1;    #Mathematica plots fit results
-maxm=5;       #Maximum m to output to VMEC
-maxn=7;       #Maximum n to output to VMEC
-maxRecursTheta=30; #Theta resolution in numerical integration
-maxRecursPhi=150;  #Phi resolution in numerical integration
+maxm=7;       #Maximum m to output to VMEC
+maxn=8;       #Maximum n to output to VMEC
+maxRecursTheta=36; #Theta resolution in numerical integration
+maxRecursPhi=180;  #Phi resolution in numerical integration
 #======VEMAC=====
 runVMEC=1;
-runVMECplotOriginal=1;
+runVMECplotOriginal=0;
 #======VEMAC Plot=====
 runVMECplotFit=1;
 
@@ -30,6 +30,7 @@ runVMECplotFit=1;
  echo "===================SENAC===================="
  echo "Stellarator Equilibrium Near-Axis Code"
  echo "============================================"
+ echo "Project name: "${proj}
  #==========================
 
 #======Print Run Parameters=====

@@ -203,7 +203,7 @@ plt.ylabel('Z [meters]')
 
 labels=[r'$\phi=0$',r'1/4 period: $\phi=(1/4)2\pi/N_{fp}$',r'1/2 period: $\phi=(1/2)2\pi/N_{fp}$',r'3/4 period: $\phi=(3/4)2\pi/N_{fp}$']
 
-ntheta = 120
+ntheta = 130
 nphi = 4
 nradius = 10
 theta = np.linspace(0,2*np.pi,num=ntheta)
@@ -245,8 +245,8 @@ fig.savefig(sys.argv[1]+"fig2.pdf", bbox_inches='tight')
 fig = plt.figure(figsize=myfigsize)
 fig.patch.set_facecolor('white')
 
-ntheta = 40
-nphi = 150
+ntheta = 50
+nphi = 200
 theta1D = np.linspace(0,2*np.pi,num=ntheta)
 phi1D = np.linspace(0,2*np.pi,num=nphi)
 phi2D, theta2D = np.meshgrid(phi1D,theta1D)

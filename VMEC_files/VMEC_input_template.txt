@@ -13,7 +13,6 @@
  FTOL_ARRAY = 1.0E-5  1.0E-7
  NITER = 12000
  NSTEP = 100
- PHIEDGE = 3.23
  CURTOR = 0.
  SPRES_PED = 1.
  PMASS_TYPE = 'power_series'

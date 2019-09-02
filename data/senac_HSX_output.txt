@@ -1,25 +1,25 @@
   VMEC read
-13:19:58.115 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.420 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.506 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.595 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.651 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.706 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.758 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.813 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.865 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.917 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-13:19:58.970 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:08:59.599 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:08:59.962 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:09:00.054 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:09:00.152 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:09:00.214 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:09:00.273 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:09:00.332 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:09:00.395 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:09:00.448 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:09:00.504 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+14:09:00.571 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
   Fitting VMEC to Mercier's theta and rho
-Computing Mercier's Angle took 3.045853s
-Computing Mercier's Rho took 2.910080s
-Fit took 12.112044s
+Computing Mercier's Angle took 6.202896s
+Computing Mercier's Rho took 8.308893s
+Fit took 40.124463s
 Best fit parameters {deltal -> -2.01517, B0c[0] -> 1.36001, muc[0] -> -0.656282, deltac[0] -> 1.61844}
 Iota from VMEC: 1.04925, iota from near-axis fit: 2.41825
-Fit plot 1 of 2 took 5.165141s
+Fit plot took 13.461622s
   Mercier to VMEC
 Starting RBC Evaluation
-RBCmn from fit took 22.422907s
+RBCmn from fit took 197.965034s
 Starting ZBS Evaluation
-ZBSmn from fit took 11.134324s
-  SENAC took 22.8152s
+ZBSmn from fit took 79.229556s
+  SENAC took 59.0365s
