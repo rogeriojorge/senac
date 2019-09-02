@@ -1,14 +1,9 @@
 (* ::Package:: *)
 
-maxm           = ToExpression[$ScriptCommandLine[[14]]];
-maxn           = ToExpression[$ScriptCommandLine[[15]]];
-maxRecursTheta = ToExpression[$ScriptCommandLine[[16]]];
-maxRecursPhi   = ToExpression[$ScriptCommandLine[[17]]];
-
-(*Fast Numerical Integration*)
-GaussLegendreQuadrature[f_, {x_, a_, b_}, n_Integer: 10, prec_: MachinePrecision] := 
-  Module[{nodes, weights}, {nodes, weights} = Most[NIntegrate`GaussRuleData[n, prec]];
-   (b - a) weights.Map[Function[x, f], Rescale[nodes, {0, 1}, {a, b}]]];
+maxm           = ToExpression[$ScriptCommandLine[[16]]];
+maxn           = ToExpression[$ScriptCommandLine[[17]]];
+maxRecursTheta = ToExpression[$ScriptCommandLine[[18]]];
+maxRecursPhi   = ToExpression[$ScriptCommandLine[[19]]];
 
 timestart = AbsoluteTime[]; 
 Print["Starting RBC Evaluation"];
@@ -16,7 +11,7 @@ ParallelEvaluate[Off[NIntegrate::ncvi, NIntegrate::slwcon, NIntegrate::eincr ]];
 RBCmn = Quiet[ParallelTable[
      GaussLegendreQuadrature[
        GaussLegendreQuadrature[
-        RBCFit[phi, theta] Cos[mm theta - vmecNFP nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 20]/If[mm == 0 && nn == 0, 4*pi^2, 2*pi^2], {mm, 0, maxm}, {nn, -maxn, maxn}]];
+        RBCFit[phi, theta] Cos[mm theta - vmecNFP nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 4*pi^2, 2*pi^2], {mm, 0, maxm}, {nn, -maxn, maxn}]];
 Print["RBCmn from fit took "<>ToString[AbsoluteTime[]-timestart]<>"s"];
 
 timestart = AbsoluteTime[];
@@ -25,16 +20,17 @@ ZBSmn =
   Quiet[ParallelTable[
      GaussLegendreQuadrature[
        GaussLegendreQuadrature[
-        ZBSFit[phi, theta] Sin[mm theta - vmecNFP nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 20]/If[mm == 0 && nn == 0, 1, 2*pi^2], {mm, 0, maxm}, {nn, -maxn, maxn}]];
+        ZBSFit[phi, theta] Sin[mm theta - vmecNFP nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 1, 2*pi^2], {mm, 0, maxm}, {nn, -maxn, maxn}]];
 Print["ZBSmn from fit took "<>ToString[AbsoluteTime[]-timestart]<>"s"];
 
 (*Print to VMEC input file*)
-printv = "";
+printv = "";nl = "\n";
+printv = printv <> "NFP = "<>ToString[vmecNFP]
+printv = printv <> nl;
 rbcs[n_, m_] := "RBC(" <> ToString[n] <> "," <> ToString[m] <> ")=";
 zbcs[n_, m_] := "  ZBS(" <> ToString[n] <> "," <> ToString[m] <> ")=";
 printv = printv <> "RAXIS = ";
 Do[printv = printv <> " " <> ToString[DecimalForm[vmecOutputRaxis[[i]]]], {i, 1, Length[vmecOutputRaxis]}];
-nl = "\n";
 printv = printv <> nl;
 printv = printv <> "ZAXIS = ";
 Do[printv = printv <> " " <> ToString[DecimalForm[vmecOutputZaxis[[i]]]], {i, 1, Length[vmecOutputZaxis]}];
