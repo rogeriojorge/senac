@@ -25,7 +25,9 @@ Print["ZBSmn from fit took "<>ToString[AbsoluteTime[]-timestart]<>"s"];
 
 (*Print to VMEC input file*)
 printv = "";nl = "\n";
-printv = printv <> "NFP = "<>ToString[vmecNFP]
+printv = printv <> "NFP = "<>ToString[vmecNFP];
+printv = printv <> nl;
+printv = printv <> "PHIEDGE = "<>ToString[vmecPSI];
 printv = printv <> nl;
 rbcs[n_, m_] := "RBC(" <> ToString[n] <> "," <> ToString[m] <> ")=";
 zbcs[n_, m_] := "  ZBS(" <> ToString[n] <> "," <> ToString[m] <> ")=";
