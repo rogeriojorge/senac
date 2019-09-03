@@ -1,0 +1,158 @@
+  VMEC read
+13:25:08.618 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:08.807 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:08.858 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:08.917 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:08.955 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:08.989 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:09.021 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:09.054 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:09.088 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:09.126 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:25:09.164 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+  Fitting VMEC to Mercier's theta and rho
+Computing Mercier's Angle took 0.961955s
+Computing Mercier's Rho took 0.960620s
+Fit took 6.583939s
+Best fit parameters {deltal -> 0.910712, B0c[0] -> 1.43872, muc[0] -> 0.456919, deltac[0] -> 1.8513}
+Iota from VMEC: 0.20403, Iota from near-axis fit: -0.140874
+Fit plot took 2.578602s
+  Mercier to VMEC
+Starting RBC Evaluation
+RBCmn from fit took 13.816895s
+Starting ZBS Evaluation
+ZBSmn from fit took 7.313948s
+  SENAC took 15.2157s
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  VMEC OUTPUT FILES ALREADY EXIST: OVERWRITING THEM ...
+  SEQ =    1 TIME SLICE  0.0000E+00
+  PROCESSING INPUT.txt
+  THIS IS PARVMEC (PARALLEL VMEC), VERSION 9.0
+  Lambda: Full Radial Mesh. L-Force: hybrid full/half.
+
+  COMPUTER:    OS:    RELEASE:   DATE = Sep 03,2019  TIME = 13:25:42
+
+  NS =   16 NO. FOURIER MODES =  288 FTOLV =  1.000E-05 NITER =  12000
+  PROCESSOR COUNT - RADIAL:    1
+
+  ITER    FSQR      FSQZ      FSQL    RAX(v=0)    DELT       WMHD
+
+    1  1.49E+00  1.17E+00  2.84E-01  1.253E+00  9.00E-01  1.0001E+00
+  100  2.24E-02  1.33E-02  1.25E-04  1.237E+00  5.90E-01  9.1557E-01
+  200  2.47E-05  2.73E-05  9.34E-06  1.237E+00  5.73E-01  9.1538E-01
+  205  9.98E-06  9.26E-06  8.21E-06  1.237E+00  5.73E-01  9.1538E-01
+
+  NS =   32 NO. FOURIER MODES =  288 FTOLV =  1.000E-07 NITER =  12000
+  PROCESSOR COUNT - RADIAL:    1
+
+  ITER    FSQR      FSQZ      FSQL    RAX(v=0)    DELT       WMHD
+
+    1  2.27E-02  2.48E-02  6.02E-04  1.237E+00  9.00E-01  9.1542E-01
+  100  2.69E-01  3.01E-01  4.46E-04  1.237E+00  5.31E-01  9.1542E-01
+  200  2.49E+00  1.58E+00  1.82E-03  1.236E+00  5.31E-01  9.1565E-01
+  300  1.39E-06  1.79E-06  2.85E-06  1.237E+00  5.16E-01  9.1535E-01
+  400  8.36E-08  1.19E-07  2.15E-07  1.237E+00  5.16E-01  9.1531E-01
+  422  4.53E-08  5.18E-08  9.94E-08  1.237E+00  5.16E-01  9.1531E-01
+ Diagno-file request not completed!
+ VMEC2000 not running in free-boundary mode!
+ -or- LASYM = .true. !
+ LASYM  =  F
+ LFREEB =  F
+ Check mgrid-file and namelist!
+
+ EXECUTION TERMINATED NORMALLY
+
+ FILE : txt
+ NUMBER OF JACOBIAN RESETS =    5
+
+    TOTAL COMPUTATIONAL TIME (SEC)        25.03
+    TIME TO INPUT/OUTPUT                   0.32
+       READ IN DATA                        0.00
+       WRITE OUT DATA TO WOUT              0.32
+    TIME IN FUNCT3D                       24.44
+       BCOVAR FIELDS                       1.20
+       FOURIER TRANSFORM                   6.62
+       INVERSE FOURIER TRANSFORM          11.51
+       FORCES AND SYMMETRIZE               1.36
+       RESIDUE                             0.81
+       EQFORCE                             0.24
+
+ NO. OF PROCS:     1
+ PARVMEC     :     T
+ LPRECOND    :     F
+ LV3FITCALL  :     F
+ This is REGCOIL,
+ a regularized least-squares method for computing stellarator coil shapes.
+ Successfully read parameters from regcoil_nml namelist in regcoil_in.senac.
+ Resolution parameters:
+   ntheta_plasma  =   64
+   ntheta_coil    =   64
+   nzeta_plasma   =   64
+   nzeta_coil     =   64
+   mpol_potential =   12
+   ntor_potential =   12
+ Symmetry: sin(m*theta - n*zeta) modes only
+ Initializing plasma surface.
+   Successfully read VMEC data from /Users/rogeriojorge/Dropbox/senac/data/wout_ESTELL_senac.nc
+   Using outermost grid point in VMEC's FULL radial grid.
+ size of rmnc_vmec:         288          32
+ Plasma surface area: 1.561E+01 m^2. Volume: 1.989E+00 m^3.
+ Overriding net_poloidal_current_Amperes with value from the VMEC wout file.
+ G =    6828446.1095686089       ; curpol =    4.2904392266509088     
+ Done initializing plasma surface. Took   0.172000006      sec.
+ Initializing coil surface.
+   Constructing a surface offset from the plasma by     0.2000 meters.
+   Number of OpenMP threads:          16
+   Computing offset points:   5.09999990E-02 sec
+   Representing the offset surface with mpol= 24, ntor= 24
+   Fourier transform:  0.224999994     sec
+ Writing winding surface into nescin.out
+ Number of harmonics written:         1201
+   Write nescin file:   3.00000003E-03 sec
+   Evaluating coil surface & derivatives:  0.698000014      sec.
+ Coil surface area: 2.694E+01 m^2. Volume: 6.231E+00 m^3.
+ Done initializing coil surface. Took   0.976999998      sec.
+ Not reading a bnorm file, so Bnormal_from_plasma_current arrays will all be 0.
+ Initializing basis functions and f
+ Done. Took  0.107000001     sec.
+ Building inductance matrix and h.
+   Number of OpenMP threads:          16
+ Done. Took  0.430000007     sec.
+ inductance*basis_functions:   8.10000002E-02 sec.
+ Form RHS_B:   0.00000000     sec.
+ Prepare for matrix_B:   2.50000004E-02 sec.
+ matmul for matrix_B:   6.00000005E-03 sec.
+ matmul 1 for matrix_regularization:   4.99999989E-03 sec.
+ matmul 2 for matrix_regularization:   7.00000022E-03 sec.
+ matmul 3 for matrix_regularization:   6.00000005E-03 sec.
+ Matmuls for RHS_regularization:   3.00000003E-03 sec.
+ Optimal LWORK:       19968
+ Solving system for lambda= 1.000+200 (  1 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    2.00000009E-03  sec.
+   Diagnostics:    1.89999994E-02  sec.
+   chi2_B: 2.929E-02,  chi2_K: 1.645E+13,  chi2_Laplace_Beltrami: 4.018E+09
+   max(B_n): 1.801E-01,  max(K): 1.208E+06,  rms K: 7.815E+05
+ *******************************************************************************
+ *******************************************************************************
+ Error! The target_value you have set is not achievable because
+ it is too high.
+ *******************************************************************************
+ *******************************************************************************
+ REGCOIL complete. Total time=   1.9040000438690186      sec.
+ You can run regcoilPlot regcoil_out.senac.nc to plot results.
+
+('nfp: ', 2)
+('ns: ', 32)
+('mpol: ', 12)
+('ntor: ', 12)
+('Aminor_p: ', 0.26903024340951515)
+('Rmajor_p: ', 1.3949185526797188)
+('aspect:            ', 5.184987884638634)
+('betatotal: ', 0.0)
+('betapol:   ', 0.0)
+('betator:   ', 0.0)
+('betaxis:   ', 0.0)
+('ctor:   ', 2.2022856628611806e-11)
+('bmnc.shape:', (32, 288))
+('Minimum coil separation:', 0.4603297348112669)

@@ -24,6 +24,9 @@ If[FileExistsQ[vmecOutput],
  	ZBSVMEC[theta_, phi_] = Sum[zmns[[iradius, i]] Sin[xm[[i]] theta - xn[[i]] phi], {i, 1, Length[xn]}];
 ,
  	WriteString[$Output, "  No VMEC output file\n"]
+	CloseKernels[];
+	Abort[];
+	Run["exit 1"];
 ]
 
 (*VMEC Axis Frenet-Serret Frame*)
