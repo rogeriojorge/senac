@@ -1,9 +1,9 @@
 (* ::Package:: *)
 
-maxm           = ToExpression[$ScriptCommandLine[[18]]];
-maxn           = ToExpression[$ScriptCommandLine[[19]]];
-maxRecursTheta = ToExpression[$ScriptCommandLine[[20]]];
-maxRecursPhi   = ToExpression[$ScriptCommandLine[[21]]];
+maxm           = ToExpression[$ScriptCommandLine[[19]]];
+maxn           = ToExpression[$ScriptCommandLine[[20]]];
+maxRecursTheta = ToExpression[$ScriptCommandLine[[21]]];
+maxRecursPhi   = ToExpression[$ScriptCommandLine[[22]]];
 
 timestart = AbsoluteTime[]; 
 Print["Starting RBC Evaluation"];
@@ -46,7 +46,7 @@ Do[If[m == 0 && n < 0 ||
    ], {m, 0, maxm}, {n, -maxn, maxn}];
 printv = printv <> "/" <> nl;
 
-CopyFile[vmecInput,StringJoin[currentPath,"data/",FileNameTake[vmecOutput],"_input.txt"], OverwriteTarget -> True];
-newVMECfile = OpenAppend[StringJoin[currentPath,"data/",FileNameTake[vmecOutput],"_input.txt"]];
+CopyFile[vmecInput,StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_SENACtoVMEC_input.txt"], OverwriteTarget -> True];
+newVMECfile = OpenAppend[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_SENACtoVMEC_input.txt"]];
 WriteString[newVMECfile, printv];
 Close[newVMECfile];

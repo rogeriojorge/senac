@@ -14,11 +14,16 @@ import sys
 import os
 from PyPDF2 import PdfFileWriter, PdfFileReader
 
-nplotTheta     = int(sys.argv[2])
-nplotPhiSurf   = int(sys.argv[3])
-nplotThetaSurf = int(sys.argv[4])
-NthetaBSurf    = int(sys.argv[5])
-NphiBSurf      = int(sys.argv[6])
+proj           = sys.argv[2]
+nplotTheta     = int(sys.argv[3])
+nplotPhiSurf   = int(sys.argv[4])
+nplotThetaSurf = int(sys.argv[5])
+NthetaBSurf    = int(sys.argv[6])
+NphiBSurf      = int(sys.argv[7])
+REGCOILplot    = int(sys.argv[8])
+REGCOILout     = sys.argv[9]
+coilsPerHalfPeriod = float(sys.argv[10])
+thetaShift = float(sys.argv[11])
 
 f = netcdf.netcdf_file(sys.argv[1],'r',mmap=False)
 phi = f.variables['phi'][()]
@@ -125,8 +130,7 @@ fig.patch.set_facecolor('white')
 plt.plot(s, iotaf, '.-')
 plt.xlabel(xLabel)
 plt.ylabel('Rotational Transform $\iota$')
-#plt.title('iota')
-fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_iota.pdf", bbox_inches='tight')
+fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+proj+"_iota.pdf", bbox_inches='tight')
 
 fig = plt.figure(figsize=myfigsize)
 fig.patch.set_facecolor('white')
@@ -174,7 +178,7 @@ for i in range(2):
         plt.ylim([0,2*np.pi])
         plt.tight_layout()
         plt.title(titles[i]+'\nradial index='+str(iradius+1))
-        fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_pjb.pdf", bbox_inches='tight')
+        fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+proj+"_pjb.pdf", bbox_inches='tight')
     else:
         fig = plt.figure(figsize=myfigsize)
         fig.patch.set_facecolor('white')
@@ -186,7 +190,7 @@ for i in range(2):
         plt.xlim([0,2*np.pi])
         plt.ylim([0,2*np.pi])
         plt.tight_layout()
-        fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_BatBoundary.pdf", bbox_inches='tight')
+        fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+proj+"_BatBoundary.pdf", bbox_inches='tight')
 
 ########################################################
 # Now make plot of flux surface shapes
@@ -212,7 +216,7 @@ plt.ylabel('Z [meters]')
 labels=[r'$\phi=0$',r'1/4 period: $\phi=(1/4)2\pi/N_{fp}$',r'1/2 period: $\phi=(1/2)2\pi/N_{fp}$',r'3/4 period: $\phi=(3/4)2\pi/N_{fp}$']
 
 plt.tight_layout()
-fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_Shapes1.pdf", bbox_inches='tight')
+fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+proj+"_Shapes1.pdf", bbox_inches='tight')
 
 fig = plt.figure(figsize=myfigsize)
 fig.patch.set_facecolor('white')
@@ -251,17 +255,13 @@ for iphi in range(nphi):
     plt.title(labels[iphi])
 
 plt.tight_layout()
-fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_Shapes2.pdf", bbox_inches='tight')
+fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+proj+"_Shapes2.pdf", bbox_inches='tight')
 
 ########################################################
 # Now make 3D surface plot
 ########################################################
 
-REGCOILplot = int(sys.argv[7])
 if REGCOILplot==1:
-    REGCOILout=sys.argv[8]
-    coilsPerHalfPeriod = float(sys.argv[9])
-    thetaShift = float(sys.argv[10])
     f = netcdf.netcdf_file(REGCOILout,'r',mmap=False)
     theta = f.variables['theta_coil'][()]
     zeta = f.variables['zeta_coil'][()]
@@ -348,7 +348,7 @@ if REGCOILplot==1:
     contour_X = []
     contour_Y = []
 
-    fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_CoilWSurface.pdf", bbox_inches='tight')
+    fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+proj+"_CoilWSurface.pdf", bbox_inches='tight')
 
     fig = plt.figure(figsize=myfigsize)
     fig.patch.set_facecolor('white')
@@ -440,7 +440,7 @@ ax.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
 
 ax._axis3don = False
 
-imgpath=os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"3DSurface.pdf"
+imgpath=os.path.dirname(sys.argv[1])+"/Figures/"+proj+"3DSurface.pdf"
 plt.savefig(imgpath, bbox_inches='tight')
 
 with open(imgpath, "rb") as in_f:

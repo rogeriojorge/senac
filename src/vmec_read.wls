@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
-vmecInput      = $ScriptCommandLine[[3]];
-vmecOutput     = $ScriptCommandLine[[4]];
+vmecInput      = $ScriptCommandLine[[4]];
+vmecOutput     = $ScriptCommandLine[[5]];
 
 If[FileExistsQ[vmecOutput],
     VMECdatasets = Import[vmecOutput, {"Datasets", {"iotaf", "rmnc", "zmns","ns","nfp","phi","bmnc","xm","xn","raxis_cc","zaxis_cs"}}];
