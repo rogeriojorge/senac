@@ -1,18 +1,18 @@
 (* ::Package:: *)
 
-nthetaM           = ToExpression[$ScriptCommandLine[[5]]];
-nphiM             = ToExpression[$ScriptCommandLine[[6]]];
-deltac0           = ToExpression[$ScriptCommandLine[[7]]];
-deltal0           = ToExpression[$ScriptCommandLine[[8]]];
-deltalmin         = ToExpression[$ScriptCommandLine[[9]]];
-deltalmax         = ToExpression[$ScriptCommandLine[[10]]];
+nthetaM           = ToExpression[$ScriptCommandLine[[6]]];
+nphiM             = ToExpression[$ScriptCommandLine[[7]]];
+deltac0           = ToExpression[$ScriptCommandLine[[8]]];
+deltal0           = ToExpression[$ScriptCommandLine[[9]]];
+deltalmin         = ToExpression[$ScriptCommandLine[[10]]];
+deltalmax         = ToExpression[$ScriptCommandLine[[11]]];
 If[deltalmin==deltalmax, deltalmin=-1.2*vmecNFP;deltalmax=1.2*vmecNFP];
-muc0              = ToExpression[$ScriptCommandLine[[11]]];
-mucMin            = ToExpression[$ScriptCommandLine[[12]]];
-mucMax            = ToExpression[$ScriptCommandLine[[13]]];
-nModes            = ToExpression[$ScriptCommandLine[[14]]];
-maxiterations     = ToExpression[$ScriptCommandLine[[15]]];
-plotFit           = ToExpression[$ScriptCommandLine[[16]]];
+muc0              = ToExpression[$ScriptCommandLine[[12]]];
+mucMin            = ToExpression[$ScriptCommandLine[[13]]];
+mucMax            = ToExpression[$ScriptCommandLine[[14]]];
+nModes            = ToExpression[$ScriptCommandLine[[15]]];
+maxiterations     = ToExpression[$ScriptCommandLine[[16]]];
+plotFit           = ToExpression[$ScriptCommandLine[[17]]];
 
 ycomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi] - closedcurvVMEC[phi], t0VMEC[phi]];
 xcomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi] - closedcurvVMEC[phi], k0VMEC[phi]];
@@ -52,7 +52,7 @@ rhonFitVMEC[theta_, phi_] = (rho[theta, phi] /. fitParams)//Quiet;
 fitParams = nlm["BestFitParameters"];
 Print["Fit took "<>ToString[AbsoluteTime[]-timestart]<>"s"];
 Print["Best fit parameters "<>ToString[fitParams]];
-Export[StringJoin[currentPath,"data/",FileNameTake[vmecOutput],"_fit_parameters.txt"],fitParams];
+Export[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_parameters.txt"],fitParams];
 
 (*Compute Iota on Axis from Expression of Near-Axis Expansion*)
 iota0VMEC1 = GaussLegendreQuadrature[(D[deltaVMEC /. fitParams, phi] - torsVMEC[phi]) Sqrt[1 - (muVMEC /. fitParams)^2], {phi, 0, 2*pi}, 70, 20]/(2*pi);
@@ -77,7 +77,7 @@ If[plotFit==1,
     fig=Grid[{ParallelTable[ParametricPlot[{RBCFit[phi, theta], ZBSFit[phi, theta]}, {theta, 0, 2*pi}, AspectRatio -> 1, PlotRange -> rangePlot, PlotPoints -> 15, MaxRecursion -> 1, ImageSize->Large], {phi, 0, 2*pi, 2*pi/nPlots}], 
         ParallelTable[ParametricPlot[{RBCVMEC[theta, phi], ZBSVMEC[theta, phi]}, {theta, 0, 2*pi}, AspectRatio -> 1, PlotRange -> rangePlot, PlotPoints -> 15, MaxRecursion -> 1, ImageSize->Large], {phi, 0, 2*pi, 2*pi/nPlots}]
     }]//Quiet;
-    Export[StringJoin[currentPath,"data/Figures/",FileNameTake[vmecOutput],"_fit_plotcompare.pdf"],fig, "AllowRasterization" -> True, ImageSize -> 1000, ImageResolution -> 600]
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_plotcompare.pdf"],fig, "AllowRasterization" -> True, ImageSize -> 1000, ImageResolution -> 600]
     Print["Fit plot took "<>ToString[AbsoluteTime[]-timestart]<>"s"];
 
     (*
@@ -87,10 +87,10 @@ If[plotFit==1,
     Nposvecpsitemp = Table[ListInterpolation[posvecpsiTable[[i]], {{0, 2*pi}, {0, 2*pi}}], {i, 1, 3}];
     Nposvecpsi[s_, theta_] = Table[Nposvecpsitemp[[i]][s, theta], {i, 1, 3}];
     figFit  = Show[{ParametricPlot3D[Nposvecpsi[s, theta],      {s, 0, 2*pi}, {theta, 0, 2*pi}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Red, Opacity[0.7], Specularity[White, 20]], PlotPoints -> 50, MaxRecursion -> 2], ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi}]}];
-    Export[StringJoin[currentPath,"data/",FileNameTake[vmecOutput],"_fit_3Dsurface_fit.pdf"],figFit];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_3Dsurface_fit.pdf"],figFit];
 
     figVMEC = Show[{ParametricPlot3D[FluxSurfaceVMEC[theta, s], {s, 0, 2*pi}, {theta, 0, 2*pi}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Red, Opacity[0.7], Specularity[White, 20]], PlotPoints -> 50, MaxRecursion -> 2], ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi}]}];
-    Export[StringJoin[currentPath,"data/",FileNameTake[vmecOutput],"_fit_3Dsurface_VMEC.pdf"],figVMEC];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_3Dsurface_VMEC.pdf"],figVMEC];
     Print["Fit plot 2 of 2 took "<>ToString[AbsoluteTime[]-timestart]<>"s"];
     *)
 

@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 # version 0.1 - R. Jorge IREAP/UMD September 2019
-proj="TJII";   # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="ARIES";   # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #======SENAC=====
-runSENAC=1;   #put to 0 if only for plotting
+runSENAC=0;   #put to 0 if only for plotting
 readVMEC=1;   #put to 1 if reading axis and surface from VMEC
+outputToVMEC=1; #compute Fourier Modes and output to VMEC
 #======VMEC=====
-runVMECofFit=1;
+runVMECofFit=0;
 #======REGCOIL=====
-runREGCOILoriginal=1;
-runREGCOILfit=1;
+runREGCOILoriginal=0;
+runREGCOILfit=0;
 #======VMECplot====
 VMECplotOriginal=1;
-VMECplotFit=1;
-REGCOILplotOriginal=1;
+VMECplotFit=0;
+REGCOILplotOriginal=0;
 REGCOILplotFit=1;
 #======SENAC INPUT PARAMETERS=====
 vmecInput="/Users/rogeriojorge/Dropbox/senac/vmec/vmec_input_template.txt"; #template VMEC input file
-vmecOutput="/Users/rogeriojorge/Dropbox/senac/vmec/wout_${proj}.nc"; #VMEC output file to read
+vmecOutput="/Users/rogeriojorge/Dropbox/senac/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
 nthetaM=20;   #resolution in theta to compute Mercier angle
 nphiM=35;     #resolution in phi to compute Mercier angle
 deltac0=1.5;  #initial point for deltac0 betweeon 0 and pi
@@ -27,9 +28,8 @@ muc0=0.5;     #initial point for muc0
 mucMin=0.1;   #minimum muc0 to help fit
 mucMax=0.9;   #maximum muc0 to help fit
 nModes=0;     #number of fourier components in mu, delta and B0
-maxiterations=350; #max number of iterations during fit parameter
+maxiterations=550; #max number of iterations during fit parameter
 plotFit=1;    #Mathematica plots fit results
-outputToVMEC=1; #compute Fourier Modes and output to VMEC
 maxm=5;       #Maximum m to output to VMEC
 maxn=7;       #Maximum n to output to VMEC
 maxRecursTheta=30; #Theta resolution in numerical integration
@@ -50,7 +50,7 @@ REGCOILseparation = 0.07
  echo "Stellarator Equilibrium Near-Axis Code"
  echo "============================================"
  echo ${proj}" Stellarator"
- rm data/senac_${proj}_output.txt
+ mkdir -p data/${proj}/Figures
 #==========================
 
 #======Print Run Parameters=====
@@ -60,20 +60,21 @@ REGCOILseparation = 0.07
 if (( $runSENAC == 1)); then
 	echo "-----------------------"
 	echo "Running SENAC Mathematica"
-	wolframscript -noprompt -script main.wls $readVMEC $vmecInput $vmecOutput $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $outputToVMEC $maxm $maxn $maxRecursTheta $maxRecursPhi | tee data/senac_${proj}_output.txt
+	rm -f data/${proj}/senac_${proj}_output.txt
+	wolframscript -noprompt -script main.wls $proj $readVMEC $vmecInput $vmecOutput $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $outputToVMEC $maxm $maxn $maxRecursTheta $maxRecursPhi | tee data/${proj}/senac_${proj}_output.txt
 fi
 #======RUN VMEC=====
 if (( $runVMECofFit == 1)); then
 	echo "-----------------------"
 	echo "Running VMEC from fit"
-	./vmec/xvmec2000 data/wout_${proj}.nc_input.txt | tee -a data/senac_${proj}_output.txt
+	./vmec/xvmec2000 data/${proj}/${proj}_SENACtoVMEC_input.txt | tee -a data/${proj}/senac_${proj}_output.txt
 	if test -f "jxbout_txt.nc"; then
     	rm *.txt
 		rm jxbout_txt.nc
 		rm fort.8
 	fi
 	if test -f "wout_txt.nc"; then
-		mv wout_txt.nc data/wout_${proj}_senac.nc
+		mv wout_txt.nc data/${proj}/wout_${proj}_senac.nc
 	fi
 fi
 #======RUN REGCOIL=====
@@ -88,17 +89,17 @@ if (( $runREGCOILoriginal == 1)); then
 	echo 'wout_filename = "'${vmecOutput}'"' >> regcoil_in.senac
 	echo '/' >> regcoil_in.senac
 	./regcoil regcoil_in.senac
-	mv regcoil_out.senac.nc regcoil_out_${proj}.nc
+	mv regcoil_out.senac.nc ../vmec/${proj}/regcoil_out_${proj}.nc
+	rm -f nescin.out
 	cd ..
 fi
 if (( $runREGCOILfit == 1)); then
 	echo "-----------------------"
 	echo "Running REGCOIL from fit"
 	get_abs_filename() {
-  		# $1 : relative filename
   		echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 	}
-	woutFile=$(get_abs_filename "data/wout_${proj}_senac.nc")
+	woutFile=$(get_abs_filename "data/${proj}/wout_${proj}_senac.nc")
 	cd regcoil
 	mv regcoil_in.senac regcoil_in.senac_temp
 	head -n 19 regcoil_in.senac_temp > regcoil_in.senac
@@ -106,20 +107,22 @@ if (( $runREGCOILfit == 1)); then
 	echo 'separation = ${REGCOILseparation}'
 	echo 'wout_filename = "'${woutFile}'"' >> regcoil_in.senac
 	echo '/' >> regcoil_in.senac
-	./regcoil regcoil_in.senac | tee -a ../data/senac_${proj}_output.txt
-	mv regcoil_out.senac.nc ../data/regcoil_out_${proj}_senac.nc
+	./regcoil regcoil_in.senac | tee -a ../data/${proj}/senac_${proj}_output.txt
+	mv regcoil_out.senac.nc ../data/${proj}/regcoil_out_${proj}_senac.nc
+	rm -f nescin.out
 	cd ..
 fi
 #======RUN VMECplot=====
 if (( $VMECplotOriginal == 1)); then
 	echo "-----------------------"
 	echo "Running VMECPLOT Original"
-	./vmecPlot vmec/wout_${proj}.nc $nplotTheta $nplotPhiSurf $nplotThetaSurf $nplotNthetaBSurf $nplotNphiBSurf $REGCOILplotOriginal "regcoil/regcoil_out_${proj}.nc" $coilsPerHalfPeriod $thetaShift
+ 	mkdir -p vmec/${proj}/Figures
+	./vmecPlot vmec/${proj}/wout_${proj}.nc $proj $nplotTheta $nplotPhiSurf $nplotThetaSurf $nplotNthetaBSurf $nplotNphiBSurf $REGCOILplotOriginal "vmec/${proj}/regcoil_out_${proj}.nc" $coilsPerHalfPeriod $thetaShift
 fi
 if (( $VMECplotFit == 1)); then
 	echo "-----------------------"
 	echo "Running VMECPlot Fit"
-	./vmecPlot data/wout_${proj}_senac.nc $nplotTheta $nplotPhiSurf $nplotThetaSurf $nplotNthetaBSurf $nplotNphiBSurf $REGCOILplotFit "data/regcoil_out_${proj}_senac.nc" $coilsPerHalfPeriod $thetaShift | tee -a data/senac_${proj}_output.txt
+	./vmecPlot data/${proj}/wout_${proj}_senac.nc $proj $nplotTheta $nplotPhiSurf $nplotThetaSurf $nplotNthetaBSurf $nplotNphiBSurf $REGCOILplotFit "data/${proj}/regcoil_out_${proj}_senac.nc" $coilsPerHalfPeriod $thetaShift | tee -a data/${proj}/senac_${proj}_output.txt
 fi
 
 #pkill -9 WolframKernel
