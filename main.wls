@@ -5,6 +5,7 @@ SetOptions[$Output, FormatType->OutputForm];
 currentPath=DirectoryName @ $InputFileName;
 SetDirectory[currentPath];
 readVMEC = ToExpression[$ScriptCommandLine[[2]]];
+outputToVMEC = ToExpression[$ScriptCommandLine[[17]]];
 pi = N[Pi,10];
 
 (*Fast Numerical Integration*)
@@ -19,8 +20,10 @@ If[readVMEC == 1,
     Get[StringJoin[currentPath,"src/vmec_read.wls"]];
     WriteString[$Output, "  Fitting VMEC to Mercier's theta and rho\n"]
     Get[StringJoin[currentPath,"src/fit_to_mercier.wls"]];
-    WriteString[$Output, "  Mercier to VMEC\n"]
-    Get[StringJoin[currentPath,"src/mercier_to_vmec.wls"]];
+    If[outputToVMEC == 1,
+      WriteString[$Output, "  Mercier to VMEC\n"]
+      Get[StringJoin[currentPath,"src/mercier_to_vmec.wls"]];
+    ]
 ]
 WriteString[$Output,"  SENAC took "<>ToString[TimeUsed[]]<>"s\n"]
 

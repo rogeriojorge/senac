@@ -5,9 +5,6 @@ myfigsize=(14,7)
 print
 #print("usage: vmecPlot <woutXXX.nc>")
 
-NthetaBSurf = 20
-NphiBSurf = 30
-
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
@@ -15,10 +12,13 @@ import numpy as np
 from scipy.io import netcdf
 import sys
 import os
+from PyPDF2 import PdfFileWriter, PdfFileReader
 
-nplotTheta = int(sys.argv[2])
-nplotPhiSurf = int(sys.argv[3])
+nplotTheta     = int(sys.argv[2])
+nplotPhiSurf   = int(sys.argv[3])
 nplotThetaSurf = int(sys.argv[4])
+NthetaBSurf    = int(sys.argv[5])
+NphiBSurf      = int(sys.argv[6])
 
 f = netcdf.netcdf_file(sys.argv[1],'r',mmap=False)
 phi = f.variables['phi'][()]
@@ -162,7 +162,7 @@ for i in range(2):
     for imode in range(len(xn_nyq)):
         angle = xm_nyq[imode]*theta2D - xn_nyq[imode]*phi2D
         b += bmnc[iradius,imode]*np.cos(angle) + bmns[iradius,imode]*np.sin(angle)
-    if i==1:
+    if i==0:
         plt.subplot(numRows,numCols,plotNum)
         plotNum += 1
         plt.set_cmap('jet')
@@ -186,7 +186,7 @@ for i in range(2):
         plt.xlim([0,2*np.pi])
         plt.ylim([0,2*np.pi])
         plt.tight_layout()
-        fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_BonAxis.pdf", bbox_inches='tight')
+        fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_BatBoundary.pdf", bbox_inches='tight')
 
 ########################################################
 # Now make plot of flux surface shapes
@@ -257,11 +257,11 @@ fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1
 # Now make 3D surface plot
 ########################################################
 
-REGCOILplot = int(sys.argv[5])
+REGCOILplot = int(sys.argv[7])
 if REGCOILplot==1:
-    REGCOILout=sys.argv[6]
-    coilsPerHalfPeriod = float(sys.argv[7])
-    thetaShift = float(sys.argv[8])
+    REGCOILout=sys.argv[8]
+    coilsPerHalfPeriod = float(sys.argv[9])
+    thetaShift = float(sys.argv[10])
     f = netcdf.netcdf_file(REGCOILout,'r',mmap=False)
     theta = f.variables['theta_coil'][()]
     zeta = f.variables['zeta_coil'][()]
@@ -283,8 +283,8 @@ if REGCOILplot==1:
     fig.patch.set_facecolor('white')
     plt.contourf(zeta,theta,np.transpose(current_potential[ilambda,:,:])/1e6,50)
     plt.colorbar()
-    plt.xlabel('zeta')
-    plt.ylabel('theta')
+    plt.xlabel(r'Toroidal angle $\phi$')
+    plt.ylabel(r'Poloidal angle $\theta$')
     plt.xlim([0,2*np.pi/nfp])
     plt.ylim([0,2*np.pi])
     plt.title('Current Potential [MA]')
@@ -416,7 +416,7 @@ fig.subplots_adjust(bottom=-factor+0.05,top=1+factor)
 
 ax.set_aspect('equal')
 p = ax.plot_surface(X, Y, Z, facecolors = cm.jet(B_rescaled), rstride=1, cstride=1, antialiased=False) 
-max_range = np.array([X.max()-X.min(), Y.max()-Y.min(), Z.max()-Z.min()]).max() / 2.0
+max_range = np.array([X.max()-X.min(), Y.max()-Y.min(), Z.max()-Z.min()]).max() / 3.3
 plt.xlabel('X [meters]')
 plt.ylabel('Y [meters]')
 #plt.zlabel('Z [meters]')
@@ -428,9 +428,43 @@ ax.set_xlim(mid_x - max_range, mid_x + max_range)
 ax.set_ylim(mid_y - max_range, mid_y + max_range)
 ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
-##############################################################
+# make the panes transparent
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+## make the grid lines transparent
+ax.xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+ax.yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+ax.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
 
-fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"3DSurface.pdf", bbox_inches='tight')
+
+ax._axis3don = False
+
+imgpath=os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"3DSurface.pdf"
+plt.savefig(imgpath, bbox_inches='tight')
+
+with open(imgpath, "rb") as in_f:
+    input1 = PdfFileReader(in_f)
+    output = PdfFileWriter()
+
+    numPages = input1.getNumPages()
+
+    for i in range(numPages):
+        page = input1.getPage(i)
+        page.compressContentStreams()
+        #print(page.mediaBox.getUpperRight_x(), page.mediaBox.getUpperRight_y())
+        #page.trimBox.lowerLeft = (40, 100)
+        #page.trimBox.upperRight = (770, 650)
+        page.cropBox.lowerLeft = (40, 170)
+        page.cropBox.upperRight = (780, 620)
+        output.addPage(page)
+
+    os.remove(imgpath)
+    with open(imgpath, "wb") as out_f:
+        output.write(out_f)
+
+
+##############################################################
 
 #plt.show()
 

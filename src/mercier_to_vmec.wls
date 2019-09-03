@@ -1,13 +1,12 @@
 (* ::Package:: *)
 
-maxm           = ToExpression[$ScriptCommandLine[[16]]];
-maxn           = ToExpression[$ScriptCommandLine[[17]]];
-maxRecursTheta = ToExpression[$ScriptCommandLine[[18]]];
-maxRecursPhi   = ToExpression[$ScriptCommandLine[[19]]];
+maxm           = ToExpression[$ScriptCommandLine[[18]]];
+maxn           = ToExpression[$ScriptCommandLine[[19]]];
+maxRecursTheta = ToExpression[$ScriptCommandLine[[20]]];
+maxRecursPhi   = ToExpression[$ScriptCommandLine[[21]]];
 
 timestart = AbsoluteTime[]; 
 Print["Starting RBC Evaluation"];
-ParallelEvaluate[Off[NIntegrate::ncvi, NIntegrate::slwcon, NIntegrate::eincr ]];
 RBCmn = Quiet[ParallelTable[
      GaussLegendreQuadrature[
        GaussLegendreQuadrature[

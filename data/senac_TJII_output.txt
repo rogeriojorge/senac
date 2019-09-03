@@ -1,0 +1,203 @@
+  VMEC read
+13:33:35.618 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:35.819 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:35.872 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:35.930 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:35.966 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:35.999 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:36.032 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:36.080 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:36.114 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:36.152 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+13:33:36.189 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+  Fitting VMEC to Mercier's theta and rho
+Computing Mercier's Angle took 3.020757s
+Computing Mercier's Rho took 2.919521s
+Fit took 6.604837s
+Best fit parameters {deltal -> 0.0375574, B0c[0] -> 1.27224, muc[0] -> 0.17645, deltac[0] -> 3.0236}
+Iota from VMEC: -1.54771, Iota from near-axis fit: -1.96854
+Fit plot took 3.376808s
+  Mercier to VMEC
+Starting RBC Evaluation
+RBCmn from fit took 38.845814s
+Starting ZBS Evaluation
+ZBSmn from fit took 19.109581s
+  SENAC took 21.9742s
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  SEQ =    1 TIME SLICE  0.0000E+00
+  PROCESSING INPUT.txt
+  THIS IS PARVMEC (PARALLEL VMEC), VERSION 9.0
+  Lambda: Full Radial Mesh. L-Force: hybrid full/half.
+
+  COMPUTER:    OS:    RELEASE:   DATE = Sep 03,2019  TIME = 13:34:52
+
+  NS =   16 NO. FOURIER MODES =  288 FTOLV =  1.000E-05 NITER =  12000
+  PROCESSOR COUNT - RADIAL:    1
+
+  ITER    FSQR      FSQZ      FSQL    RAX(v=0)    DELT       WMHD
+
+    1  1.38E-01  8.12E-02  7.49E-02  1.739E+00  9.00E-01  6.2015E-01
+  100  1.12E-04  1.23E-04  3.83E-05  1.720E+00  8.10E-01  5.9141E-01
+  131  6.75E-06  9.33E-06  2.47E-06  1.719E+00  8.10E-01  5.9141E-01
+
+  NS =   32 NO. FOURIER MODES =  288 FTOLV =  1.000E-07 NITER =  12000
+  PROCESSOR COUNT - RADIAL:    1
+
+  ITER    FSQR      FSQZ      FSQL    RAX(v=0)    DELT       WMHD
+
+    1  5.21E-04  4.58E-04  6.78E-06  1.719E+00  9.00E-01  5.9141E-01
+  100  1.22E-07  1.03E-07  7.63E-09  1.718E+00  8.00E-01  5.9141E-01
+  101  6.96E-08  5.57E-08  7.54E-09  1.718E+00  8.00E-01  5.9141E-01
+ Diagno-file request not completed!
+ VMEC2000 not running in free-boundary mode!
+ -or- LASYM = .true. !
+ LASYM  =  F
+ LFREEB =  F
+ Check mgrid-file and namelist!
+
+ EXECUTION TERMINATED NORMALLY
+
+ FILE : txt
+ NUMBER OF JACOBIAN RESETS =    0
+
+    TOTAL COMPUTATIONAL TIME (SEC)         8.52
+    TIME TO INPUT/OUTPUT                   0.32
+       READ IN DATA                        0.00
+       WRITE OUT DATA TO WOUT              0.31
+    TIME IN FUNCT3D                        7.99
+       BCOVAR FIELDS                       0.40
+       FOURIER TRANSFORM                   2.17
+       INVERSE FOURIER TRANSFORM           3.74
+       FORCES AND SYMMETRIZE               0.45
+       RESIDUE                             0.27
+       EQFORCE                             0.20
+
+ NO. OF PROCS:     1
+ PARVMEC     :     T
+ LPRECOND    :     F
+ LV3FITCALL  :     F
+ This is REGCOIL,
+ a regularized least-squares method for computing stellarator coil shapes.
+ Successfully read parameters from regcoil_nml namelist in regcoil_in.senac.
+ Resolution parameters:
+   ntheta_plasma  =   64
+   ntheta_coil    =   64
+   nzeta_plasma   =   64
+   nzeta_coil     =   64
+   mpol_potential =   12
+   ntor_potential =   12
+ Symmetry: sin(m*theta - n*zeta) modes only
+ Initializing plasma surface.
+   Successfully read VMEC data from /Users/rogeriojorge/Dropbox/senac/data/wout_TJII_senac.nc
+   Using outermost grid point in VMEC's FULL radial grid.
+ size of rmnc_vmec:         288          32
+ Plasma surface area: 1.169E+01 m^2. Volume: 9.536E-01 m^3.
+ Overriding net_poloidal_current_Amperes with value from the VMEC wout file.
+ G =    9804671.7631559726       ; curpol =    3.0802284781990088     
+ Done initializing plasma surface. Took   0.330000013      sec.
+ Initializing coil surface.
+   Constructing a surface offset from the plasma by     0.2000 meters.
+   Number of OpenMP threads:          16
+   Computing offset points:   5.49999997E-02 sec
+   Representing the offset surface with mpol= 24, ntor= 24
+   Fourier transform:  0.245000005     sec
+ Writing winding surface into nescin.out
+ Number of harmonics written:         1201
+   Write nescin file:   3.00000003E-03 sec
+   Evaluating coil surface & derivatives:   1.17700005      sec.
+ Coil surface area: 2.675E+01 m^2. Volume: 4.672E+00 m^3.
+ Done initializing coil surface. Took    1.48099995      sec.
+ Not reading a bnorm file, so Bnormal_from_plasma_current arrays will all be 0.
+ Initializing basis functions and f
+ Done. Took  0.115999997     sec.
+ Building inductance matrix and h.
+   Number of OpenMP threads:          16
+ Done. Took  0.760999978     sec.
+ inductance*basis_functions:   7.10000023E-02 sec.
+ Form RHS_B:   1.00000005E-03 sec.
+ Prepare for matrix_B:   2.60000005E-02 sec.
+ matmul for matrix_B:   6.00000005E-03 sec.
+ matmul 1 for matrix_regularization:   4.99999989E-03 sec.
+ matmul 2 for matrix_regularization:   6.00000005E-03 sec.
+ matmul 3 for matrix_regularization:   4.99999989E-03 sec.
+ Matmuls for RHS_regularization:   2.00000009E-03 sec.
+ Optimal LWORK:       19968
+ Solving system for lambda= 1.000+200 (  1 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    1.00000005E-03  sec.
+   Diagnostics:    1.40000004E-02  sec.
+   chi2_B: 4.467E-01,  chi2_K: 2.176E+13,  chi2_Laplace_Beltrami: 1.316E+16
+   max(B_n): 4.955E-01,  max(K): 1.514E+06,  rms K: 9.020E+05
+ Solving system for lambda= 0.000E+00 (  2 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    1.00000005E-03  sec.
+   Diagnostics:    1.40000004E-02  sec.
+   chi2_B: 1.917E-05,  chi2_K: 1.521E+18,  chi2_Laplace_Beltrami: 1.031E+22
+   max(B_n): 1.294E-02,  max(K): 3.188E+09,  rms K: 2.384E+08
+ Solving system for lambda= 5.601E-17 (  3 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    0.00000000      sec.
+   Diagnostics:    1.49999997E-02  sec.
+   chi2_B: 1.258E-03,  chi2_K: 4.532E+13,  chi2_Laplace_Beltrami: 1.327E+17
+   max(B_n): 5.501E-02,  max(K): 7.014E+06,  rms K: 1.302E+06
+ Solving system for lambda= 5.601E-15 (  4 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    1.00000005E-03  sec.
+   Diagnostics:    1.49999997E-02  sec.
+   chi2_B: 1.153E-02,  chi2_K: 2.548E+13,  chi2_Laplace_Beltrami: 3.567E+16
+   max(B_n): 1.204E-01,  max(K): 2.533E+06,  rms K: 9.760E+05
+ Solving system for lambda= 5.601E-13 (  5 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    1.00000005E-03  sec.
+   Diagnostics:    1.40000004E-02  sec.
+   chi2_B: 2.916E-01,  chi2_K: 2.188E+13,  chi2_Laplace_Beltrami: 1.275E+16
+   max(B_n): 4.185E-01,  max(K): 1.582E+06,  rms K: 9.045E+05
+ Target_value has been bracketed.
+ Solving system for lambda= 2.110E-14 (  6 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    1.00000005E-03  sec.
+   Diagnostics:    1.40000004E-02  sec.
+   chi2_B: 2.610E-02,  chi2_K: 2.420E+13,  chi2_Laplace_Beltrami: 2.152E+16
+   max(B_n): 1.700E-01,  max(K): 2.063E+06,  rms K: 9.513E+05
+ Solving system for lambda= 2.513E-14 (  7 of at most  20)
+   Additions:    1.00000005E-03  sec.
+   DSYSV:    0.00000000      sec.
+   Diagnostics:    1.49999997E-02  sec.
+   chi2_B: 2.979E-02,  chi2_K: 2.404E+13,  chi2_Laplace_Beltrami: 2.028E+16
+   max(B_n): 1.781E-01,  max(K): 2.025E+06,  rms K: 9.481E+05
+ Solving system for lambda= 2.452E-14 (  8 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    0.00000000      sec.
+   Diagnostics:    1.49999997E-02  sec.
+   chi2_B: 2.922E-02,  chi2_K: 2.407E+13,  chi2_Laplace_Beltrami: 2.045E+16
+   max(B_n): 1.770E-01,  max(K): 2.030E+06,  rms K: 9.486E+05
+ Solving system for lambda= 2.453E-14 (  9 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    1.00000005E-03  sec.
+   Diagnostics:    1.40000004E-02  sec.
+   chi2_B: 2.923E-02,  chi2_K: 2.407E+13,  chi2_Laplace_Beltrami: 2.044E+16
+   max(B_n): 1.770E-01,  max(K): 2.030E+06,  rms K: 9.486E+05
+ Solving system for lambda= 2.453E-14 ( 10 of at most  20)
+   Additions:    0.00000000      sec.
+   DSYSV:    1.00000005E-03  sec.
+   Diagnostics:    1.49999997E-02  sec.
+   chi2_B: 2.923E-02,  chi2_K: 2.407E+13,  chi2_Laplace_Beltrami: 2.044E+16
+   max(B_n): 1.770E-01,  max(K): 2.030E+06,  rms K: 9.486E+05
+ Requested tolerance has been met.
+ REGCOIL complete. Total time=   3.0239999294281006      sec.
+ You can run regcoilPlot regcoil_out.senac.nc to plot results.
+
+('nfp: ', 4)
+('ns: ', 32)
+('mpol: ', 12)
+('ntor: ', 12)
+('Aminor_p: ', 0.17897754146485265)
+('Rmajor_p: ', 1.5107156742766552)
+('aspect:            ', 8.440811410817862)
+('betatotal: ', 0.0)
+('betapol:   ', 0.0)
+('betator:   ', 0.0)
+('betaxis:   ', 0.0)
+('ctor:   ', 6.959222694641332e-11)
+('bmnc.shape:', (32, 288))
+('Minimum coil separation:', 0.22921478360071285)
