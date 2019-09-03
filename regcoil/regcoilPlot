@@ -1,0 +1,154 @@
+#!/usr/bin/env python3
+
+#print("Usage: cutCoilsFromRegcoil <regcoil_out.XXX> <# of coils per half period> <thetaShift>")
+#print("This script assumes the contours do not zig-zag back and forth across the theta=0 line,")
+#print("after shifting the current potential by thetaShift grid points.")
+
+import sys
+
+filename = sys.argv[1]
+#print(filename[:12])
+if filename[:12] != 'regcoil_out.':
+   print("Error! First argument should be regcoil_out.XXX")
+   exit(1)
+coilsPerHalfPeriod = 2
+#coilsPerHalfPeriod = int(sys.argv[2])
+#print("coilsPerHalfPeriod:",coilsPerHalfPeriod)
+thetaShift = 0
+if (len(sys.argv)>3): thetaShift = int(sys.argv[3])
+#print("thetaShift:",thetaShift)
+
+from scipy.io import netcdf
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+
+f = netcdf.netcdf_file(filename,'r',mmap=False)
+theta = f.variables['theta_coil'][()]
+zeta = f.variables['zeta_coil'][()]
+zetal = f.variables['zetal_coil'][()]
+nfp = f.variables['nfp'][()]
+net_poloidal_current_Amperes = f.variables['net_poloidal_current_Amperes'][()]
+current_potential = f.variables['current_potential'][()]
+rmnc_coil = f.variables['rmnc_coil'][()]
+zmns_coil = f.variables['zmns_coil'][()]
+xm_coil = f.variables['xm_coil'][()]
+xn_coil = f.variables['xn_coil'][()]
+lambdas = f.variables['lambda'][()]
+ilambda = len(lambdas)-1
+f.close()
+
+# Now just generate a new monotonic array with the correct first value:
+theta = theta[0] + np.linspace(0,2*np.pi,len(theta),endpoint=False)
+
+fig = plt.figure()
+fig.patch.set_facecolor('white')
+plt.contourf(zeta,theta,np.transpose(current_potential[ilambda,:,:])/1e6,50)
+plt.colorbar()
+plt.xlabel('zeta')
+plt.ylabel('theta')
+plt.xlim([0,2*np.pi/nfp])
+plt.ylim([0,2*np.pi])
+plt.title('Current Potential [MA]')
+
+if abs(net_poloidal_current_Amperes) > np.finfo(float).eps:
+   data = current_potential[ilambda,:,:] / net_poloidal_current_Amperes * nfp
+else:
+   data = current_potential[ilambda,:,:] / np.max(current_potential[ilambda,:,:])
+
+data = np.roll(data,thetaShift,axis=1)
+
+d = 2*np.pi/nfp
+zeta_3 = np.concatenate((zeta-d, zeta, zeta+d))
+data_3 = np.concatenate((data-1,data,data+1))
+
+contours = np.linspace(-1,2,coilsPerHalfPeriod*2*3+1)
+d = contours[1]-contours[0]
+contours = contours + d/2
+
+# Repeat with just the contours we care about:
+contours = np.linspace(0,1,coilsPerHalfPeriod*2,endpoint=False)
+d = contours[1]-contours[0]
+contours = contours + d/2
+cdata = plt.contour(zeta_3,theta,np.transpose(data_3),contours,colors='k')
+
+numCoilsFound = len(cdata.collections)
+if numCoilsFound != 2*coilsPerHalfPeriod:
+   print("WARNING!!! The expected number of coils was not the number found.")
+
+contour_zeta=[]
+contour_theta=[]
+numCoils = 0
+for j in range(numCoilsFound):
+   p = cdata.collections[j].get_paths()[0]
+   v = p.vertices
+   # Make sure the contours have increasing theta:
+   if v[1,1]<v[0,1]:
+      v = np.flipud(v)
+
+   # close the contours by adding a copy of the first point to the end
+   for jfp in range(nfp):
+      d = 2*np.pi/nfp*jfp
+      contour_zeta.append(v[:,0]+d)
+      contour_theta.append(v[:,1])
+      numCoils += 1
+
+contour_R = []
+contour_Z = []
+for j in range(numCoils):
+   contour_R.append(contour_zeta[j]*0)
+   contour_Z.append(contour_zeta[j]*0)
+
+nmodes = len(xm_coil)
+for imode in range(nmodes):
+    m = xm_coil[imode]
+    n = xn_coil[imode]
+    crc = rmnc_coil[imode]
+    czs = zmns_coil[imode]
+    for j in range(numCoils):
+       angle = m*contour_theta[j] - n*contour_zeta[j]
+       contour_R[j] = contour_R[j] + crc*np.cos(angle)
+       contour_Z[j] = contour_Z[j] + czs*np.sin(angle)
+
+contour_X = []
+contour_Y = []
+fig=plt.figure(figsize=(9,9))
+fig.patch.set_facecolor('white')
+ax = fig.gca(projection='3d')
+maxR=0
+for j in range(numCoils):
+   maxR = np.max((maxR,np.max(contour_R[j])))
+   contour_X.append(contour_R[j]*np.cos(contour_zeta[j]))
+   contour_Y.append(contour_R[j]*np.sin(contour_zeta[j]))
+   ax.plot(contour_X[j],contour_Y[j],contour_Z[j],color='green',linewidth=5)
+
+ax.auto_scale_xyz([-maxR,maxR],[-maxR,maxR],[-maxR,maxR])
+
+coilCurrent = net_poloidal_current_Amperes / numCoils
+
+# Find the point of minimum separation
+minSeparation2=1.0e+20
+for whichCoil1 in range(numCoils):
+   for whichCoil2 in range(whichCoil1):
+      for whichPoint in range(len(contour_X[whichCoil1])):
+         dx = contour_X[whichCoil1][whichPoint] - contour_X[whichCoil2]
+         dy = contour_Y[whichCoil1][whichPoint] - contour_Y[whichCoil2]
+         dz = contour_Z[whichCoil1][whichPoint] - contour_Z[whichCoil2]
+         separation2 = dx*dx+dy*dy+dz*dz
+         this_minSeparation2 = np.min(separation2)
+         if this_minSeparation2<minSeparation2:
+            minSeparation2 = this_minSeparation2
+            x1 = contour_X[whichCoil1][whichPoint]
+            y1 = contour_Y[whichCoil1][whichPoint]
+            z1 = contour_Z[whichCoil1][whichPoint]
+            index=np.argmin(separation2)
+            x2 = contour_X[whichCoil2][index]
+            y2 = contour_Y[whichCoil2][index]
+            z2 = contour_Z[whichCoil2][index]
+            
+print("Minimum coil separation:",np.sqrt(minSeparation2))
+
+
+
+plt.show()

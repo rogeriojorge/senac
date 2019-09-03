@@ -1,0 +1,23 @@
+&regcoil_nml
+  general_option = 5  ! Determine lambda to meet a current density target
+
+  target_option = 'rms_Bnormal'
+  target_value = 5e-2
+
+  nlambda = 20
+
+  ntheta_plasma = 64
+  ntheta_coil   = 64
+  nzeta_plasma  = 64
+  nzeta_coil    = 64
+
+  mpol_potential = 12
+  ntor_potential = 12
+
+  geometry_option_plasma = 2
+  
+  geometry_option_coil = 2 ! Uniform offset from plasma surface 
+  separation = 0.04
+  
+wout_filename = "/Users/rogeriojorge/Dropbox/senac/data/wout_LHD_senac.nc"
+/

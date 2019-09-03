@@ -76,7 +76,7 @@ If[plotFit==1,
     fig=Grid[{ParallelTable[ParametricPlot[{RBCFit[phi, theta], ZBSFit[phi, theta]}, {theta, 0, 2*pi}, AspectRatio -> 1, PlotRange -> rangePlot, PlotPoints -> 15, MaxRecursion -> 1, ImageSize->Large], {phi, 0, 2*pi, 2*pi/nPlots}], 
         ParallelTable[ParametricPlot[{RBCVMEC[theta, phi], ZBSVMEC[theta, phi]}, {theta, 0, 2*pi}, AspectRatio -> 1, PlotRange -> rangePlot, PlotPoints -> 15, MaxRecursion -> 1, ImageSize->Large], {phi, 0, 2*pi, 2*pi/nPlots}]
     }]//Quiet;
-    Export[StringJoin[currentPath,"data/",FileNameTake[vmecOutput],"_fit_plotcompare.pdf"],fig, "AllowRasterization" -> True, ImageSize -> 1000, ImageResolution -> 600]
+    Export[StringJoin[currentPath,"data/Figures/",FileNameTake[vmecOutput],"_fit_plotcompare.pdf"],fig, "AllowRasterization" -> True, ImageSize -> 1000, ImageResolution -> 600]
     Print["Fit plot took "<>ToString[AbsoluteTime[]-timestart]<>"s"];
 
     (*

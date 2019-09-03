@@ -5,16 +5,20 @@ myfigsize=(14,7)
 print
 #print("usage: vmecPlot <woutXXX.nc>")
 
+NthetaBSurf = 20
+NphiBSurf = 30
+
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import numpy as np
 from scipy.io import netcdf
 import sys
+import os
 
-if len(sys.argv) != 2:
-    print "Error! You must specify 1 argument: the woutXXX.nc file."
-    exit(1)
+nplotTheta = int(sys.argv[2])
+nplotPhiSurf = int(sys.argv[3])
+nplotThetaSurf = int(sys.argv[4])
 
 f = netcdf.netcdf_file(sys.argv[1],'r',mmap=False)
 phi = f.variables['phi'][()]
@@ -51,39 +55,38 @@ else:
     raxis_cs = 0*raxis_cc
     zaxis_cc = 0*raxis_cc
 
-
-print "nfp: ",nfp
-print "ns: ",ns
+print("nfp: ",nfp)
+print("ns: ",ns)
 
 mpol = f.variables['mpol'][()]
-print "mpol: ",mpol
+print("mpol: ",mpol)
 
 ntor = f.variables['ntor'][()]
-print "ntor: ",ntor
+print("ntor: ",ntor)
 
 Aminor_p = f.variables['Aminor_p'][()]
-print "Aminor_p: ",Aminor_p
+print("Aminor_p: ",Aminor_p)
 
 Rmajor_p = f.variables['Rmajor_p'][()]
-print "Rmajor_p: ",Rmajor_p
+print("Rmajor_p: ",Rmajor_p)
 
 data = f.variables['aspect'][()]
-print "aspect:            ",data
+print("aspect:            ",data)
 
 data = f.variables['betatotal'][()]
-print "betatotal: ",data
+print("betatotal: ",data)
 
 data = f.variables['betapol'][()]
-print "betapol:   ",data
+print("betapol:   ",data)
 
 data = f.variables['betator'][()]
-print "betator:   ",data
+print("betator:   ",data)
 
 data = f.variables['betaxis'][()]
-print "betaxis:   ",data
+print("betaxis:   ",data)
 
 ctor = f.variables['ctor'][()]
-print "ctor:   ",ctor
+print("ctor:   ",ctor)
 
 f.close()
 nmodes = len(xn)
@@ -94,14 +97,13 @@ s_half = [(i-0.5)/(ns-1) for i in range(1,ns)]
 phiedge = phi[-1]
 phi_half = [(i-0.5)*phiedge/(ns-1) for i in range(1,ns)]
 
-ntheta = 200
 nphi = 4
-theta = np.linspace(0,2*np.pi,num=ntheta)
+theta = np.linspace(0,2*np.pi,num=nplotTheta)
 phi = np.linspace(0,2*np.pi/nfp,num=nphi,endpoint=False)
 iradius = ns-1
-R = np.zeros((ntheta,nphi))
-Z = np.zeros((ntheta,nphi))
-for itheta in range(ntheta):
+R = np.zeros((nplotTheta,nphi))
+Z = np.zeros((nplotTheta,nphi))
+for itheta in range(nplotTheta):
     for iphi in range(nphi):
         for imode in range(nmodes):
             angle = xm[imode]*theta[itheta] - xn[imode]*phi[iphi]
@@ -116,21 +118,22 @@ for iphi in range(nphi):
         Raxis[iphi] += raxis_cc[n]*np.cos(angle) + raxis_cs[n]*np.sin(angle)
         Zaxis[iphi] += zaxis_cs[n]*np.sin(angle) + zaxis_cc[n]*np.cos(angle)
 
-xLabel = r'$s =$ Normalized toroidal flux'
+xLabel = r'Normalized toroidal flux'
 
+fig = plt.figure(figsize=myfigsize)
+fig.patch.set_facecolor('white')
+plt.plot(s, iotaf, '.-')
+plt.xlabel(xLabel)
+plt.ylabel('Rotational Transform $\iota$')
+#plt.title('iota')
+fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_iota.pdf", bbox_inches='tight')
 
 fig = plt.figure(figsize=myfigsize)
 fig.patch.set_facecolor('white')
 
 numCols = 3
-numRows = 2
+numRows = 1
 plotNum = 1
-
-plt.subplot(numRows,numCols,plotNum)
-plotNum += 1
-plt.plot(s, iotaf, '.-',label='iotaf')
-plt.xlabel(xLabel)
-plt.title('iota')
 
 plt.subplot(numRows,numCols,plotNum)
 plotNum += 1
@@ -146,38 +149,44 @@ plt.plot(s_half, toroidal_current_inside[1:], '.-',label='buco')
 plt.title('Toroidal current [Amperes] inside $s$')
 plt.xlabel(xLabel)
 
-
 titles = ['|B| [Tesla] at half radius','|B| [Tesla] at boundary']
 iradii = [int((ns*0.25).round()), ns-1]
-print "bmnc.shape:",bmnc.shape
+print("bmnc.shape:",bmnc.shape)
 for i in range(2):
-    iradius = iradii[i]
-    Ntheta = 30
-    Nphi = 65
-    theta = np.linspace(0,2*np.pi,num=Ntheta)
-    phi = np.linspace(0,2*np.pi,num=Nphi)
-    b = np.zeros([Ntheta,Nphi])
+    theta = np.linspace(0,2*np.pi,num=NthetaBSurf)
+    phi = np.linspace(0,2*np.pi,num=NphiBSurf)
+    b = np.zeros([NthetaBSurf,NphiBSurf])
     phi2D,theta2D = np.meshgrid(phi,theta)
+    iradius = iradii[i]
     iota = iotaf[iradius]
     for imode in range(len(xn_nyq)):
         angle = xm_nyq[imode]*theta2D - xn_nyq[imode]*phi2D
         b += bmnc[iradius,imode]*np.cos(angle) + bmns[iradius,imode]*np.sin(angle)
-
-    plt.subplot(numRows,numCols,plotNum)
-    plotNum += 1
-    plt.set_cmap('jet')
-    plt.contourf(phi2D,theta2D,b,20)
-    plt.title(titles[i]+'\nradial index='+str(iradius+1))
-    plt.xlabel(r'Toroidal angle $\phi$')
-    plt.ylabel(r'Poloidal angle $\theta$')
-    plt.colorbar()
-    plt.xlim([0,2*np.pi])
-    plt.ylim([0,2*np.pi])
-
-
-plt.tight_layout()
-
-fig.savefig(sys.argv[1]+"fig1.pdf", bbox_inches='tight')
+    if i==1:
+        plt.subplot(numRows,numCols,plotNum)
+        plotNum += 1
+        plt.set_cmap('jet')
+        plt.contourf(phi2D,theta2D,b,20)
+        plt.xlabel(r'Toroidal angle $\phi$')
+        plt.ylabel(r'Poloidal angle $\theta$')
+        plt.colorbar()
+        plt.xlim([0,2*np.pi])
+        plt.ylim([0,2*np.pi])
+        plt.tight_layout()
+        plt.title(titles[i]+'\nradial index='+str(iradius+1))
+        fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_pjb.pdf", bbox_inches='tight')
+    else:
+        fig = plt.figure(figsize=myfigsize)
+        fig.patch.set_facecolor('white')
+        plt.set_cmap('jet')
+        plt.contourf(phi2D,theta2D,b,20)
+        plt.xlabel(r'Toroidal angle $\phi$')
+        plt.ylabel(r'Poloidal angle $\theta$')
+        plt.colorbar()
+        plt.xlim([0,2*np.pi])
+        plt.ylim([0,2*np.pi])
+        plt.tight_layout()
+        fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_BonAxis.pdf", bbox_inches='tight')
 
 ########################################################
 # Now make plot of flux surface shapes
@@ -186,12 +195,11 @@ fig.savefig(sys.argv[1]+"fig1.pdf", bbox_inches='tight')
 fig = plt.figure(figsize=myfigsize)
 fig.patch.set_facecolor('white')
 
-numCols = 3
+numCols = 2
 numRows = 2
 plotNum = 1
 
 plt.subplot(numRows,numCols,plotNum)
-plotNum += 1
 plt.plot(R[:,0], Z[:,0], '-',label=r'$\phi=0$')
 plt.plot(R[:,1], Z[:,1], '-',label='1/4 period')
 plt.plot(R[:,2], Z[:,2], '-',label='1/2 period')
@@ -203,16 +211,25 @@ plt.ylabel('Z [meters]')
 
 labels=[r'$\phi=0$',r'1/4 period: $\phi=(1/4)2\pi/N_{fp}$',r'1/2 period: $\phi=(1/2)2\pi/N_{fp}$',r'3/4 period: $\phi=(3/4)2\pi/N_{fp}$']
 
-ntheta = 130
+plt.tight_layout()
+fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_Shapes1.pdf", bbox_inches='tight')
+
+fig = plt.figure(figsize=myfigsize)
+fig.patch.set_facecolor('white')
+
+numCols = 2
+numRows = 2
+plotNum = 1
+
 nphi = 4
-nradius = 10
-theta = np.linspace(0,2*np.pi,num=ntheta)
+nradius = 5
+theta = np.linspace(0,2*np.pi,num=nplotTheta)
 phi = np.linspace(0,2*np.pi/nfp,num=nphi,endpoint=False)
 iradii = np.linspace(0,ns-1,num=nradius).round()
 iradii = [int(i) for i in iradii]
-R = np.zeros((ntheta,nphi,nradius))
-Z = np.zeros((ntheta,nphi,nradius))
-for itheta in range(ntheta):
+R = np.zeros((nplotTheta,nphi,nradius))
+Z = np.zeros((nplotTheta,nphi,nradius))
+for itheta in range(nplotTheta):
     for iphi in range(nphi):
         for iradius in range(nradius):
             for imode in range(nmodes):
@@ -233,27 +250,152 @@ for iphi in range(nphi):
     plt.ylabel('Z [meters]')
     plt.title(labels[iphi])
 
-
 plt.tight_layout()
-
-fig.savefig(sys.argv[1]+"fig2.pdf", bbox_inches='tight')
+fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_Shapes2.pdf", bbox_inches='tight')
 
 ########################################################
 # Now make 3D surface plot
 ########################################################
 
-fig = plt.figure(figsize=myfigsize)
-fig.patch.set_facecolor('white')
+REGCOILplot = int(sys.argv[5])
+if REGCOILplot==1:
+    REGCOILout=sys.argv[6]
+    coilsPerHalfPeriod = float(sys.argv[7])
+    thetaShift = float(sys.argv[8])
+    f = netcdf.netcdf_file(REGCOILout,'r',mmap=False)
+    theta = f.variables['theta_coil'][()]
+    zeta = f.variables['zeta_coil'][()]
+    zetal = f.variables['zetal_coil'][()]
+    nfp = f.variables['nfp'][()]
+    net_poloidal_current_Amperes = f.variables['net_poloidal_current_Amperes'][()]
+    current_potential = f.variables['current_potential'][()]
+    rmnc_coil = f.variables['rmnc_coil'][()]
+    zmns_coil = f.variables['zmns_coil'][()]
+    xm_coil = f.variables['xm_coil'][()]
+    xn_coil = f.variables['xn_coil'][()]
+    lambdas = f.variables['lambda'][()]
+    ilambda = len(lambdas)-1
+    f.close()
+    # Now just generate a new monotonic array with the correct first value:
+    theta = theta[0] + np.linspace(0,2*np.pi,len(theta),endpoint=False)
 
-ntheta = 50
-nphi = 200
-theta1D = np.linspace(0,2*np.pi,num=ntheta)
-phi1D = np.linspace(0,2*np.pi,num=nphi)
+    fig = plt.figure()
+    fig.patch.set_facecolor('white')
+    plt.contourf(zeta,theta,np.transpose(current_potential[ilambda,:,:])/1e6,50)
+    plt.colorbar()
+    plt.xlabel('zeta')
+    plt.ylabel('theta')
+    plt.xlim([0,2*np.pi/nfp])
+    plt.ylim([0,2*np.pi])
+    plt.title('Current Potential [MA]')
+
+    if abs(net_poloidal_current_Amperes) > np.finfo(float).eps:
+        data = current_potential[ilambda,:,:] / net_poloidal_current_Amperes * nfp
+    else:
+        data = current_potential[ilambda,:,:] / np.max(current_potential[ilambda,:,:])
+
+    data = np.roll(data,thetaShift,axis=1)
+
+    d = 2*np.pi/nfp
+    zeta_3 = np.concatenate((zeta-d, zeta, zeta+d))
+    data_3 = np.concatenate((data-1,data,data+1))
+
+    contours = np.linspace(-1,2,coilsPerHalfPeriod*2*3+1)
+    d = contours[1]-contours[0]
+    contours = contours + d/2
+
+    # Repeat with just the contours we care about:
+    contours = np.linspace(0,1,coilsPerHalfPeriod*2,endpoint=False)
+    d = contours[1]-contours[0]
+    contours = contours + d/2
+    cdata = plt.contour(zeta_3,theta,np.transpose(data_3),contours,colors='k')
+
+    numCoilsFound = len(cdata.collections)
+    if numCoilsFound != 2*coilsPerHalfPeriod:
+        print("WARNING!!! The expected number of coils was not the number found.")
+
+    contour_zeta=[]
+    contour_theta=[]
+    numCoils = 0
+    for j in range(numCoilsFound):
+        p = cdata.collections[j].get_paths()[0]
+        v = p.vertices
+        # Make sure the contours have increasing theta:
+        if v[1,1]<v[0,1]:
+            v = np.flipud(v)
+        # close the contours by adding a copy of the first point to the end
+        for jfp in range(nfp):
+            d = 2*np.pi/nfp*jfp
+            contour_zeta.append(v[:,0]+d)
+            contour_theta.append(v[:,1])
+            numCoils += 1
+    contour_R = []
+    contour_Z = []
+    for j in range(numCoils):
+        contour_R.append(contour_zeta[j]*0)
+        contour_Z.append(contour_zeta[j]*0)
+
+    for imode in range(len(xm_coil)):
+        m = xm_coil[imode]
+        n = xn_coil[imode]
+        crc = rmnc_coil[imode]
+        czs = zmns_coil[imode]
+        for j in range(numCoils):
+            angle = m*contour_theta[j] - n*contour_zeta[j]
+            contour_R[j] = contour_R[j] + crc*np.cos(angle)
+            contour_Z[j] = contour_Z[j] + czs*np.sin(angle)
+
+    contour_X = []
+    contour_Y = []
+
+    fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"_CoilWSurface.pdf", bbox_inches='tight')
+
+    fig = plt.figure(figsize=myfigsize)
+    fig.patch.set_facecolor('white')
+    ax = fig.gca(projection='3d')
+    maxR=0
+    for j in range(numCoils):
+        maxR = np.max((maxR,np.max(contour_R[j])))
+        contour_X.append(contour_R[j]*np.cos(contour_zeta[j]))
+        contour_Y.append(contour_R[j]*np.sin(contour_zeta[j]))
+        ax.plot(contour_X[j],contour_Y[j],contour_Z[j],color='black',linewidth=3)
+
+    #ax.auto_scale_xyz([-maxR,maxR],[-maxR,maxR],[-maxR,maxR])
+
+    coilCurrent = net_poloidal_current_Amperes / numCoils
+
+    # Find the point of minimum separation
+    minSeparation2=1.0e+20
+    for whichCoil1 in range(numCoils):
+        for whichCoil2 in range(whichCoil1):
+            for whichPoint in range(len(contour_X[whichCoil1])):
+                dx = contour_X[whichCoil1][whichPoint] - contour_X[whichCoil2]
+                dy = contour_Y[whichCoil1][whichPoint] - contour_Y[whichCoil2]
+                dz = contour_Z[whichCoil1][whichPoint] - contour_Z[whichCoil2]
+                separation2 = dx*dx+dy*dy+dz*dz
+                this_minSeparation2 = np.min(separation2)
+                if this_minSeparation2<minSeparation2:
+                    minSeparation2 = this_minSeparation2
+                    x1 = contour_X[whichCoil1][whichPoint]
+                    y1 = contour_Y[whichCoil1][whichPoint]
+                    z1 = contour_Z[whichCoil1][whichPoint]
+                    index=np.argmin(separation2)
+                    x2 = contour_X[whichCoil2][index]
+                    y2 = contour_Y[whichCoil2][index]
+                    z2 = contour_Z[whichCoil2][index]       
+    print("Minimum coil separation:",np.sqrt(minSeparation2))
+else:
+    fig = plt.figure(figsize=myfigsize)
+    fig.patch.set_facecolor('white')
+    ax = fig.gca(projection='3d')
+
+theta1D = np.linspace(0,2*np.pi,num=nplotThetaSurf)
+phi1D = np.linspace(0,2*np.pi,num=nplotPhiSurf)
 phi2D, theta2D = np.meshgrid(phi1D,theta1D)
 iradius = ns-1
-R = np.zeros((ntheta,nphi))
-Z = np.zeros((ntheta,nphi))
-B = np.zeros((ntheta,nphi))
+R = np.zeros((nplotThetaSurf,nplotPhiSurf))
+Z = np.zeros((nplotThetaSurf,nplotPhiSurf))
+B = np.zeros((nplotThetaSurf,nplotPhiSurf))
 for imode in range(nmodes):
     angle = xm[imode]*theta2D - xn[imode]*phi2D
     R = R + rmnc[iradius,imode]*np.cos(angle) + rmns[iradius,imode]*np.sin(angle)
@@ -272,7 +414,6 @@ B_rescaled = (B - B.min()) / (B.max() - B.min())
 factor = 1
 fig.subplots_adjust(bottom=-factor+0.05,top=1+factor)
 
-ax = fig.gca(projection='3d')
 ax.set_aspect('equal')
 p = ax.plot_surface(X, Y, Z, facecolors = cm.jet(B_rescaled), rstride=1, cstride=1, antialiased=False) 
 max_range = np.array([X.max()-X.min(), Y.max()-Y.min(), Z.max()-Z.min()]).max() / 2.0
@@ -287,10 +428,9 @@ ax.set_xlim(mid_x - max_range, mid_x + max_range)
 ax.set_ylim(mid_y - max_range, mid_y + max_range)
 ax.set_zlim(mid_z - max_range, mid_z + max_range)
 
-plt.figtext(0.5,0.999,'Color = |B|',horizontalalignment='center',verticalalignment='top',fontsize=10)
 ##############################################################
 
-fig.savefig(sys.argv[1]+"fig3.pdf", bbox_inches='tight')
+fig.savefig(os.path.dirname(sys.argv[1])+"/Figures/"+os.path.basename(sys.argv[1])+"3DSurface.pdf", bbox_inches='tight')
 
 #plt.show()
 
