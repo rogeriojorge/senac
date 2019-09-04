@@ -440,7 +440,7 @@ ax.zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
 
 ax._axis3don = False
 
-imgpath=os.path.dirname(sys.argv[1])+"/Figures/"+proj+"3DSurface.pdf"
+imgpath=os.path.dirname(sys.argv[1])+"/Figures/"+proj+"_3DSurface.pdf"
 plt.savefig(imgpath, bbox_inches='tight')
 
 with open(imgpath, "rb") as in_f:
