@@ -2,7 +2,6 @@
   general_option = 5  ! Determine lambda to meet a current density target
 
   target_option = 'rms_Bnormal'
-  target_value = 5e-2
 
   nlambda = 20
 
@@ -17,5 +16,8 @@
   geometry_option_plasma = 2
   
   geometry_option_coil = 2 ! Uniform offset from plasma surface 
-wout_filename = "/Users/rogeriojorge/Dropbox/senac/data/ARIES/wout_ARIES_senac.nc"
+  
+  target_value = 0.05
+  separation = 0.07
+  wout_filename = "/Users/rogeriojorge/Dropbox/senac/data/NCSX/wout_NCSX_senac.nc"
 /

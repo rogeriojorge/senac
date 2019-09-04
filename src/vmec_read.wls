@@ -1,9 +1,10 @@
 (* ::Package:: *)
 
-vmecInput      = $ScriptCommandLine[[4]];
-vmecOutput     = $ScriptCommandLine[[5]];
+vmecInput      = $ScriptCommandLine[[6]];
+vmecOutput     = $ScriptCommandLine[[7]];
 
 If[FileExistsQ[vmecOutput],
+	muDefined=0;
     VMECdatasets = Import[vmecOutput, {"Datasets", {"iotaf", "rmnc", "zmns","ns","nfp","phi","bmnc","xm","xn","raxis_cc","zaxis_cs"}}];
     iotaAxisOut = VMECdatasets[[1]][[1]];
     rmnc = VMECdatasets[[2]];
@@ -28,15 +29,3 @@ If[FileExistsQ[vmecOutput],
 	Abort[];
 	Run["exit 1"];
 ]
-
-(*VMEC Axis Frenet-Serret Frame*)
-Off[Simplify::time]
-curvVMEC[t_] = Chop[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/Norm[closedcurvVMEC'[t]]^3, 10^-6]//Re;
-torsVMEC[t_] = Chop[Dot[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]], closedcurvVMEC'''[t]]/Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]^2, 10^-6];
-sprimeVMEC[t_] = Chop[Simplify[Chop[ComplexExpand[Norm[closedcurvVMEC'[t]]], 10^-6], TimeConstraint -> 0.01], 10^-6];
-b0VMEC[t_] = Simplify[Chop[closedcurvVMEC'[t]/sprimeVMEC[t], 10^-6], TimeConstraint -> 0.01];
-k0VMEC[t_] = Simplify[Chop[b0VMEC'[t]/sprimeVMEC[t], 10^-6], TimeConstraint -> 0.01]/curvVMEC[t]//Re;
-t0VMEC[t_] = Chop[Cross[b0VMEC[t], k0VMEC[t]], 10^-6]//Re;
-
-(*Flux Surface of VMEC*)
-FluxSurfaceVMEC[theta_, phi_] = Simplify[Chop[{RBCVMEC[theta, phi] Cos[phi], RBCVMEC[theta, phi] Sin[phi], ZBSVMEC[theta, phi]}, 10^-6], TimeConstraint -> 0.01]//Re;
