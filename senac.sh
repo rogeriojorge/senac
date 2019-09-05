@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 0.1 - R. Jorge IREAP/UMD September 2019
-proj="NCSX"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="LHD"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -9,19 +9,21 @@ vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to re
 #======SENAC=====
 runSENAC=1;   #0 -> doesn't run SENAC mathematica, 1-> runs SENAC mathematica
 readInput=2;  #1 -> read parameters from surf_input.txt file, 2-> read from VMEC output file
-outputToVMEC=1; #compute Fourier Modes and output to VMEC
+outputToVMEC=0; #compute Fourier Modes and output to VMEC
 #======VMEC=====
-runVMECofFit=1;
+runVMECofFit=0;
 #======REGCOIL=====
-runREGCOILoriginal=1;
-runREGCOILfit=1;
+runREGCOILoriginal=0;
+runREGCOILfit=0;
 #======VMECplot====
-VMECplotOriginal=1;
-VMECplotFit=1;
+VMECplotOriginal=0;
+VMECplotFit=0;
 REGCOILplotOriginal=0;
-REGCOILplotFit=1;
+REGCOILplotFit=0;
 #======SENAC INPUT PARAMETERS=====
-nthetaM=20;   #resolution in theta to compute Mercier angle
+### Choose Surface from VMEC
+### Compare iota on axis for different surfaces on VMEC and fit
+nthetaM=15;   #resolution in theta to compute Mercier angle
 nphiM=35;     #resolution in phi to compute Mercier angle
 deltac0=1.5;  #initial point for deltac0 betweeon -pi and pi
 deltal0=-1.0; #initial point for deltal
@@ -31,12 +33,12 @@ muc0=0.5;     #initial point for muc0
 mucMin=0.1;   #minimum muc0 to help fit
 mucMax=0.9;   #maximum muc0 to help fit
 nModes=0;     #number of fourier components in mu, delta and B0
-maxiterations=400; #max number of iterations during fit parameter
+maxiterations=100; #max number of iterations during fit parameter
 plotFit=1;    #Mathematica plots fit results
 maxm=5;       #Maximum m to output to VMEC
 maxn=6;       #Maximum n to output to VMEC
-maxRecursTheta=20; #Theta resolution in numerical integration
-maxRecursPhi=100;  #Phi resolution in numerical integration
+maxRecursTheta=30; #Theta resolution in numerical integration
+maxRecursPhi=200;  #Phi resolution in numerical integration
 #======VMECplot INPUT PARAMETERS======
 nplotTheta=80;
 nplotThetaSurf=80;
