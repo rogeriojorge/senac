@@ -2,17 +2,30 @@
 overallTimeStart = AbsoluteTime[];
 
 SetOptions[$Output, FormatType->OutputForm];
-
 currentPath=DirectoryName @ $InputFileName;
 SetDirectory[currentPath];
+
 proj         = $ScriptCommandLine[[2]];
-readInput    = ToExpression[$ScriptCommandLine[[3]]];
-surfInput    = $ScriptCommandLine[[4]];
-outputToVMEC = ToExpression[$ScriptCommandLine[[5]]];
-vmecInput    = $ScriptCommandLine[[6]];
-nthetaM      = ToExpression[$ScriptCommandLine[[8]]];
-nphiM        = ToExpression[$ScriptCommandLine[[9]]];
-plotFit      = ToExpression[$ScriptCommandLine[[19]]];
+surfInput    = $ScriptCommandLine[[3]];
+outputToVMEC = ToExpression[$ScriptCommandLine[[4]]];
+vmecInput    = $ScriptCommandLine[[5]];
+vmecOutput   = $ScriptCommandLine[[6]];
+nthetaM      = ToExpression[$ScriptCommandLine[[7]]];
+nphiM        = ToExpression[$ScriptCommandLine[[8]]];
+deltac0           = ToExpression[$ScriptCommandLine[[9]]];
+deltal0           = ToExpression[$ScriptCommandLine[[10]]];
+deltalmin         = ToExpression[$ScriptCommandLine[[11]]];
+deltalmax         = ToExpression[$ScriptCommandLine[[12]]];
+muc0              = ToExpression[$ScriptCommandLine[[13]]];
+mucMin            = ToExpression[$ScriptCommandLine[[14]]];
+mucMax            = ToExpression[$ScriptCommandLine[[15]]];
+nModes            = ToExpression[$ScriptCommandLine[[16]]];
+maxiterations     = ToExpression[$ScriptCommandLine[[17]]];
+plotFit      = ToExpression[$ScriptCommandLine[[18]]];
+maxm           = ToExpression[$ScriptCommandLine[[19]]];
+maxn           = ToExpression[$ScriptCommandLine[[20]]];
+maxRecursTheta = ToExpression[$ScriptCommandLine[[21]]];
+maxRecursPhi   = ToExpression[$ScriptCommandLine[[22]]];
 pi = N[Pi,10];
 
 (*Fast Numerical Integrator*)
@@ -21,14 +34,19 @@ GaussLegendreQuadrature[f_, {x_, a_, b_}, n_Integer: 10, prec_: MachinePrecision
    (b - a) weights.Map[Function[x, f], Rescale[nodes, {0, 1}, {a, b}]]];
 
 (*Obtain Axis and Surface Parameters*)
-If[readInput == 1,
-    timestart1 = AbsoluteTime[]; WriteString[$Output, "  Read from surf_input..."];
-    Get[StringJoin[currentPath,"src/surfinput_read.wls"]];
-    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
-    ,
+If[FileExistsQ[vmecOutput],
     timestart1 = AbsoluteTime[]; WriteString[$Output, "  Read from VMEC file...\n"];
     Get[StringJoin[currentPath,"src/vmec_read.wls"]];
     WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
+    ,
+    If[FileExistsQ[surfInput],
+      timestart1 = AbsoluteTime[]; WriteString[$Output, "  Read from surf_input..."];
+      Get[StringJoin[currentPath,"src/surfinput_read.wls"]];
+      WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
+      ,
+      WriteString[$Output, "No Input File to Read From.\n"];
+      CloseKernels[];Exit[];
+    ];
 ]
 
 (*VMEC Axis Frenet-Serret Frame*)
@@ -69,10 +87,10 @@ If[muDefined==1,
   iota0VMEC1 = GaussLegendreQuadrature[(D[deltaVMEC /. fitParams, phi] - torsVMEC[phi]) Sqrt[1 - (muVMEC /. fitParams)^2], {phi, 0, 2*pi}, 70, 20]/(2*pi);
   iota0VMEC2 = (((deltaVMEC /. fitParams) /. phi -> 2*pi) - ((deltaVMEC /. fitParams) /. phi -> 0))/(2*pi);
   iotaFit = iota0VMEC1 - iota0VMEC2;
-  If[readInput==1,
-    Print["  Iota from near-axis formula: "<>ToString[iotaFit]];
-    ,
+  If[FileExistsQ[vmecOutput],
     Print["  Iota from VMEC: "<>ToString[iotaAxisOut]<>", Iota from near-axis: "<>ToString[iotaFit]];
+    ,
+    Print["  Iota from near-axis formula: "<>ToString[iotaFit]];
   ]
 ];
 

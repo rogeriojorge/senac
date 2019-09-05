@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-
 (*Plotting Options*)
 nPlotTheta=30;nPlotPhi=60;plotPointsFig=40;maxRecursPlot=2;ImageSizePlot=700;ImageResolutionPlot=300;
 PlotOptions = Flatten[{LabelStyle -> Directive[FontFamily -> (*"Latin Modern Roman"*)"Helvetica", FontSize -> 30], ImageSize -> ImageSizePlot, PlotStyle -> Thickness[0.007], Frame -> True, AspectRatio -> 1}];
