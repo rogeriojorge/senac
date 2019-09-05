@@ -1,10 +1,5 @@
 (* ::Package:: *)
 
-maxm           = ToExpression[$ScriptCommandLine[[20]]];
-maxn           = ToExpression[$ScriptCommandLine[[21]]];
-maxRecursTheta = ToExpression[$ScriptCommandLine[[22]]];
-maxRecursPhi   = ToExpression[$ScriptCommandLine[[23]]];
-
 timestart = AbsoluteTime[]; 
 WriteString[$Output, "    RBCmn Evaluation... "];
 RBCmn = Quiet[ParallelTable[
@@ -31,17 +26,17 @@ printv = printv <> nl;
 rbcs[n_, m_] := " RBC(" <> ToString[n] <> "," <> ToString[m] <> ")=";
 zbcs[n_, m_] := "  ZBS(" <> ToString[n] <> "," <> ToString[m] <> ")=";
 printv = printv <> " RAXIS = ";
-If[readInput == 1,
-  Do[printv = printv <> " " <> ToString[DecimalForm[Internal`StringToDouble@vmecRAXIS[[i + 3]]]], {i, 0, Dimensions[vmecRAXIS][[1]] - 3}];
-  printv = printv <> nl;
-  printv = printv <> " ZAXIS = ";
-  Do[printv = printv <> " " <> ToString[DecimalForm[Internal`StringToDouble@vmecZAXIS[[i + 3]]]], {i, 0, Dimensions[vmecZAXIS][[1]] - 3}];
-  printv = printv <> nl;
-,
+If[FileExistsQ[vmecOutput],
   Do[printv = printv <> " " <> ToString[DecimalForm[vmecOutputRaxis[[i]]]], {i, 1, Length[vmecOutputRaxis]}];
   printv = printv <> nl;
   printv = printv <> " ZAXIS = ";
   Do[printv = printv <> " " <> ToString[DecimalForm[vmecOutputZaxis[[i]]]], {i, 1, Length[vmecOutputZaxis]}];
+  printv = printv <> nl;
+,
+  Do[printv = printv <> " " <> ToString[DecimalForm[Internal`StringToDouble@vmecRAXIS[[i + 3]]]], {i, 0, Dimensions[vmecRAXIS][[1]] - 3}];
+  printv = printv <> nl;
+  printv = printv <> " ZAXIS = ";
+  Do[printv = printv <> " " <> ToString[DecimalForm[Internal`StringToDouble@vmecZAXIS[[i + 3]]]], {i, 0, Dimensions[vmecZAXIS][[1]] - 3}];
   printv = printv <> nl;
 ]
 

@@ -1,21 +1,9 @@
 (* ::Package:: *)
 
-deltac0           = ToExpression[$ScriptCommandLine[[10]]];
-deltal0           = ToExpression[$ScriptCommandLine[[11]]];
-deltalmin         = ToExpression[$ScriptCommandLine[[12]]];
-deltalmax         = ToExpression[$ScriptCommandLine[[13]]];
-If[deltalmin==deltalmax, deltalmin=-1.2*vmecNFP;deltalmax=1.2*vmecNFP];
-muc0              = ToExpression[$ScriptCommandLine[[14]]];
-mucMin            = ToExpression[$ScriptCommandLine[[15]]];
-mucMax            = ToExpression[$ScriptCommandLine[[16]]];
-nModes            = ToExpression[$ScriptCommandLine[[17]]];
-maxiterations     = ToExpression[$ScriptCommandLine[[18]]];
-If[readInput!=2,B0Est=1];
-
 (*Compute Mercier Angles Theta and Phi as a function VMEC's theta and phi*)
 WriteString[$Output, "    Axis's Phi Evaluation...  "];timestart = AbsoluteTime[];
 phiAxis = Interpolation[Flatten[ParallelTable[{{theta, phi}, x /. FindRoot[Dot[b0VMEC[x], FluxSurfaceVMEC[theta, phi] - closedcurvVMEC[x]], {x, phi}]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phi, 0, 2*pi, 2*pi/nphiM}], 1], Method -> "Spline", InterpolationOrder -> 2];
-(**phiAxis[theta_,phi_]=phi;*)
+(*phiAxis[theta_,phi_]=phi;*)
 ycomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi] - closedcurvVMEC[phiAxis[theta,phi]], t0VMEC[phiAxis[theta,phi]]];
 xcomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi] - closedcurvVMEC[phiAxis[theta,phi]], k0VMEC[phiAxis[theta,phi]]];
 thetaMercierFunc[theta_, phi_] = Chop[ArcTan[xcomponent[theta, phi], ycomponent[theta, phi]], 10^-8];
@@ -45,6 +33,7 @@ rho[theta_, phi_] = Sqrt[(vmecPSI*Sqrt[1 - muVMEC^2] )/(2*(B0VMEC)*(1 + muVMEC*C
 WriteString[$Output, "    Computing Fit to Surface...  "];timestart = AbsoluteTime[];
 Off[InterpolatingFunction::dmval]; (*Hack not to specify that the arguments should vary between 0 and 2 pi *)
 modelVMEC = rho[thetaMercier[theta, phi], phiAxis[theta,phi]];
+If[!FileExistsQ[vmecOutput],B0Est=1];If[deltalmin==deltalmax, deltalmin=-1.2*vmecNFP;deltalmax=1.2*vmecNFP];
 nlm = NonlinearModelFit[dataVMEC, {modelVMEC, mucMin < Sum[muc[i], {i, 0, nModes}] < mucMax, B0c[0] > 0., -pi <= deltac[0] <= pi,  deltalmin <= deltal <= deltalmax}, 
    Flatten[{{{deltal, deltal0}, {B0c[0], B0Est}, {muc[0], muc0}, {deltac[0], deltac0}}, 
      Flatten[Table[{{B0c[i],0.01},{muc[i], 0.01},{deltas[i],0.01}}, {i, 1, nModes}], 1]}, 1],
@@ -57,10 +46,9 @@ WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"
 WriteString[$Output, "    Best fit parameters "<>ToString[fitParams]<>"\n"];
 Export[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_parameters.txt"],fitParams];
 
-rho[theta_, phi_] = rho[theta, phi] /. fitParams;
-FluxSurfacenFitVMEC[theta_, phi_] = Chop[closedcurvVMEC[phi] + (rho[theta, phi])*(Cos[theta]*k0VMEC[phi] + Sin[theta]*t0VMEC[phi]), 10^-6]//Quiet;
-
 (*The inverse transform phi_axis -> phi_boundary if needed*)
 (*phiBoundary = Interpolation[Flatten[ParallelTable[{{theta, phia}, phi /. FindRoot[phiAxis[theta, phi] - phia, {phi, phia, 0, 2*pi}]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phia, 0, 2*pi, 2*pi/nphiM}], 1]];*)
-RBCFit[phi_, theta_] = Re[Cos[phi]*FluxSurfacenFitVMEC[theta, phiAxis[theta,phi]][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phiAxis[theta,phi]][[2]]]//Quiet;
-ZBSFit[phi_, theta_] = Re[FluxSurfacenFitVMEC[theta, phiAxis[theta,phi]][[3]]]//Quiet;
+rho[theta_, phi_] = rho[theta, phi] /. fitParams;
+FluxSurfacenFitVMEC[theta_, phi_] = Chop[closedcurvVMEC[phi] + (rho[theta, phi])*(Cos[theta]*k0VMEC[phi] + Sin[theta]*t0VMEC[phi]), 10^-7]//Quiet; (*Mercier's Coordinates*)
+RBCFit[phi_, theta_] = Re[Cos[phi]*FluxSurfacenFitVMEC[theta, phiAxis[theta,phi]][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phiAxis[theta,phi]][[2]]]//Quiet; (*VMEC's Coordinates*)
+ZBSFit[phi_, theta_] = Re[FluxSurfacenFitVMEC[theta, phiAxis[theta,phi]][[3]]]//Quiet; (*VMEC's Coordinates*)

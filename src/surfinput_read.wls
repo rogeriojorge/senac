@@ -19,8 +19,8 @@ If[FileExistsQ[surfInput],
 		Table[
 			ToExpression[StringJoin[StringReplace[vmecSurf[[i]], {"RBC" -> "vmecRBC", "ZBS" -> "vmecZBS", "(" -> "[[" <> ToString[Floor[tmaxN/2]] <> "+", ")" -> "+" <> ToString[Floor[tmaxN/2]] <> "]]", "e" -> "\[Times]10^("}], ")"]],
 		{i, 1, Length[vmecSurf]}];
-		RBCVMEC[theta_, phi_] = Chop[Sum[vmecRBC[[mm, nn]] Cos[(mm - Floor[tmaxN/2]) theta - vmecNFP (nn - Floor[tmaxN/2]) phi], {mm, 1, Length[vmecRBC]}, {nn, 1, Length[vmecRBC]}],10^-4];
-		ZBSVMEC[theta_, phi_] = Chop[Sum[vmecZBS[[mm, nn]] Sin[(mm - Floor[tmaxN/2]) theta - vmecNFP (nn - Floor[tmaxN/2]) phi], {mm, 1, Length[vmecRBC]}, {nn, 1, Length[vmecRBC]}],10^-4];
+		RBCVMEC[theta_, phi_] = Chop[Sum[vmecRBC[[mm, nn]] Cos[(mm - Floor[tmaxN/2]) theta - vmecNFP (nn - Floor[tmaxN/2]) phi], {mm, 1, Length[vmecRBC]}, {nn, 1, Length[vmecRBC]}]];
+		ZBSVMEC[theta_, phi_] = Chop[Sum[vmecZBS[[mm, nn]] Sin[(mm - Floor[tmaxN/2]) theta - vmecNFP (nn - Floor[tmaxN/2]) phi], {mm, 1, Length[vmecRBC]}, {nn, 1, Length[vmecRBC]}]];
 		,
 		muDefined=1; WriteString[$Output, " Mercier's Parameters Defined in file..."];
 		muTable    = StringSplit[FindList[surfInput, "mu"]][[1]];
