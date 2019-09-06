@@ -1,8 +1,0 @@
-  Read from surf_input... Mercier's Parameters Defined in file... Successful in 0.001369s
-  Computing VMEC's Frenet-Serret Frame and Surface... Successful in 0.599927s
-  Constructing Mercier's theta and rho... Successful in 0.015481s
-  Iota from near-axis formula: -0.985967
-  Creating Figures...
-    Plotting Obtained Surface... Successful in 10.593220s
-  Successful in 10.594038s
-  SENAC Mathematica took 11.316880s
