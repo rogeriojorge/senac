@@ -1,91 +1,37 @@
   Read from VMEC file...
-19:40:29.344 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.528 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.579 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.634 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.666 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.697 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.729 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.764 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.796 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.829 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-19:40:29.862 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-  Successful in 1.153390s
-  Computing Frenet-Serret Frame... Successful in 1.587092s
+21:57:43.816 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.003 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.053 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.106 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.138 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.169 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.199 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.238 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.271 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.302 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.333 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.364 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:57:44.395 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+  Successful in 1.214956s
+  Computing VMEC's Frenet-Serret Frame and Surface... Successful in 2.899621s
   Fitting VMEC to Mercier's theta and rho...
-    Axis's Phi Evaluation...  Successful in 0.477016s
-    Mercier's Angle Evaluation...  Successful in 8.049061s
-    Mercier's Rho Evaluation...  Successful in 8.319325s
-    Computing Fit to Surface...  Successful in 7.834922s
-    Best fit parameters {deltal -> -2.52747, B0c[0] -> 3.5552, muc[0] -> 0.487653, deltac[0] -> 0.0862884}
-  Successful in 24.841001s
-  Iota from near-axis formula: 1.07662
-  SENAC Mathematica took 29.029812s
- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  SEQ =    1 TIME SLICE  0.0000E+00
-  PROCESSING INPUT.txt
-  THIS IS PARVMEC (PARALLEL VMEC), VERSION 9.0
-  Lambda: Full Radial Mesh. L-Force: hybrid full/half.
-
-  COMPUTER:    OS:    RELEASE:   DATE = Sep 04,2019  TIME = 19:40:57
-
-  NS =   16 NO. FOURIER MODES =  288 FTOLV =  1.000E-05 NITER =  12000
-  PROCESSOR COUNT - RADIAL:    1
-
-  ITER    FSQR      FSQZ      FSQL    RAX(v=0)    DELT       WMHD
-
-    1  1.14E+00  9.52E-01  3.05E-01  5.949E+00  9.00E-01  1.1300E+02
-  100  1.96E-03  2.30E-03  4.23E-04  5.913E+00  5.73E-01  1.0070E+02
-  150  9.29E-06  9.36E-06  3.24E-06  5.905E+00  5.73E-01  1.0069E+02
-
-  NS =   32 NO. FOURIER MODES =  288 FTOLV =  1.000E-07 NITER =  12000
-  PROCESSOR COUNT - RADIAL:    1
-
-  ITER    FSQR      FSQZ      FSQL    RAX(v=0)    DELT       WMHD
-
-    1  2.10E-02  6.37E-03  9.19E-04  5.905E+00  9.00E-01  1.0069E+02
-  100  2.08E-04  1.26E-04  9.52E-06  5.905E+00  5.25E-01  1.0069E+02
-  200  1.32E-07  4.49E-08  1.02E-07  5.902E+00  5.25E-01  1.0069E+02
-  228  9.99E-08  2.34E-08  6.45E-08  5.900E+00  5.25E-01  1.0069E+02
- Diagno-file request not completed!
- VMEC2000 not running in free-boundary mode!
- -or- LASYM = .true. !
- LASYM  =  F
- LFREEB =  F
- Check mgrid-file and namelist!
-
- EXECUTION TERMINATED NORMALLY
-
- FILE : txt
- NUMBER OF JACOBIAN RESETS =    4
-
-    TOTAL COMPUTATIONAL TIME (SEC)        14.64
-    TIME TO INPUT/OUTPUT                   0.30
-       READ IN DATA                        0.00
-       WRITE OUT DATA TO WOUT              0.30
-    TIME IN FUNCT3D                       14.12
-       BCOVAR FIELDS                       0.71
-       FOURIER TRANSFORM                   3.85
-       INVERSE FOURIER TRANSFORM           6.60
-       FORCES AND SYMMETRIZE               0.78
-       RESIDUE                             0.47
-       EQFORCE                             0.19
-
- NO. OF PROCS:     1
- PARVMEC     :     T
- LPRECOND    :     F
- LV3FITCALL  :     F
-
-('nfp: ', 5)
-('ns: ', 32)
-('mpol: ', 12)
-('ntor: ', 12)
-('Aminor_p: ', 0.5407162926104999)
-('Rmajor_p: ', 5.560114574029535)
-('aspect:            ', 10.282868576395408)
-('betatotal: ', 0.0)
-('betapol:   ', 0.0)
-('betator:   ', 0.0)
-('betaxis:   ', 0.0)
-('ctor:   ', 1.1917956855775347e-08)
-('bmnc.shape:', (32, 288))
+    Fiting Surface 1 of 5...  Successful in 84.126502s
+    Fiting Surface 2 of 5...  Successful in 85.192202s
+    Fiting Surface 3 of 5...  Successful in 90.407000s
+    Fiting Surface 4 of 5...  Successful in 89.091126s
+    Fiting Surface 5 of 5...  Successful in 89.496248s
+    Best fit parameters of first surface {deltal -> -2.51022, B0c[0] -> 351.859, muc[0] -> 0.49237, deltac[0] -> 3.14159}
+    Best fit parameters of last  surface {deltal -> -2.52561, B0c[0] -> 3.60862, muc[0] -> 0.468772, deltac[0] -> -3.06115}
+    Total time computing phiAxis 8.14015s
+    Total time computing thetaMercier 113.04363s
+    Total time computing rhoVMEC data 112.29935s
+    Total time computing fits 203.88722s
+  Successful in 438.317370s
+  Iota from VMEC: {0.856574, 0.871184, 0.895231, 0.927894, 0.967619}, Iota from near-axis: {-1.0788, -1.0798, -1.07272, -1.06584, -1.05932}
+  Creating Figures...
+    Plotting Original Surface... Successful in 19.594708s
+    Plotting Obtained Surface... Successful in 69.963685s
+    Plotting Comparison at Different Poloidal Planes...  Successful in 20.507050s
+    Plotting Iota Profiles...  Successful in 0.804884s
+  Successful in 110.871430s
+  SENAC Mathematica took 553.506084s

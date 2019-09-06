@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 0.1 - R. Jorge IREAP/UMD September 2019
-proj="LHD"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="HSX"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -20,8 +20,7 @@ VMECplotFit=0;
 REGCOILplotOriginal=0;
 REGCOILplotFit=0;
 #======SENAC INPUT PARAMETERS=====
-### Choose Surface from VMEC
-### Compare iota on axis for different surfaces on VMEC and fit
+nsurfaces=5;  #number of surfaces to read and compare from VMEC
 nthetaM=15;   #resolution in theta to compute Mercier angle
 nphiM=30;     #resolution in phi to compute Mercier angle
 deltac0=1.5;  #initial point for deltac0 betweeon -pi and pi
@@ -66,7 +65,7 @@ if (( $runSENAC == 1)); then
 	echo "-----------------------"
 	echo "Running SENAC Mathematica"
 	rm -f data/${proj}/senac_${proj}_output.txt
-	wolframscript -noprompt -script main.wls $proj $surfInput $outputToVMEC $vmecInput $vmecOutput $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $maxm $maxn $maxRecursTheta $maxRecursPhi | tee data/${proj}/senac_${proj}_output.txt
+	wolframscript -noprompt -script main.wls $proj $surfInput $outputToVMEC $vmecInput $vmecOutput $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $maxm $maxn $maxRecursTheta $maxRecursPhi | tee data/${proj}/senac_${proj}_output.txt
 fi
 #======RUN VMEC=====
 if (( $runVMECofFit == 1)); then
@@ -130,5 +129,4 @@ if (( $VMECplotFit == 1)); then
 	./vmecPlot data/${proj}/wout_${proj}_senac.nc $proj $nplotTheta $nplotPhiSurf $nplotThetaSurf $nplotNthetaBSurf $nplotNphiBSurf $REGCOILplotFit "data/${proj}/regcoil_out_${proj}_senac.nc" $coilsPerHalfPeriod $thetaShift | tee -a data/${proj}/senac_${proj}_output.txt
 fi
 
-#pkill -9 WolframKernel
-#pkill -9 WolframScript
+#pkill -9 WolframKernel; pkill -9 WolframScript

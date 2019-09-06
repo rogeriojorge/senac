@@ -11,7 +11,7 @@ If[FileExistsQ[surfInput],
 	closedcurvVMEC[phi_] = {nRAXIS[phi] Cos[phi], nRAXIS[phi] Sin[phi], nZAXIS[phi]};
 	(*Check if surface parameters or Fourier components are given*)
 	If[SameQ[Find[OpenRead[surfInput],"mu"], EndOfFile], 
-		muDefined=0;WriteString[$Output, " Surface Fourier Components Defined in file..."];
+		muDefined=0; WriteString[$Output, " Surface Fourier Components Defined in file..."];
 		tmaxN = 40;
 		vmecRBC = ConstantArray[0, {tmaxN, tmaxN}];
 		vmecZBS = ConstantArray[0, {tmaxN, tmaxN}];
@@ -19,8 +19,9 @@ If[FileExistsQ[surfInput],
 		Table[
 			ToExpression[StringJoin[StringReplace[vmecSurf[[i]], {"RBC" -> "vmecRBC", "ZBS" -> "vmecZBS", "(" -> "[[" <> ToString[Floor[tmaxN/2]] <> "+", ")" -> "+" <> ToString[Floor[tmaxN/2]] <> "]]", "e" -> "\[Times]10^("}], ")"]],
 		{i, 1, Length[vmecSurf]}];
-		RBCVMEC[theta_, phi_] = Chop[Sum[vmecRBC[[mm, nn]] Cos[(mm - Floor[tmaxN/2]) theta - vmecNFP (nn - Floor[tmaxN/2]) phi], {mm, 1, Length[vmecRBC]}, {nn, 1, Length[vmecRBC]}]];
-		ZBSVMEC[theta_, phi_] = Chop[Sum[vmecZBS[[mm, nn]] Sin[(mm - Floor[tmaxN/2]) theta - vmecNFP (nn - Floor[tmaxN/2]) phi], {mm, 1, Length[vmecRBC]}, {nn, 1, Length[vmecRBC]}]];
+		nsurfaces=1;nns=1;
+		RBCVMEC[theta_, phi_, 1] = Chop[Sum[vmecRBC[[mm, nn]] Cos[(mm - Floor[tmaxN/2]) theta - vmecNFP (nn - Floor[tmaxN/2]) phi], {mm, 1, Length[vmecRBC]}, {nn, 1, Length[vmecRBC]}], 10^-8];
+		ZBSVMEC[theta_, phi_, 1] = Chop[Sum[vmecZBS[[mm, nn]] Sin[(mm - Floor[tmaxN/2]) theta - vmecNFP (nn - Floor[tmaxN/2]) phi], {mm, 1, Length[vmecRBC]}, {nn, 1, Length[vmecRBC]}], 10^-8];
 		,
 		muDefined=1; WriteString[$Output, " Mercier's Parameters Defined in file..."];
 		muTable    = StringSplit[FindList[surfInput, "mu"]][[1]];

@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    424444,       7891]
+NotebookDataLength[    424447,       7891]
 NotebookOptionsPosition[    420881,       7833]
-NotebookOutlinePosition[    421218,       7848]
-CellTagsIndexPosition[    421175,       7845]
+NotebookOutlinePosition[    421221,       7848]
+CellTagsIndexPosition[    421178,       7845]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -81,7 +81,7 @@ Cell[BoxData[
    3.7763678879428263`*^9}, {3.776395578648364*^9, 3.7763955789291773`*^9}, {
    3.776432728364077*^9, 3.7764327301434383`*^9}, {3.776605539097425*^9, 
    3.77660555823138*^9}, {3.776637681668538*^9, 3.776637690634837*^9}},
- CellLabel->"In[3]:=",ExpressionUUID->"92578317-1585-4fa5-a137-14f3b4f0fee2"],
+ CellLabel->"In[1]:=",ExpressionUUID->"92578317-1585-4fa5-a137-14f3b4f0fee2"],
 
 Cell[BoxData[
  RowBox[{
@@ -773,7 +773,7 @@ Cell[BoxData[
     Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
     "\"untitled\"", Typeset`specs$$ = {{
       Hold[$CellContext`t$$], 0, 2 Pi}}, Typeset`size$$ = {
-    360., {139., 143.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
+    360., {197., 202.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
     Typeset`skipInitDone$$ = True, $CellContext`t$4104$$ = 0}, 
     DynamicBox[Manipulate`ManipulateBoxes[
      1, StandardForm, "Variables" :> {$CellContext`t$$ = 0}, 
@@ -804,7 +804,7 @@ Cell[BoxData[
             $CellContext`closedcurvVMEC[$CellContext`t$$]]]]}], 
       "Specifications" :> {{$CellContext`t$$, 0, 2 Pi}}, "Options" :> {}, 
       "DefaultOptions" :> {}],
-     ImageSizeCache->{405., {184., 190.}},
+     ImageSizeCache->{405., {242., 248.}},
      SingleEvaluation->True],
     Deinitialization:>None,
     DynamicModuleValues:>{},
@@ -7832,7 +7832,7 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{1394, 790},
-WindowMargins->{{Automatic, 11}, {Automatic, 0}},
+WindowMargins->{{Automatic, 497}, {300, Automatic}},
 FrontEndVersion->"12.0 for Mac OS X x86 (64-bit) (April 8, 2019)",
 StyleDefinitions->"Default.nb"
 ]
@@ -7854,7 +7854,7 @@ Cell[4177, 85, 17915, 436, 879, "Input",ExpressionUUID->"0dba1699-18bb-4161-9b74
 Cell[22095, 523, 6082, 163, 276, "Input",ExpressionUUID->"2ebf4ffb-8447-4663-8baf-0476a7de51b5"],
 Cell[CellGroupData[{
 Cell[28202, 690, 3102, 75, 115, "Input",ExpressionUUID->"272ba5c4-5477-4e47-a22f-b5c552bb24ff"],
-Cell[31307, 767, 2438, 51, 393, "Output",ExpressionUUID->"dc0428a8-7b6e-479c-9251-612fee514e1d"]
+Cell[31307, 767, 2438, 51, 509, "Output",ExpressionUUID->"dc0428a8-7b6e-479c-9251-612fee514e1d"]
 }, Open  ]],
 Cell[33760, 821, 3742, 92, 138, "Input",ExpressionUUID->"059843bb-fa27-44cf-87dd-62483b503310"],
 Cell[37505, 915, 3950, 101, 199, "Input",ExpressionUUID->"f25bcd37-5438-41c5-82d5-36620e39cb60"],

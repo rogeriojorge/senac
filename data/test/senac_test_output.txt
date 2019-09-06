@@ -1,16 +1,8 @@
-  Read from surf_input... Surface Fourier Components Defined in file... Successful in 0.214178s
-  Computing Frenet-Serret Frame... Successful in 2.052827s
-  Fitting VMEC to Mercier's theta and rho...
-    Axis's Phi Evaluation...  Successful in 0.267965s
-    Mercier's Angle Evaluation...  Successful in 2.282157s
-    Mercier's Rho Evaluation...  Successful in 2.265723s
-    Computing Fit to Surface...  Successful in 7.488785s
-    Best fit parameters {deltal -> 2.46951, B0c[0] -> 7.31907, muc[0] -> 0.536015, deltac[0] -> -3.04582}
-  Successful in 12.423762s
-  Iota from near-axis formula: -1.10066
+  Read from surf_input... Mercier's Parameters Defined in file... Successful in 0.001369s
+  Computing VMEC's Frenet-Serret Frame and Surface... Successful in 0.599927s
+  Constructing Mercier's theta and rho... Successful in 0.015481s
+  Iota from near-axis formula: -0.985967
   Creating Figures...
-    Plotting Original Surface... Successful in 6.888981s
-    Plotting Obtained Surface... Successful in 9.526737s
-    Plotting comparison with Surface...  Successful in 1.281686s
-  Successful in 17.760812s
-  SENAC Mathematica took 33.725464s
+    Plotting Obtained Surface... Successful in 10.593220s
+  Successful in 10.594038s
+  SENAC Mathematica took 11.316880s

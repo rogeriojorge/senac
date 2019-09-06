@@ -1,28 +1,39 @@
   Read from VMEC file...
-14:15:20.289 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.466 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.516 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.572 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.604 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.635 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.667 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.700 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.731 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.765 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-14:15:20.796 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
-  Successful in 1.047888s
-  Computing Frenet-Serret Frame... Successful in 0.402242s
+21:51:32.925 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.106 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.156 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.211 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.243 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.274 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.304 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.335 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.365 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.396 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.427 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.457 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+21:51:33.487 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+  Successful in 1.155075s
+  Computing VMEC's Frenet-Serret Frame and Surface... Successful in 1.654473s
   Fitting VMEC to Mercier's theta and rho...
-    Axis's Phi Evaluation...  Successful in 0.491935s
-    Mercier's Angle Evaluation...  Successful in 0.924199s
-    Mercier's Rho Evaluation...  Successful in 0.908657s
-    Computing Fit to Surface...  Successful in 7.870690s
-    Best fit parameters {deltal -> -5.00442, B0c[0] -> 3.91727, muc[0] -> 0.558906, deltac[0] -> -3.12771}
-  Successful in 10.248261s
-  Iota from VMEC: -0.331224, Iota from near-axis: 0.855409
+    Fiting Surface 1 of 5...  Successful in 58.727747s
+    Fiting Surface 2 of 5...  
+NMinimize::cvmit: Failed to converge to the requested accuracy or precision within 600 iterations.
+Successful in 54.618944s
+    Fiting Surface 3 of 5...  Successful in 46.656007s
+    Fiting Surface 4 of 5...  Successful in 48.862824s
+    Fiting Surface 5 of 5...  Successful in 47.089535s
+    Best fit parameters of first surface {deltal -> -5.00732, B0c[0] -> 262.505, muc[0] -> 0.345094, deltac[0] -> -3.11858}
+    Best fit parameters of last  surface {deltal -> -5.00636, B0c[0] -> 3.89542, muc[0] -> 0.572783, deltac[0] -> -3.12162}
+    Total time computing phiAxis 3.10475s
+    Total time computing thetaMercier 22.04940s
+    Total time computing rhoVMEC data 22.23473s
+    Total time computing fits 208.31769s
+  Successful in 255.959500s
+  Iota from VMEC: {-0.336443, -0.465777, -0.676131, -0.9937, -1.5985}, Iota from near-axis: {-0.308527, -0.38341, -0.495166, -0.649586, -0.903412}
   Creating Figures...
-    Plotting Original Surface... Successful in 5.908534s
-    Plotting Obtained Surface... Successful in 5.679112s
-    Plotting comparison with Surface...  Successful in 0.920820s
-  Successful in 12.563422s
-  SENAC Mathematica took 25.473962s
+    Plotting Original Surface... Successful in 11.209886s
+    Plotting Obtained Surface... Successful in 14.051757s
+    Plotting Comparison at Different Poloidal Planes...  Successful in 6.843628s
+    Plotting Iota Profiles...  Successful in 0.189316s
+  Successful in 32.295662s
+  SENAC Mathematica took 291.108061s
