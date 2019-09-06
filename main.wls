@@ -101,16 +101,26 @@ If[muDefined==0,
 ];
 
 (*Compute Iota on Axis from Expression of Near-Axis Expansion*)
+timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing total rotation angle N of the normal vector..."];
+quadrant = 0; nNormal = 0; diffQuadrant = 0; qnew=0;
+Table[
+  normalx = k0VMEC[t][[1]] Cos[t] + k0VMEC[t][[2]] Sin[t];
+  normaly = k0VMEC[t][[3]];
+  If[Abs[normalx] > Abs[normaly],If[normalx > 0, qnew = 2, qnew = 4],If[normaly > 0, qnew = 1, qnew = 3]];
+  If[quadrant == 0,quadrant = qnew, diffQuadrant = qnew - quadrant;];
+  If[Abs[diffQuadrant] == 3, diffQuadrant = diffQuadrant/3];nNormal = nNormal + diffQuadrant/2; quadrant = qnew;
+, {t, 0, 2*pi, 2*pi/vmecNFP/15}];
+WriteString[$Output, " N="<>ToString[nNormal]<>" Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 If[muDefined==1,
   iota1 = GaussLegendreQuadrature[(D[delta[phi], phi] - torsVMEC[phi]) Sqrt[1 - (mu[phi])^2], {phi, 0, 2*pi}, 70, 20]/(2*pi);
   iota2 = (delta[2*pi] - delta[0])/(2*pi);
-  iotaFit = iota1 - iota2;
+  iotaFit = iota1 - iota2 - nNormal;
   Print["  Iota from near-axis formula: "<>ToString[iotaFit]];
   ,
   iotaFit=ParallelTable[
     iota1 = GaussLegendreQuadrature[(D[deltaVMEC /. fitParams[iradius], phi] - torsVMEC[phi]) Sqrt[1 - (muVMEC /. fitParams[iradius])^2], {phi, 0, 2*pi}, 70, 20]/(2*pi);
     iota2 = (((deltaVMEC /. fitParams[iradius]) /. phi -> 2*pi) - ((deltaVMEC /. fitParams[iradius]) /. phi -> 0))/(2*pi);
-    iota2 - iota1,
+    iota2 - iota1 - nNormal,
   {iradius,1,nsurfaces}];
   If[FileExistsQ[vmecOutput],
     Print["  Iota from VMEC: "<>ToString[iotaAxisOut]<>", Iota from near-axis: "<>ToString[iotaFit]];

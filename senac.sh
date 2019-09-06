@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 0.1 - R. Jorge IREAP/UMD September 2019
-proj="W7X"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="LHD"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -21,9 +21,9 @@ VMECplotFit=0;
 REGCOILplotOriginal=0;
 REGCOILplotFit=0;
 #======SENAC INPUT PARAMETERS=====
-nsurfaces=1;  #number of surfaces to read and compare from VMEC
-nthetaM=10;   #resolution in theta to compute Mercier angle
-nphiM=20;     #resolution in phi to compute Mercier angle
+nsurfaces=35;  #number of surfaces to read and compare from VMEC
+nthetaM=15;   #resolution in theta to compute Mercier angle
+nphiM=30;     #resolution in phi to compute Mercier angle
 deltac0=1.5;  #initial point for deltac0 betweeon -pi and pi
 deltal0=-1.0; #initial point for deltal
 deltalmin=0.0;#minimum deltal to help fit
@@ -32,7 +32,7 @@ muc0=0.5;     #initial point for muc0
 mucMin=0.1;   #minimum muc0 to help fit
 mucMax=0.9;   #maximum muc0 to help fit
 nModes=0;     #number of fourier components in mu, delta and B0
-maxiterations=1000; #max number of iterations during fit parameter
+maxiterations=150; #max number of iterations during fit parameter
 plotFit=1;    #Mathematica plots fit results
 maxm=5;       #Maximum m to output to VMEC
 maxn=6;       #Maximum n to output to VMEC

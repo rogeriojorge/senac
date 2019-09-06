@@ -84,9 +84,9 @@ If[muDefined==0,
 If[muDefined==0,
   nPlots = 4;
   WriteString[$Output, "    Plotting Comparison at Different Poloidal Planes...  \n"];timestart = AbsoluteTime[];
-  Table[
+  j=0;Table[j=j+1;
     Off[ParametricPlot::precw,NMinimize::precw,NMaximize::precw];
-    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B for Figure "<>ToString[iradius]<>" of "<>ToString[nfigsSurf],"..."];
+    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B for Figure "<>ToString[j]<>" of "<>ToString[nfigsSurf],"..."];
     rangePlot = {
       {NMinimize[{RBCVMEC[phi, theta, Floor[iradius]], 0 < phi <= 2*pi, 0 < theta <= 2*pi}, {phi, theta}][[1]],
        NMaximize[{RBCVMEC[phi, theta, Floor[iradius]], 0 < phi <= 2*pi, 0 < theta <= 2*pi}, {phi, theta}][[1]]},
