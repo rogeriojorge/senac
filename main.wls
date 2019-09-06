@@ -43,6 +43,7 @@ GaussLegendreQuadrature[f_, {x_, a_, b_}, n_Integer: 10, prec_: MachinePrecision
 If[readFit==1,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Reading Fit From Text File...\n"];
   Get[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_functions.mx"]];
+  WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 ];
 
 (*Obtain Axis and Surface Parameters*)
