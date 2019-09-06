@@ -40,3 +40,7 @@ Thumbs.db
 ######################
 *.pdf
 *.mx
+
+# Folders for Results #
+#####################
+data/
