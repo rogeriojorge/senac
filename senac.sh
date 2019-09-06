@@ -9,7 +9,7 @@ vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to re
 #======SENAC=====
 runSENAC=1;   #1-> runs SENAC mathematica
 readFit=0;    #1 -> reads fit parameters from text file, not working yet
-outputToVMEC=0; #compute Fourier Modes and output to VMEC
+outputToVMEC=1; #compute Fourier Modes and output to VMEC
 #======VMEC=====
 runVMECofFit=0;
 #======REGCOIL=====
@@ -21,7 +21,7 @@ VMECplotFit=0;
 REGCOILplotOriginal=0;
 REGCOILplotFit=0;
 #======SENAC INPUT PARAMETERS=====
-nsurfaces=20;  #number of surfaces to read and compare from VMEC
+nsurfaces=25;  #number of surfaces to read and compare from VMEC
 nthetaM=30;   #resolution in theta to compute Mercier angle
 nphiM=50;     #resolution in phi to compute Mercier angle
 deltac0=1.5;  #initial point for deltac0 betweeon -pi and pi
