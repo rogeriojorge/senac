@@ -1,11 +1,5 @@
 (* ::Package:: *)
 
-(*Mercier rho function in terms of axis quantities a.k.a. Mercier's theta and phi*)
-muVMEC = muc[0] + Sum[muc[i] Cos[vmecNFP i phi], {i, 1, nModes}];
-deltaVMEC = deltal*phi+deltac[0]+Sum[deltas[i] Sin[vmecNFP i phi],{i,1,nModes}];
-B0VMEC = B0c[0]+ Sum[B0c[i] Cos[vmecNFP i phi],{i,1,nModes}];
-rho[theta_, phi_] = Sqrt[(vmecPSI*Sqrt[1 - muVMEC^2] )/(2*(B0VMEC)*(1 + muVMEC*Cos[2*(theta + deltaVMEC)]))];
-
 (*Initialize Variables*)
 timestartPhiAxis=0;timestartMercierAngle=0;timestartrhoVMEC=0;timestartFit=0;
 
@@ -15,13 +9,13 @@ Table[
   (*Compute Mercier Angles Theta and Phi as a function VMEC's theta and phi*)
   (*WriteString[$Output, "    Axis's Phi Evaluation...  "];*)timestart=AbsoluteTime[];
   phiAxis = Interpolation[Flatten[ParallelTable[{{theta, phi}, x /. FindRoot[Dot[b0VMEC[x], FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[x]], {x, phi}]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phi, 0, 2*pi, 2*pi/nphiM}], 1], Method -> "Spline", InterpolationOrder -> 2];
-  ycomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[theta,phi]], t0VMEC[phiAxis[theta,phi]]];
-  xcomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[theta,phi]], k0VMEC[phiAxis[theta,phi]]];
-  thetaMercierFunc[theta_, phi_] = Chop[ArcTan[xcomponent[theta, phi], ycomponent[theta, phi]], 10^-8];
   (*Print["Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s"];*)timestartPhiAxis=timestartPhiAxis+AbsoluteTime[]-timestart;
 
   (*Compute Mercier Angle*)
   (*WriteString[$Output, "    Mercier's Angle Evaluation...  "];*)timestart = AbsoluteTime[];
+  ycomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[theta,phi]], t0VMEC[phiAxis[theta,phi]]];
+  xcomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[theta,phi]], k0VMEC[phiAxis[theta,phi]]];
+  thetaMercierFunc[theta_, phi_] = Chop[ArcTan[xcomponent[theta, phi], ycomponent[theta, phi]], 10^-8];
   thetaMercierTable = ParallelTable[thetaMercierFunc[theta, phi], {theta, 0, 2*pi,2*pi/nthetaM}, {phi, 0, 2*pi, 2*pi/nphiM}]//Quiet;
   thetaMercier = ListInterpolation[thetaMercierTable[[All, All]], {{0, 2*pi}, {0, 2*pi}}, Method -> "Spline", InterpolationOrder -> 2];
   (*Print["Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s"];*)timestartMercierAngle=timestartMercierAngle+AbsoluteTime[]-timestart;Clear[thetaMercierTable];
@@ -39,7 +33,7 @@ Table[
   (*Performing the fit*)
   (*WriteString[$Output, "    Computing Fit to Surface...  "];*)timestart = AbsoluteTime[];
   Off[InterpolatingFunction::dmval]; (*Hack not to specify that the arguments should vary between 0 and 2 pi *)
-  modelVMEC = rho[thetaMercier[theta, phi], phiAxis[theta,phi]];
+  modelVMEC = rho[thetaMercier[theta, phi], phiAxis[theta,phi]]/.PSI->vmecPSI[[iradius]];
   If[!FileExistsQ[vmecOutput],B0Est=1];If[deltalmin==deltalmax, deltalmin=-1.2*vmecNFP;deltalmax=1.2*vmecNFP];
 
   nlm = NonlinearModelFit[dataVMEC, {modelVMEC, mucMin < Sum[muc[i], {i, 0, nModes}] < mucMax, B0c[0] > 0., -pi <= deltac[0] <= pi,  deltalmin <= deltal <= deltalmax}, 
@@ -58,7 +52,6 @@ Table[
   FluxSurfacenFitVMEC[theta_, phi_, iradius] = Chop[closedcurvVMEC[phi] + (rho[theta, phi] /. fitParams[iradius])*(Cos[theta]*k0VMEC[phi] + Sin[theta]*t0VMEC[phi]), 10^-7]//Quiet; (*Mercier's Coordinates*)
   RBCFit[phi_, theta_, iradius] = Re[Cos[phi]*FluxSurfacenFitVMEC[thetaMercierFunc[theta,phi], phiAxis[theta,phi], iradius][[1]] + Sin[phi]*FluxSurfacenFitVMEC[thetaMercierFunc[theta,phi], phiAxis[theta,phi], iradius][[2]]]//Quiet; (*VMEC's Coordinates*)
   ZBSFit[phi_, theta_, iradius] = Re[FluxSurfacenFitVMEC[thetaMercierFunc[theta,phi], phiAxis[theta,phi], iradius][[3]]]//Quiet; (*VMEC's Coordinates*)
-
   WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestartFitIteration]<>"s\n"];
 ,{iradius,1,nsurfaces}];Clear[dataVMEC];
 
@@ -71,3 +64,4 @@ WriteString[$Output, "    Total time computing fits "<>ToString[timestartFit]<>"
 
 printv = "";nl = "\n";Do[printv = printv <> ToString[fitParams[i]] <> nl, {i, 1, nsurfaces}];
 Export[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_parameters.txt"],printv];
+(*Save[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_functions.mx"], {RBCFit,ZBSFit,FluxSurfacenFitVMEC,nsurfaces,fitParams}];*)

@@ -12,32 +12,38 @@ overallTimeStart = AbsoluteTime[];
 (*Global Variables*)
 proj           = $ScriptCommandLine[[2]];
 surfInput      = $ScriptCommandLine[[3]];
-outputToVMEC   = ToExpression[$ScriptCommandLine[[4]]];
-vmecInput      = $ScriptCommandLine[[5]];
-vmecOutput     = $ScriptCommandLine[[6]];
-nsurfaces      = ToExpression[$ScriptCommandLine[[7]]];
-nthetaM        = ToExpression[$ScriptCommandLine[[8]]];
-nphiM          = ToExpression[$ScriptCommandLine[[9]]];
-deltac0        = ToExpression[$ScriptCommandLine[[10]]];
-deltal0        = ToExpression[$ScriptCommandLine[[11]]];
-deltalmin      = ToExpression[$ScriptCommandLine[[12]]];
-deltalmax      = ToExpression[$ScriptCommandLine[[13]]];
-muc0           = ToExpression[$ScriptCommandLine[[14]]];
-mucMin         = ToExpression[$ScriptCommandLine[[15]]];
-mucMax         = ToExpression[$ScriptCommandLine[[16]]];
-nModes         = ToExpression[$ScriptCommandLine[[17]]];
-maxiterations  = ToExpression[$ScriptCommandLine[[18]]];
-plotFit        = ToExpression[$ScriptCommandLine[[19]]];
-maxm           = ToExpression[$ScriptCommandLine[[20]]];
-maxn           = ToExpression[$ScriptCommandLine[[21]]];
-maxRecursTheta = ToExpression[$ScriptCommandLine[[22]]];
-maxRecursPhi   = ToExpression[$ScriptCommandLine[[23]]];
+readFit        = ToExpression[$ScriptCommandLine[[4]]];
+outputToVMEC   = ToExpression[$ScriptCommandLine[[5]]];
+vmecInput      = $ScriptCommandLine[[6]];
+vmecOutput     = $ScriptCommandLine[[7]];
+nsurfaces      = ToExpression[$ScriptCommandLine[[8]]];
+nthetaM        = ToExpression[$ScriptCommandLine[[9]]];
+nphiM          = ToExpression[$ScriptCommandLine[[10]]];
+deltac0        = ToExpression[$ScriptCommandLine[[11]]];
+deltal0        = ToExpression[$ScriptCommandLine[[12]]];
+deltalmin      = ToExpression[$ScriptCommandLine[[13]]];
+deltalmax      = ToExpression[$ScriptCommandLine[[14]]];
+muc0           = ToExpression[$ScriptCommandLine[[15]]];
+mucMin         = ToExpression[$ScriptCommandLine[[16]]];
+mucMax         = ToExpression[$ScriptCommandLine[[17]]];
+nModes         = ToExpression[$ScriptCommandLine[[18]]];
+maxiterations  = ToExpression[$ScriptCommandLine[[19]]];
+plotFit        = ToExpression[$ScriptCommandLine[[20]]];
+maxm           = ToExpression[$ScriptCommandLine[[21]]];
+maxn           = ToExpression[$ScriptCommandLine[[22]]];
+maxRecursTheta = ToExpression[$ScriptCommandLine[[23]]];
+maxRecursPhi   = ToExpression[$ScriptCommandLine[[24]]];
 pi = N[Pi,10];
 
 (*Fast Numerical Integrator*)
 GaussLegendreQuadrature[f_, {x_, a_, b_}, n_Integer: 10, prec_: MachinePrecision] := 
   Module[{nodes, weights}, {nodes, weights} = Most[NIntegrate`GaussRuleData[n, prec]];
    (b - a) weights.Map[Function[x, f], Rescale[nodes, {0, 1}, {a, b}]]];
+
+If[readFit==1,
+  timestart1 = AbsoluteTime[]; WriteString[$Output, "  Reading Fit From Text File...\n"];
+  Get[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_functions.mx"]];
+];
 
 (*Obtain Axis and Surface Parameters*)
 If[FileExistsQ[vmecOutput],
@@ -54,7 +60,7 @@ If[FileExistsQ[vmecOutput],
       WriteString[$Output, "No Input File to Read From.\n"];
       CloseKernels[];Exit[];
     ];
-]
+];
 
 (*VMEC Axis Frenet-Serret Frame*)
 timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing VMEC's Frenet-Serret Frame and Surface..."]; Off[Simplify::time];
@@ -74,12 +80,19 @@ WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\
 
 (*Obtain Desired Surface in Mercier's Coordinates*)
 If[muDefined==0,
-  timestart1 = AbsoluteTime[]; WriteString[$Output, "  Fitting VMEC to Mercier's theta and rho...\n"];
-  Get[StringJoin[currentPath,"src/fit_to_mercier.wls"]];
-  WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
+  (*Mercier rho function in terms of axis quantities a.k.a. Mercier's theta and phi*)
+  muVMEC = muc[0] + Sum[muc[i] Cos[vmecNFP i phi], {i, 1, nModes}];
+  deltaVMEC = deltal*phi+deltac[0]+Sum[deltas[i] Sin[vmecNFP i phi],{i,1,nModes}];
+  B0VMEC = B0c[0]+ Sum[B0c[i] Cos[vmecNFP i phi],{i,1,nModes}];
+  rho[theta_, phi_] = Sqrt[(PSI*Sqrt[1 - muVMEC^2] )/(2*(B0VMEC)*(1 + muVMEC*Cos[2*(theta + deltaVMEC)]))];
+  If[readFit==0,
+    timestart1 = AbsoluteTime[]; WriteString[$Output, "  Fitting VMEC to Mercier's theta and rho...\n"];
+    Get[StringJoin[currentPath,"src/fit_to_mercier.wls"]];
+    WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
+  ]
   ,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Constructing Mercier's theta and rho..."];
-  rho[theta_, phi_] = Sqrt[(vmecPSI*Sqrt[1 - mu[phi]^2] )/(2*(B0[phi]) (1 + mu[phi]*Cos[2 (theta + delta[phi])]))];
+  rho[theta_, phi_] = Sqrt[(vmecPSI[[nsurfaces]]*Sqrt[1 - mu[phi]^2] )/(2*(B0[phi]) (1 + mu[phi]*Cos[2 (theta + delta[phi])]))];
   FluxSurfacenFitVMEC[theta_, s_, 1] = Chop[closedcurvVMEC[s] + (rho[theta, s]) (Cos[theta] k0VMEC[s] + Sin[theta] t0VMEC[s]), 10^-6]//Quiet;
 	RBCFit[phi_, theta_, 1] = Re[Cos[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[2]]]//Quiet;
 	ZBSFit[phi_, theta_, 1] = Re[FluxSurfacenFitVMEC[theta, phi, 1][[3]]]//Quiet;

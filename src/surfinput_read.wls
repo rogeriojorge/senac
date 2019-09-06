@@ -3,7 +3,7 @@
 If[FileExistsQ[surfInput],
 	(*Calculate Axis Parameters*)
 	vmecNFP = StringCases[StringDelete[FindList[surfInput, "NFP"][[1]], " "], x : NumberString :> ToExpression[x]][[1]];
-	vmecPSI = Abs[StringCases[StringDelete[FindList[surfInput, "PHIEDGE"][[1]], " "], x : NumberString :> ToExpression[x]][[1]]];
+	vmecPSI = {Abs[StringCases[StringDelete[FindList[surfInput, "PHIEDGE"][[1]], " "], x : NumberString :> ToExpression[x]][[1]]]};
 	vmecRAXIS = StringSplit[FindList[surfInput, "RAXIS"][[1]]];
 	vmecZAXIS = StringSplit[FindList[surfInput, "ZAXIS"][[1]]];
 	nRAXIS[phi_] = Sum[Internal`StringToDouble@vmecRAXIS[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[vmecRAXIS][[1]] - 3}];

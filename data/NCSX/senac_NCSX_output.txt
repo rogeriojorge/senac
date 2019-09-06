@@ -1,18 +1,53 @@
-  Read from surf_input... Surface Fourier Components Defined in file... Successful in 0.203716s
-  Computing Frenet-Serret Frame... Successful in 1.406027s
+  Read from VMEC file...
+23:51:52.240 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:52.541 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:52.630 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:52.721 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:52.780 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:52.839 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:52.899 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:52.965 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:53.017 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:53.071 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:53.127 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:53.188 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+23:51:53.247 [J/Link reader] DEBUG ucar.nc2.NetcdfFile - Using IOSP ucar.nc2.iosp.netcdf3.N3raf
+  Successful in 4.025639s
+  Computing VMEC's Frenet-Serret Frame and Surface... Successful in 10.188075s
   Fitting VMEC to Mercier's theta and rho...
-    Mercier's Angle Evaluation...  Successful in 4.010054s
-    Mercier's Rho Evaluation...  Successful in 4.447806s
-    Computing Fit to Surface...  
-InterpolatingFunction::dmval: Input value {0.314159, 6.28417} lies outside the range of data in the interpolating function. Extrapolation will be used.
-
-InterpolatingFunction::dmval: Input value {0.628319, 6.28503} lies outside the range of data in the interpolating function. Extrapolation will be used.
-
-InterpolatingFunction::dmval: Input value {0.942478, 6.28559} lies outside the range of data in the interpolating function. Extrapolation will be used.
-
-General::stop: Further output of InterpolatingFunction::dmval will be suppressed during this calculation.
-Successful in 8.228811s
-    Best fit parameters {deltal -> 2.48725, B0c[0] -> 6.71816, muc[0] -> 0.592115, deltac[0] -> 0.0383381}
-  Successful in 17.097992s
-  Iota from VMEC: iotaAxisOut, Iota from near-axis: -1.1663
-  SENAC Mathematica took 19.935550s
+    Fiting Surface 1 of 20...  Successful in 184.530864s
+    Fiting Surface 2 of 20...  Successful in 183.423450s
+    Fiting Surface 3 of 20...  Successful in 187.673473s
+    Fiting Surface 4 of 20...  Successful in 190.751385s
+    Fiting Surface 5 of 20...  Successful in 190.135358s
+    Fiting Surface 6 of 20...  Successful in 195.186669s
+    Fiting Surface 7 of 20...  Successful in 232.302745s
+    Fiting Surface 8 of 20...  Successful in 212.022269s
+    Fiting Surface 9 of 20...  Successful in 229.013261s
+    Fiting Surface 10 of 20...  Successful in 2792.816516s
+    Fiting Surface 11 of 20...  Successful in 582.623426s
+    Fiting Surface 12 of 20...  Successful in 675.557890s
+    Fiting Surface 13 of 20...  Successful in 7768.565662s
+    Fiting Surface 14 of 20...  
+NMinimize::cvmit: Failed to converge to the requested accuracy or precision within 1000 iterations.
+Successful in 610.395587s
+    Fiting Surface 15 of 20...  Successful in 623.316121s
+    Fiting Surface 16 of 20...  Successful in 622.232354s
+    Fiting Surface 17 of 20...  
+NMinimize::cvmit: Failed to converge to the requested accuracy or precision within 1000 iterations.
+Successful in 654.748628s
+    Fiting Surface 18 of 20...  Successful in 736.399272s
+    Fiting Surface 19 of 20...  Successful in 754.334803s
+    Fiting Surface 20 of 20...  Successful in 7791.328843s
+    Best fit parameters of first surface {deltal -> -0.00839446, B0c[0] -> 209.883, muc[0] -> 0.797605, deltac[0] -> -3.11522}
+    Best fit parameters of last  surface {deltal -> 0.00665147, B0c[0] -> 1.66996, muc[0] -> 0.444278, deltac[0] -> 3.1207}
+    Total time computing phiAxis 148.73359s
+    Total time computing thetaMercier 1718.85604s
+    Total time computing rhoVMEC data 18467.95454s
+    Total time computing fits 5057.10881s
+  Successful in 25417.376841s
+  Iota from VMEC: {0.399639, 0.424717, 0.443863, 0.460177, 0.475059, 0.491991, 0.505852, 0.51987, 0.534312, 0.549318, 0.568056, 0.584115, 0.600304, 0.616205, 0.631175, 0.646623, 0.656039, 0.660924, 0.660311, 0.653415}, Iota from near-axis: {0.0250108, 0.0298742, 0.0316624, 0.0317745, 0.0331235, 0.0344627, 0.0354156, 0.0362601, 0.0370229, 0.0377209, 0.0387713, 0.0390786, 0.039761, 0.040201, 0.0406198, 0.0411568, 0.0413808, 0.041971, 0.0423484, 0.0427879}
+  Creating Figures...
+    Plotting Original Surface... Successful in 153.379810s
+    Plotting Obtained Surface... Successful in 447.612143s
+    Plotting Comparison at Different Poloidal Planes...  
