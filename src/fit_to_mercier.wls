@@ -27,7 +27,7 @@ Table[
 
   (*Flux Surface After Fitting for mu and delta*)
   timestart = AbsoluteTime[];
-  dataVMEC = Flatten[ParallelTable[{theta, phi, Re[Sqrt[rhonVMEC2[theta, phi]]]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phi, 0, 2*pi, 2*pi/nphiM}], 1];
+  dataVMEC = Flatten[ParallelTable[{theta, phi, Re[Sqrt[rhonVMEC2[theta, phi]]]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phi, 0, 1.3*2*pi/vmecNFP, 2*pi/nphiM}], 1];
   timestartrhoVMEC=timestartrhoVMEC+AbsoluteTime[]-timestart;
 
   (*Performing the fit*)
@@ -35,17 +35,27 @@ Table[
   Off[InterpolatingFunction::dmval]; (*Hack not to specify that the arguments should vary between 0 and 2 pi *)
   modelVMEC = rho[thetaMercier[theta, phi], phiAxis[theta,phi]]/.PSI->vmecPSI[[iradius]];
   If[!FileExistsQ[vmecOutput],B0Est=1];If[deltalmin==deltalmax, deltalmin=-1.2*vmecNFP;deltalmax=1.2*vmecNFP];
+  If[iradius>1,
+    If[iradius>2,
+      deltalmin = Round[deltal/.fitParams[iradius-1]]-0.01*Abs[Round[deltal/.fitParams[iradius-1]]];
+      deltalmax = Round[deltal/.fitParams[iradius-1]]+0.01*Abs[Round[deltal/.fitParams[iradius-1]]];
+    ];
+    deltal0   = Round[deltal/.fitParams[iradius-1]];
+    muc0      = muc[0]/.fitParams[iradius-1];
+    B0Est     = B0c[0]/.fitParams[iradius-1];
+    deltac0   = deltac[0]/.fitParams[iradius-1];
+  ];
 
   nlm = NonlinearModelFit[dataVMEC,
     Flatten[
-      {modelVMEC, mucMin < muc[0] < mucMax, 0.01*B0Est<B0c[0], -pi <= deltac[0] <= pi,  deltalmin <= deltal <= deltalmax, 
+      {modelVMEC, mucMin < muc[0] < mucMax, 0.05*B0Est<B0c[0], -pi <= deltac[0] <= pi,  deltalmin <= deltal <= deltalmax, 
       Flatten[
-        Table[{{-0.01*Min[Abs[mucMin],Abs[mucMax]] < muc[i] < 0.01*Min[Abs[mucMin],Abs[mucMax]]} , {-0.01*B0Est < B0c[i] < 0.01*B0Est}},{i,1,nModes}]
+        Table[{{-0.1*Min[Abs[mucMin],Abs[mucMax]] < muc[i] < 0.1*Min[Abs[mucMin],Abs[mucMax]]}, {-0.01*B0Est < B0c[i] < 0.01*B0Est}, {-0.7 < deltas[i] < 0.7}},{i,1,nModes}]
       ]}
     ,1],
     Flatten[{
       {{deltal, deltal0}, {B0c[0], B0Est}, {muc[0], muc0}, {deltac[0], deltac0}}, 
-      Flatten[Table[{{B0c[i],0.001*B0Est},{muc[i],0.01*Min[Abs[mucMin],Abs[mucMax]]},{deltas[i],0.01}}, {i, 1, nModes}], 1],
+      Flatten[Table[{{B0c[i],0.001*B0Est},{muc[i],0.001*Min[Abs[mucMin],Abs[mucMax]]},{deltas[i],0.01}}, {i, 1, nModes}], 1],
       {{psi1s,0.1},{psi1c,0.1},{psi3s,0.1},{psi3c,0.1}}
     }, 1],
    {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations

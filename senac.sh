@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 0.1 - R. Jorge IREAP/UMD September 2019
-proj="LHD"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="ARIES"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -22,11 +22,12 @@ REGCOILplotOriginal=0;
 REGCOILplotFit=0;
 #======SENAC INPUT PARAMETERS=====
 nsurfaces=6;  #number of surfaces to read and compare from VMEC
-nthetaM=30;   #resolution in theta to compute Mercier angle
-nphiM=50;     #resolution in phi to compute Mercier angle
-maxiterations=600; #max number of iterations during fit parameter
-nModes=1;     #number of fourier components in mu, delta and B0
+nthetaM=23;   #resolution in theta to compute Mercier angld
+nphiM=33;     #resolution in phi to compute Mercier angle
+maxiterations=1000; #max number of iterations for fit
+nModes=2;     #number of fourier components in mu, delta and B0
 plotFit=1;    #Mathematica plots fit results
+plotOriginal=1; #Mathematica plots original surface
 deltac0=1.5;  #initial point for deltac0 betweeon -pi and pi
 deltal0=-1.0; #initial point for deltal
 deltalmin=0.0;#minimum deltal to help fit
@@ -66,7 +67,7 @@ if (( $runSENAC == 1)); then
 	echo "-----------------------"
 	echo "Running SENAC Mathematica"
 	rm -f data/${proj}/senac_${proj}_output.txt
-	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $maxm $maxn $maxRecursTheta $maxRecursPhi | tee data/${proj}/senac_${proj}_output.txt
+	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi | tee data/${proj}/senac_${proj}_output.txt
 fi
 #======RUN VMEC=====
 if (( $runVMECofFit == 1)); then

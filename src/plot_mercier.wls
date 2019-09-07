@@ -1,13 +1,13 @@
 (* ::Package:: *)
 
 (*Plotting Options*)
-nPlotTheta=40;nPlotPhi=60;plotPointsFig=50;maxRecursPlot=2;ImageSizePlot=700;ImageResolutionPlot=400;nfigsSurf=Min[4,nsurfaces];phimax=0.9*2*pi;
+nPlotTheta=80;nPlotPhi=120;plotPointsFig=60;maxRecursPlot=2;ImageSizePlot=700;ImageResolutionPlot=500;nfigsSurf=Min[3,nsurfaces];
 PlotOptions = Flatten[{LabelStyle -> Directive[FontFamily -> "Latin Modern Roman", FontSize -> 30], ImageSize -> ImageSizePlot, Frame -> True, AspectRatio -> 1}];
-phimax = Table[phi + 2*pi (1 - (nfigsSurf - 1)/nfigsSurf/vmecNFP), {phi, 2*pi/vmecNFP (1 - 1/nfigsSurf), 0, -2*pi/nfigsSurf/vmecNFP}]-0.1;
-phimin = Table[phi, {phi, 0, 2*pi/vmecNFP (1 - 1/nfigsSurf), 2*pi/nfigsSurf/vmecNFP}]+0.1;
+phimax = Table[phi + 2*pi (1 - (nfigsSurf - 1)/nfigsSurf/vmecNFP), {phi, 2*pi/vmecNFP (1 - 1/nfigsSurf), 0, -2*pi/nfigsSurf/vmecNFP/2.6}]-0.03;
+phimin = Table[phi, {phi, 0, 2*pi/vmecNFP (1 - 1/nfigsSurf), 2*pi/nfigsSurf/vmecNFP/2.6}]+0.03;
 
 (*Plot Original Surface and Axis*)
-If[muDefined==0,
+If[muDefined==0 && plotOriginal==1,
   figVMEC=Array[Null,nfigsSurf];
   timestart = AbsoluteTime[]; WriteString[$Output, "    Plotting Original Surface...\n"];
   j=0;Table[j=j+1;

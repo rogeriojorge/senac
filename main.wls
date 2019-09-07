@@ -29,10 +29,11 @@ mucMax         = ToExpression[$ScriptCommandLine[[17]]];
 nModes         = ToExpression[$ScriptCommandLine[[18]]];
 maxiterations  = ToExpression[$ScriptCommandLine[[19]]];
 plotFit        = ToExpression[$ScriptCommandLine[[20]]];
-maxm           = ToExpression[$ScriptCommandLine[[21]]];
-maxn           = ToExpression[$ScriptCommandLine[[22]]];
-maxRecursTheta = ToExpression[$ScriptCommandLine[[23]]];
-maxRecursPhi   = ToExpression[$ScriptCommandLine[[24]]];
+plotOriginal   = ToExpression[$ScriptCommandLine[[21]]];
+maxm           = ToExpression[$ScriptCommandLine[[22]]];
+maxn           = ToExpression[$ScriptCommandLine[[23]]];
+maxRecursTheta = ToExpression[$ScriptCommandLine[[24]]];
+maxRecursPhi   = ToExpression[$ScriptCommandLine[[25]]];
 pi = N[Pi,10];
 
 (*Fast Numerical Integrator*)
@@ -82,9 +83,9 @@ WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\
 (*Obtain Desired Surface in Mercier's Coordinates*)
 If[muDefined==0,
   (*Mercier rho function in terms of axis quantities a.k.a. Mercier's theta and phi*)
-  muVMEC = muc[0] + Sum[muc[i] Cos[vmecNFP i phi], {i, 1, nModes}];
-  deltaVMEC = deltal*phi+deltac[0]+Sum[deltas[i] Sin[vmecNFP i phi],{i,1,nModes}];
-  B0VMEC = B0c[0]+ Sum[B0c[i] Cos[vmecNFP i phi],{i,1,nModes}];
+  muVMEC = muc[0] + Sum[muc[i]*Cos[vmecNFP i phi], {i, 1, nModes}];
+  deltaVMEC = deltal*phi/2+deltac[0]+Sum[deltas[i]*Sin[vmecNFP i phi],{i,1,nModes}];
+  B0VMEC = B0c[0]+ Sum[B0c[i]*Cos[vmecNFP i phi],{i,1,nModes}];
   psi2[theta_, phi_] = 2*(B0VMEC)*(1 + muVMEC*Cos[2*(theta + deltaVMEC)])/Sqrt[1 - (muVMEC)^2];
   psi3[theta_, phi_] = psi1c*Cos[theta + deltaVMEC]+psi3c*Cos[3*(theta + deltaVMEC)]+psi1s*Sin[theta + deltaVMEC]+psi3s*Sin[3*(theta + deltaVMEC)];
   rho[theta_, phi_] = Sqrt[PSI/psi2[theta,phi]]-PSI*psi3[theta,phi]/(2*psi2[theta,phi]^2);
