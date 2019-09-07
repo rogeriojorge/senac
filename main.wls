@@ -64,7 +64,7 @@ If[FileExistsQ[vmecOutput],
 ];
 
 (*VMEC Axis Frenet-Serret Frame*)
-timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing VMEC's Frenet-Serret Frame and Surface..."]; Off[Simplify::time];
+timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing VMEC's Frenet-Serret Frame and Surfaces..."]; Off[Simplify::time];
 curvVMEC[t_] = Chop[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/Norm[closedcurvVMEC'[t]]^3, 10^-6]//Re;
 torsVMEC[t_] = Chop[Dot[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]], closedcurvVMEC'''[t]]/Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]^2, 10^-6];
 sprimeVMEC[t_] = Chop[Simplify[Chop[ComplexExpand[Norm[closedcurvVMEC'[t]]], 10^-6], TimeConstraint -> 0.01], 10^-6];
@@ -85,7 +85,9 @@ If[muDefined==0,
   muVMEC = muc[0] + Sum[muc[i] Cos[vmecNFP i phi], {i, 1, nModes}];
   deltaVMEC = deltal*phi+deltac[0]+Sum[deltas[i] Sin[vmecNFP i phi],{i,1,nModes}];
   B0VMEC = B0c[0]+ Sum[B0c[i] Cos[vmecNFP i phi],{i,1,nModes}];
-  rho[theta_, phi_] = Sqrt[(PSI*Sqrt[1 - muVMEC^2] )/(2*(B0VMEC)*(1 + muVMEC*Cos[2*(theta + deltaVMEC)]))];
+  psi2[theta_, phi_] = 2*(B0VMEC)*(1 + muVMEC*Cos[2*(theta + deltaVMEC)])/Sqrt[1 - (muVMEC)^2];
+  psi3[theta_, phi_] = psi1c*Cos[theta + deltaVMEC]+psi3c*Cos[3*(theta + deltaVMEC)]+psi1s*Sin[theta + deltaVMEC]+psi3s*Sin[3*(theta + deltaVMEC)];
+  rho[theta_, phi_] = Sqrt[PSI/psi2[theta,phi]]-PSI*psi3[theta,phi]/(2*psi2[theta,phi]^2);
   If[readFit==0,
     timestart1 = AbsoluteTime[]; WriteString[$Output, "  Fitting VMEC to Mercier's theta and rho...\n"];
     Get[StringJoin[currentPath,"src/fit_to_mercier.wls"]];
@@ -104,7 +106,7 @@ If[muDefined==0,
 timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing total rotation angle N of the normal vector..."];
 quadrant = 0; nNormal = 0; diffQuadrant = 0; qnew=0;
 Table[
-  normalx = k0VMEC[t][[1]] Cos[t] + k0VMEC[t][[2]] Sin[t];
+  normalx = k0VMEC[t][[1]]*Cos[t] + k0VMEC[t][[2]]*Sin[t];
   normaly = k0VMEC[t][[3]];
   If[Abs[normalx] > Abs[normaly],If[normalx > 0, qnew = 2, qnew = 4],If[normaly > 0, qnew = 1, qnew = 3]];
   If[quadrant == 0,quadrant = qnew, diffQuadrant = qnew - quadrant;];
