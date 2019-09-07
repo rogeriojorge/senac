@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 0.1 - R. Jorge IREAP/UMD September 2019
-proj="ARIES"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="W7X"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -22,9 +22,9 @@ REGCOILplotOriginal=0;
 REGCOILplotFit=0;
 #======SENAC INPUT PARAMETERS=====
 nsurfaces=6;  #number of surfaces to read and compare from VMEC
-nthetaM=23;   #resolution in theta to compute Mercier angld
-nphiM=33;     #resolution in phi to compute Mercier angle
-maxiterations=1000; #max number of iterations for fit
+nthetaM=35;   #resolution in theta to compute Mercier angld
+nphiM=45;     #resolution in phi to compute Mercier angle
+maxiterations=1500; #max number of iterations for fit
 nModes=2;     #number of fourier components in mu, delta and B0
 plotFit=1;    #Mathematica plots fit results
 plotOriginal=1; #Mathematica plots original surface

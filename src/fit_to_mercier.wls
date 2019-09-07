@@ -27,7 +27,7 @@ Table[
 
   (*Flux Surface After Fitting for mu and delta*)
   timestart = AbsoluteTime[];
-  dataVMEC = Flatten[ParallelTable[{theta, phi, Re[Sqrt[rhonVMEC2[theta, phi]]]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phi, 0, 1.3*2*pi/vmecNFP, 2*pi/nphiM}], 1];
+  dataVMEC = Flatten[ParallelTable[{theta, phi, Re[Sqrt[rhonVMEC2[theta, phi]]]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phi, 0, 1.4*2*pi/vmecNFP, 2*pi/nphiM}], 1];
   timestartrhoVMEC=timestartrhoVMEC+AbsoluteTime[]-timestart;
 
   (*Performing the fit*)

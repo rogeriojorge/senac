@@ -1,10 +1,10 @@
 (* ::Package:: *)
 
 (*Plotting Options*)
-nPlotTheta=80;nPlotPhi=120;plotPointsFig=60;maxRecursPlot=2;ImageSizePlot=700;ImageResolutionPlot=500;nfigsSurf=Min[3,nsurfaces];
+nPlotTheta=55;nPlotPhi=105;plotPointsFig=60;maxRecursPlot=2;ImageSizePlot=700;ImageResolutionPlot=500;nfigsSurf=Min[3,nsurfaces];
 PlotOptions = Flatten[{LabelStyle -> Directive[FontFamily -> "Latin Modern Roman", FontSize -> 30], ImageSize -> ImageSizePlot, Frame -> True, AspectRatio -> 1}];
-phimax = Table[phi + 2*pi (1 - (nfigsSurf - 1)/nfigsSurf/vmecNFP), {phi, 2*pi/vmecNFP (1 - 1/nfigsSurf), 0, -2*pi/nfigsSurf/vmecNFP/2.6}]-0.03;
-phimin = Table[phi, {phi, 0, 2*pi/vmecNFP (1 - 1/nfigsSurf), 2*pi/nfigsSurf/vmecNFP/2.6}]+0.03;
+phimax = Table[phi + 2*pi (1 - (nfigsSurf - 1)/nfigsSurf/vmecNFP), {phi, 2*pi/vmecNFP (1 - 1/nfigsSurf), 0, -2*pi/nfigsSurf/vmecNFP/2.4}]-0.1;
+phimin = Table[phi, {phi, 0, 2*pi/vmecNFP (1 - 1/nfigsSurf), 2*pi/nfigsSurf/vmecNFP/2.4}]+0.1;
 
 (*Plot Original Surface and Axis*)
 If[muDefined==0 && plotOriginal==1,
@@ -12,7 +12,7 @@ If[muDefined==0 && plotOriginal==1,
   timestart = AbsoluteTime[]; WriteString[$Output, "    Plotting Original Surface...\n"];
   j=0;Table[j=j+1;
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Grid for Figure "<>ToString[j]<>" of "<>ToString[nfigsSurf],"..."];
-    VMECposvecpsiTable = Table[ParallelTable[FluxSurfaceVMEC[theta, phi, Floor[iradius]][[i]], {theta, 0, 2*pi, 2*pi/(nPlotTheta/2)}, {phi, phimin[[j]], phimax[[j]], phimax[[j]]/(nPlotPhi/2)}], {i, 1, 3}];
+    VMECposvecpsiTable = Table[ParallelTable[FluxSurfaceVMEC[theta, phi, Floor[iradius]][[i]], {theta, 0, 2*pi, 2*pi/(nPlotTheta)}, {phi, phimin[[j]], phimax[[j]], phimax[[j]]/(nPlotPhi/2)}], {i, 1, 3}];
     VMECNposvecpsitemp = ParallelTable[ListInterpolation[VMECposvecpsiTable[[i]], {{0, 2*pi}, {phimin[[j]], phimax[[j]]}}], {i, 1, 3}];
     VMECNposvecpsi[theta_, phi_] = Table[VMECNposvecpsitemp[[i]][theta, phi], {i, 1, 3}];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
@@ -27,7 +27,7 @@ If[muDefined==0 && plotOriginal==1,
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       ,
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
-      BFunc[theta_, phi_]=1 + (rho[theta, phi]/.fitParams[Floor[iradius]])*Cos[theta]*curvVMEC[phi];
+      BFunc[theta_, phi_]=1 + (rho[theta, phi]/.fitParams[Floor[iradius]]/.PSI->vmecPSI[[Floor[iradius]]])*Cos[theta]*curvVMEC[phi];
       minB0 = FindMinValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
       maxB0 = FindMaxValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
@@ -54,7 +54,7 @@ j=0;Table[j=j+1;
   Nposvecpsi[theta_, phi_] = Table[Nposvecpsitemp[[i]][theta, phi], {i, 1, 3}];
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
-  If[muDefined==0,rhoPlot[theta_, phi_]=rho[theta, phi]/.fitParams[Floor[iradius]]/.PSI->vmecPSI[[Floor[iradius]]]];
+  If[muDefined==0,rhoPlot[theta_, phi_]=rho[theta, phi]/.fitParams[Floor[iradius]]/.PSI->vmecPSI[[Floor[iradius]]],rhoPlot[theta_, phi_]=rho[theta, phi]];
   BFunc[theta_, phi_]=1 + rhoPlot[theta, phi]*Cos[theta]*curvVMEC[phi];
   minB0 = FindMinValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
   maxB0 = FindMaxValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
