@@ -21,13 +21,14 @@ VMECplotFit=0;
 REGCOILplotOriginal=0;
 REGCOILplotFit=0;
 #======SENAC INPUT PARAMETERS=====
+ordern=4;     #Near-Axis Expansion Order (has to be greater than 2)
+nModes=3;     #number of fourier components in mu, delta and B0
 nsurfaces=6;  #number of surfaces to read and compare from VMEC
-nthetaM=35;   #resolution in theta to compute Mercier angld
-nphiM=45;     #resolution in phi to compute Mercier angle
+nthetaM=31;   #resolution in theta to compute Mercier angld
+nphiM=51;     #resolution in phi to compute Mercier angle
 maxiterations=1500; #max number of iterations for fit
-nModes=2;     #number of fourier components in mu, delta and B0
 plotFit=1;    #Mathematica plots fit results
-plotOriginal=1; #Mathematica plots original surface
+plotOriginal=0; #Mathematica plots original surface
 deltac0=1.5;  #initial point for deltac0 betweeon -pi and pi
 deltal0=-1.0; #initial point for deltal
 deltalmin=0.0;#minimum deltal to help fit
@@ -67,7 +68,7 @@ if (( $runSENAC == 1)); then
 	echo "-----------------------"
 	echo "Running SENAC Mathematica"
 	rm -f data/${proj}/senac_${proj}_output.txt
-	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi | tee data/${proj}/senac_${proj}_output.txt
+	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi | tee data/${proj}/senac_${proj}_output.txt
 fi
 #======RUN VMEC=====
 if (( $runVMECofFit == 1)); then

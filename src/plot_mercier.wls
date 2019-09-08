@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
 (*Plotting Options*)
-nPlotTheta=55;nPlotPhi=105;plotPointsFig=60;maxRecursPlot=2;ImageSizePlot=700;ImageResolutionPlot=500;nfigsSurf=Min[3,nsurfaces];
+nPlotTheta=85;nPlotPhi=125;plotPointsFig=70;maxRecursPlot=2;ImageSizePlot=800;ImageResolutionPlot=500;nfigsSurf=Min[3,nsurfaces];
 PlotOptions = Flatten[{LabelStyle -> Directive[FontFamily -> "Latin Modern Roman", FontSize -> 30], ImageSize -> ImageSizePlot, Frame -> True, AspectRatio -> 1}];
 phimax = Table[phi + 2*pi (1 - (nfigsSurf - 1)/nfigsSurf/vmecNFP), {phi, 2*pi/vmecNFP (1 - 1/nfigsSurf), 0, -2*pi/nfigsSurf/vmecNFP/2.4}]-0.1;
 phimin = Table[phi, {phi, 0, 2*pi/vmecNFP (1 - 1/nfigsSurf), 2*pi/nfigsSurf/vmecNFP/2.4}]+0.1;
@@ -92,8 +92,8 @@ If[muDefined==0,
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
       fig2[Floor[iradius]]=Show[{
-        ParametricPlot[Evaluate[{RBCFit[#,  theta, Floor[iradius]], ZBSFit[#,  theta, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->30, MaxRecursion->1, PlotStyle -> Dashed]//Quiet, 
-        ParametricPlot[Evaluate[{RBCVMEC[theta, #, Floor[iradius]], ZBSVMEC[theta, #, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->30, MaxRecursion->1]//Quiet},
+        ParametricPlot[Evaluate[{RBCFit[#,  theta, Floor[iradius]], ZBSFit[#,  theta, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->35, MaxRecursion->1, PlotStyle -> Dashed]//Quiet, 
+        ParametricPlot[Evaluate[{RBCVMEC[theta, #, Floor[iradius]], ZBSVMEC[theta, #, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->35, MaxRecursion->1]//Quiet},
       PlotRange -> All, PlotOptions, FrameLabel -> {"R [meters]", "Z [meters]"}];
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];

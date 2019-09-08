@@ -51,13 +51,17 @@ Table[
       {modelVMEC, mucMin < muc[0] < mucMax, 0.05*B0Est<B0c[0], -pi <= deltac[0] <= pi,  deltalmin <= deltal <= deltalmax, 
       Flatten[
         Table[{{-0.1*Min[Abs[mucMin],Abs[mucMax]] < muc[i] < 0.1*Min[Abs[mucMin],Abs[mucMax]]}, {-0.01*B0Est < B0c[i] < 0.01*B0Est}, {-0.7 < deltas[i] < 0.7}},{i,1,nModes}]
-      ]}
+      ],
+      If[ordern > 2, Flatten[
+        Table[Table[If[EvenQ[n], {{-1<psic[n, 2 i]<1}, {-1<psis[n, 2 i]<1}}, {{-1<psic[n, 2 i + 1]<1}, {-1<psis[n, 2 i + 1]<1}}], {i,0, Floor[n/2]}], {n, 3, ordern}]
+      ],xa]
+      }
     ,1],
-    Flatten[{
+    DeleteCases[Flatten[{
       {{deltal, deltal0}, {B0c[0], B0Est}, {muc[0], muc0}, {deltac[0], deltac0}}, 
       Flatten[Table[{{B0c[i],0.001*B0Est},{muc[i],0.001*Min[Abs[mucMin],Abs[mucMax]]},{deltas[i],0.01}}, {i, 1, nModes}], 1],
-      {{psi1s,0.1},{psi1c,0.1},{psi3s,0.1},{psi3c,0.1}}
-    }, 1],
+      If[ordern > 2, Flatten[Table[Table[If[EvenQ[n], {{psic[n, 2 i], 0.1}, {psis[n, 2 i], 0.1}}, {{psic[n, 2 i + 1], 0.1}, {psis[n, 2 i + 1], 0.1}}], {i,0, Floor[n/2]}], {n, 3, ordern}], 2],xa]
+    }, 1],xa],
    {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations
   ];
   fitParams[iradius] = nlm["BestFitParameters"];
