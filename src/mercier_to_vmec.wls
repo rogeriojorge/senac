@@ -2,19 +2,16 @@
 
 timestart = AbsoluteTime[]; 
 WriteString[$Output, "    RBCmn Evaluation... "];
-RBCmn = Quiet[ParallelTable[
-     GaussLegendreQuadrature[GaussLegendreQuadrature[
-       RBCFit[phi, theta, nsurfaces] Cos[mm theta - vmecNFP[[nsurfaces]] nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 4*pi^2, 2*pi^2], 
-     {mm, 0, maxm}, {nn, -maxn, maxn}]];
+RBCmn = Quiet[ParallelTable[GaussLegendreQuadrature[GaussLegendreQuadrature[
+  RBCFit[phi, theta, nsurfaces] Cos[mm theta - vmecNFP nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 4*pi^2, 2*pi^2],
+{mm, 0, maxm}, {nn, -maxn, maxn}]];
 WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s."];
 timestart = AbsoluteTime[];
 WriteString[$Output, "\n    ZBSmn Evaluation... "];
 
-ZBSmn =
-  Quiet[ParallelTable[
-     GaussLegendreQuadrature[
-       GaussLegendreQuadrature[
-        ZBSFit[phi, theta, nsurfaces] Sin[mm theta - vmecNFP[[nsurfaces]] nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 1, 2*pi^2], {mm, 0, maxm}, {nn, -maxn, maxn}]];
+ZBSmn = Quiet[ParallelTable[GaussLegendreQuadrature[GaussLegendreQuadrature[
+  ZBSFit[phi, theta, nsurfaces] Sin[mm theta - vmecNFP nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 1, 2*pi^2],
+{mm, 0, maxm}, {nn, -maxn, maxn}]];
 WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s.\n"];
 
 (*Print to VMEC input file*)

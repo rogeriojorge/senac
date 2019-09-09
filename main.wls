@@ -35,6 +35,15 @@ maxm           = ToExpression[$ScriptCommandLine[[23]]];
 maxn           = ToExpression[$ScriptCommandLine[[24]]];
 maxRecursTheta = ToExpression[$ScriptCommandLine[[25]]];
 maxRecursPhi   = ToExpression[$ScriptCommandLine[[26]]];
+nPlotTheta     = ToExpression[$ScriptCommandLine[[27]]];
+nPlotPhi       = ToExpression[$ScriptCommandLine[[28]]];
+plotPointsFig  = ToExpression[$ScriptCommandLine[[29]]];
+maxRecursPlot  = ToExpression[$ScriptCommandLine[[30]]];
+ImageSizePlot  = ToExpression[$ScriptCommandLine[[31]]];
+ImageResolutionPlot = ToExpression[$ScriptCommandLine[[32]]];
+nfigsSurf      = ToExpression[$ScriptCommandLine[[33]]];
+nPlots         = ToExpression[$ScriptCommandLine[[34]]];
+
 pi = N[Pi,10];
 
 (*Fast Numerical Integrator*)
@@ -132,7 +141,7 @@ If[muDefined==1,
 ];
 
 (*Plot Obtained Surfaces*)
-If[plotFit==1,
+If[plotFit==1 || plotOriginal==1,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Creating Figures...\n"];
   Get[StringJoin[currentPath,"src/plot_mercier.wls"]];
   WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];

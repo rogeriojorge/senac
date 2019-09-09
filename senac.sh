@@ -8,47 +8,56 @@ vmecInput=${currentDIR}"/vmec/vmec_input_template.txt"; #template VMEC input fil
 vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
 #======SENAC=====
 runSENAC=1;   #1-> runs SENAC mathematica
-readFit=0;    #1 -> reads fit parameters from text file, not working yet
-outputToVMEC=0; #compute Fourier Modes and output to VMEC
+readFit=0;    #not working yet, 1 -> reads fit parameters from text file
+outputToVMEC=1; #compute Fourier Modes and output to VMEC
 #======VMEC=====
 runVMECofFit=0;
 #======REGCOIL=====
 runREGCOILoriginal=0;
-runREGCOILfit=0;
+runREGCOILfit=1;
 #======VMECplot====
 VMECplotOriginal=0;
 VMECplotFit=0;
 REGCOILplotOriginal=0;
 REGCOILplotFit=0;
 #======SENAC INPUT PARAMETERS=====
-ordern=4;     #Near-Axis Expansion Order (has to be greater than 2)
-nModes=3;     #number of fourier components in mu, delta and B0
-nsurfaces=6;  #number of surfaces to read and compare from VMEC
-nthetaM=31;   #resolution in theta to compute Mercier angld
-nphiM=51;     #resolution in phi to compute Mercier angle
+ordern=4;       #Near-Axis Expansion Order (has to be greater than 2)
+nModes=3;       #number of fourier components in mu, delta and B0
+nsurfaces=6;    #number of surfaces to read and compare from VMEC
+nthetaM=31;      #resolution in theta to compute Mercier angld
+nphiM=51;       #resolution in phi to compute Mercier angle
 maxiterations=1500; #max number of iterations for fit
-plotFit=1;    #Mathematica plots fit results
-plotOriginal=0; #Mathematica plots original surface
-deltac0=1.5;  #initial point for deltac0 betweeon -pi and pi
-deltal0=-1.0; #initial point for deltal
-deltalmin=0.0;#minimum deltal to help fit
-deltalmax=0.0;#maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
-muc0=0.5;     #initial point for muc0
-mucMin=0.1;   #minimum muc0 to help fit
-mucMax=0.9;   #maximum muc0 to help fit
-maxm=5;       #Maximum m to output to VMEC
-maxn=6;       #Maximum n to output to VMEC
-maxRecursTheta=30; #Theta resolution in numerical integration
-maxRecursPhi=200;  #Phi resolution in numerical integration
+deltac0=1.5;    #initial point for deltac0 betweeon -pi and pi
+deltal0=-1.0;   #initial point for deltal
+deltalmin=0.0;  #minimum deltal to help fit
+deltalmax=0.0;  #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
+muc0=0.5;       #initial point for muc0
+mucMin=0.1;     #minimum muc0 to help fit
+mucMax=0.9;     #maximum muc0 to help fit
+maxm=3;         #Maximum m to output to VMEC
+maxn=3;         #Maximum n to output to VMEC
+maxRecursTheta=15; #Theta resolution in numerical integration
+maxRecursPhi=80;  #Phi resolution in numerical integration
+#======PLOTTING PARAMETERS=====
+plotFit=1;         #Mathematica plots fit results
+plotOriginal=1;    #Mathematica plots original surface
+nPlotTheta=70;     #number of interpolating points in theta
+nPlotPhi=120;      #number of interpolating points in phi
+plotPointsFig=60;  #plotpoints for 3D figure
+maxRecursPlot=2;   #max recursion for 3D figure
+ImageSizePlot=800; #image size for 3D figure
+ImageResolutionPlot=400; #resolution for 3D figure
+nfigsSurf=4;       #number of surfaces to plot in 3D figure
+nPlots=4;          #number of poloidal plots to save
 #======VMECplot INPUT PARAMETERS======
 nplotTheta=80;
 nplotThetaSurf=80;
 nplotPhiSurf=220;
 nplotNthetaBSurf=40;
 nplotNphiBSurf=50;
+#=====REGCOIL INPUT PARAMTERS========
 coilsPerHalfPeriod=3;
 thetaShift=0;
-#=====REGCOIL INPUT PARAMTERS========
 REGCOILtargetvalue=0.05;
 REGCOILseparation=0.07;
 
@@ -63,12 +72,18 @@ REGCOILseparation=0.07;
 #======Print Run Parameters=====
 #echo "Parameters: nthetaM $nthetaM nphiM $nphiM maxiterations $maxiterations maxm $maxm maxn $maxn maxRecursTheta $maxRecursTheta maxRecursPhi $maxRecursPhi"
 
+#======TEST INPUT PARAMETERS=====
+if (($ordern < 2)); then
+	echo "The order of the axis expansion should be above two"
+	exit 1;
+fi
+
 #======RUN SENAC=====
 if (( $runSENAC == 1)); then
 	echo "-----------------------"
 	echo "Running SENAC Mathematica"
 	rm -f data/${proj}/senac_${proj}_output.txt
-	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi | tee data/${proj}/senac_${proj}_output.txt
+	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi $nPlotTheta $nPlotPhi $plotPointsFig $maxRecursPlot $ImageSizePlot $ImageResolutionPlot $nfigsSurf $nPlots | tee data/${proj}/senac_${proj}_output.txt
 fi
 #======RUN VMEC=====
 if (( $runVMECofFit == 1)); then
