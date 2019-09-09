@@ -5,7 +5,7 @@ timestartPhiAxis=0;timestartMercierAngle=0;timestartrhoVMEC=0;timestartFit=0;
 
 Table[
   WriteString[$Output, "    Fiting Surface "<>ToString[iradius]<>" of "<>ToString[nsurfaces]<>"...  "];timestartFitIteration=AbsoluteTime[];
-  
+
   (*Compute Mercier Angles Theta and Phi as a function VMEC's theta and phi*)
   timestart=AbsoluteTime[];
   phiAxis = Interpolation[Flatten[ParallelTable[{{theta, phi}, x /. FindRoot[Dot[b0VMEC[x], FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[x]], {x, phi}]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phi, 0, 2*pi, 2*pi/nphiM}], 1], Method -> "Spline", InterpolationOrder -> 2];
@@ -16,7 +16,7 @@ Table[
   ycomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[theta,phi]], t0VMEC[phiAxis[theta,phi]]];
   xcomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[theta,phi]], k0VMEC[phiAxis[theta,phi]]];
   thetaMercierFunc[theta_, phi_] = Chop[ArcTan[xcomponent[theta, phi], ycomponent[theta, phi]], 10^-8];
-  thetaMercierTable = ParallelTable[thetaMercierFunc[theta, phi], {theta, 0, 2*pi,2*pi/nthetaM}, {phi, 0, 2*pi, 2*pi/nphiM}]//Quiet;
+  thetaMercierTable = ParallelTable[thetaMercierFunc[theta, phi], {theta, 0, 2*pi,2*pi/nthetaM/1.5}, {phi, 0, 2*pi, 2*pi/nphiM/1.2}]//Quiet;
   thetaMercier = ListInterpolation[thetaMercierTable[[All, All]], {{0, 2*pi}, {0, 2*pi}}, Method -> "Spline", InterpolationOrder -> 2];
   timestartMercierAngle=timestartMercierAngle+AbsoluteTime[]-timestart;Clear[thetaMercierTable];
 
@@ -85,5 +85,5 @@ WriteString[$Output, "    Total time computing rhoVMEC data "<>ToString[timestar
 WriteString[$Output, "    Total time computing fits "<>ToString[timestartFit]<>"s\n"];
 
 printv = "";nl = "\n";Do[printv = printv <> ToString[fitParams[i]] <> nl, {i, 1, nsurfaces}];
-Export[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_parameters.txt"],printv];
+Export[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_parameters_ordern_"<>ToString[ordern]<>".txt"],printv];
 (*Save[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_functions.mx"], {RBCFit,ZBSFit,FluxSurfacenFitVMEC,nsurfaces,fitParams}];*)

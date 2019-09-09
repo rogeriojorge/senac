@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 0.1 - R. Jorge IREAP/UMD September 2019
-proj="W7X"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="HSX"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -11,22 +11,22 @@ runSENAC=1;   #1-> runs SENAC mathematica
 readFit=0;    #not working yet, 1 -> reads fit parameters from text file
 outputToVMEC=1; #compute Fourier Modes and output to VMEC
 #======VMEC=====
-runVMECofFit=0;
+runVMECofFit=1;
 #======REGCOIL=====
 runREGCOILoriginal=0;
-runREGCOILfit=1;
+runREGCOILfit=0;
 #======VMECplot====
 VMECplotOriginal=0;
 VMECplotFit=0;
 REGCOILplotOriginal=0;
 REGCOILplotFit=0;
 #======SENAC INPUT PARAMETERS=====
-ordern=4;       #Near-Axis Expansion Order (has to be greater than 2)
-nModes=3;       #number of fourier components in mu, delta and B0
+ordern=3;       #Near-Axis Expansion Order (has to be greater than 2)
+nModes=2;       #number of fourier components in mu, delta and B0
 nsurfaces=6;    #number of surfaces to read and compare from VMEC
-nthetaM=31;      #resolution in theta to compute Mercier angld
-nphiM=51;       #resolution in phi to compute Mercier angle
-maxiterations=1500; #max number of iterations for fit
+nthetaM=31;     #resolution in theta for fit and Mercier's coordinates
+nphiM=41;       #resolution in phi for fit and Mercier's coordinates
+maxiterations=1200; #max number of iterations for fit
 deltac0=1.5;    #initial point for deltac0 betweeon -pi and pi
 deltal0=-1.0;   #initial point for deltal
 deltalmin=0.0;  #minimum deltal to help fit
@@ -34,19 +34,19 @@ deltalmax=0.0;  #maximum deltal to help fit (put equal to deltalmin to leave -1.
 muc0=0.5;       #initial point for muc0
 mucMin=0.1;     #minimum muc0 to help fit
 mucMax=0.9;     #maximum muc0 to help fit
-maxm=3;         #Maximum m to output to VMEC
-maxn=3;         #Maximum n to output to VMEC
-maxRecursTheta=15; #Theta resolution in numerical integration
-maxRecursPhi=80;  #Phi resolution in numerical integration
+maxm=6;         #Maximum m to output to VMEC
+maxn=7;         #Maximum n to output to VMEC
+maxRecursTheta=45; #Theta resolution in numerical integration
+maxRecursPhi=250;  #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
 plotFit=1;         #Mathematica plots fit results
 plotOriginal=1;    #Mathematica plots original surface
-nPlotTheta=70;     #number of interpolating points in theta
+nPlotTheta=80;     #number of interpolating points in theta
 nPlotPhi=120;      #number of interpolating points in phi
 plotPointsFig=60;  #plotpoints for 3D figure
 maxRecursPlot=2;   #max recursion for 3D figure
 ImageSizePlot=800; #image size for 3D figure
-ImageResolutionPlot=400; #resolution for 3D figure
+ImageResolutionPlot=500; #resolution for 3D figure
 nfigsSurf=4;       #number of surfaces to plot in 3D figure
 nPlots=4;          #number of poloidal plots to save
 #======VMECplot INPUT PARAMETERS======

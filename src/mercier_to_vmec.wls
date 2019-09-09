@@ -1,16 +1,23 @@
 (* ::Package:: *)
 
+RBCtoVMEC[theta_, phi_, mm_, nn_] = (Cos[phi]*FluxSurfacenFitVMEC[theta, phi, nsurfaces][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phi, nsurfaces][[2]])*Cos[mm theta - vmecNFP nn phi];
+ZBStoVMEC[theta_, phi_, mm_, nn_] = FluxSurfacenFitVMEC[theta, phi, nsurfaces][[3]]*Sin[mm theta - vmecNFP nn phi];
+
 timestart = AbsoluteTime[]; 
 WriteString[$Output, "    RBCmn Evaluation... "];
-RBCmn = Quiet[ParallelTable[GaussLegendreQuadrature[GaussLegendreQuadrature[
-  RBCFit[phi, theta, nsurfaces] Cos[mm theta - vmecNFP nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 4*pi^2, 2*pi^2],
+RBCmn = Quiet[Table[
+  rbstemp = Interpolation[Flatten[ParallelTable[{{theta, phi}, RBCtoVMEC[theta, phi, mm, nn]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.1}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.1}], 1], Method -> "Spline", InterpolationOrder -> 2];
+  GaussLegendreQuadrature[GaussLegendreQuadrature[
+  rbstemp[theta, phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 4*pi^2, 2*pi^2],
 {mm, 0, maxm}, {nn, -maxn, maxn}]];
 WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s."];
 timestart = AbsoluteTime[];
 WriteString[$Output, "\n    ZBSmn Evaluation... "];
 
-ZBSmn = Quiet[ParallelTable[GaussLegendreQuadrature[GaussLegendreQuadrature[
-  ZBSFit[phi, theta, nsurfaces] Sin[mm theta - vmecNFP nn phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 1, 2*pi^2],
+ZBSmn = Quiet[Table[
+  zbstemp = Interpolation[Flatten[ParallelTable[{{theta, phi}, ZBStoVMEC[theta, phi, mm, nn]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.1}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.1}], 1], Method -> "Spline", InterpolationOrder -> 2];
+  GaussLegendreQuadrature[GaussLegendreQuadrature[
+  zbstemp[theta, phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 1, 2*pi^2],
 {mm, 0, maxm}, {nn, -maxn, maxn}]];
 WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s.\n"];
 
