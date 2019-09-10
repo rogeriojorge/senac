@@ -11,43 +11,14 @@ overallTimeStart = AbsoluteTime[];
 
 (*Global Variables*)
 proj           = $ScriptCommandLine[[2]];
-surfInput      = $ScriptCommandLine[[3]];
-readFit        = ToExpression[$ScriptCommandLine[[4]]];
-outputToVMEC   = ToExpression[$ScriptCommandLine[[5]]];
-vmecInput      = $ScriptCommandLine[[6]];
-vmecOutput     = $ScriptCommandLine[[7]];
-ordern         = ToExpression[$ScriptCommandLine[[8]]];
-nsurfaces      = ToExpression[$ScriptCommandLine[[9]]];
-nthetaM        = ToExpression[$ScriptCommandLine[[10]]];
-nphiM          = ToExpression[$ScriptCommandLine[[11]]];
-deltac0        = ToExpression[$ScriptCommandLine[[12]]];
-deltal0        = ToExpression[$ScriptCommandLine[[13]]];
-deltalmin      = ToExpression[$ScriptCommandLine[[14]]];
-deltalmax      = ToExpression[$ScriptCommandLine[[15]]];
-muc0           = ToExpression[$ScriptCommandLine[[16]]];
-mucMin         = ToExpression[$ScriptCommandLine[[17]]];
-mucMax         = ToExpression[$ScriptCommandLine[[18]]];
-nModes         = ToExpression[$ScriptCommandLine[[19]]];
-maxiterations  = ToExpression[$ScriptCommandLine[[20]]];
-plotFit        = ToExpression[$ScriptCommandLine[[21]]];
-plotOriginal   = ToExpression[$ScriptCommandLine[[22]]];
-maxm           = ToExpression[$ScriptCommandLine[[23]]];
-maxn           = ToExpression[$ScriptCommandLine[[24]]];
-maxRecursTheta = ToExpression[$ScriptCommandLine[[25]]];
-maxRecursPhi   = ToExpression[$ScriptCommandLine[[26]]];
-nPlotTheta     = ToExpression[$ScriptCommandLine[[27]]];
-nPlotPhi       = ToExpression[$ScriptCommandLine[[28]]];
-plotPointsFig  = ToExpression[$ScriptCommandLine[[29]]];
-maxRecursPlot  = ToExpression[$ScriptCommandLine[[30]]];
-ImageSizePlot  = ToExpression[$ScriptCommandLine[[31]]];
-ImageResolutionPlot  = ToExpression[$ScriptCommandLine[[32]]];
-nfigsSurf      = ToExpression[$ScriptCommandLine[[33]]];
-nPlots         = ToExpression[$ScriptCommandLine[[34]]];
-plotRegcoilFit = ToExpression[$ScriptCommandLine[[35]]];
-plotRegcoilOriginal  = ToExpression[$ScriptCommandLine[[36]]];
-coilsPerHalfPeriod   = ToExpression[$ScriptCommandLine[[37]]];
-numHalfPeriodsToPlot = ToExpression[$ScriptCommandLine[[38]]];
-plotRegcoilSENAC = ToExpression[$ScriptCommandLine[[39]]];
+ordern         = ToExpression[$ScriptCommandLine[[3]]];
+nModes         = ToExpression[$ScriptCommandLine[[4]]];
+ImageSizePlot  = ToExpression[$ScriptCommandLine[[5]]];
+ImageResolutionPlot  = ToExpression[$ScriptCommandLine[[6]]];
+nPlots         = ToExpression[$ScriptCommandLine[[7]]];
+coilsPerHalfPeriod   = ToExpression[$ScriptCommandLine[[8]]];
+numHalfPeriodsToPlot = ToExpression[$ScriptCommandLine[[9]]];
+plotRegcoilSENAC     = ToExpression[$ScriptCommandLine[[10]]];
 
 pi = N[Pi,10];
 
@@ -111,7 +82,10 @@ Table[
   plasmaposTemp[theta_, phi_] = plasmaposTemp[theta, phi] + {rmncplasma[[im]]*Cos[angle[theta, phi]]*Cos[phi], rmncplasma[[im]]*Cos[angle[theta, phi]]*Sin[phi], zmnsplasma[[im]]*Sin[angle[theta, phi]]};
   , {im, 1, Length[xmplasma]}];
 
-imMax = Position[rmnccoil, _?(10^-12 < # < 10^-8 &)][[3, 1]];
+If[Dimensions[Position[rmnccoil, _?(10^(-10) < # < 10^(-7) &)]][[1]] > 2 && NumberQ[Position[rmnccoil, _?(10^(-10) < # < 10^(-7) &)][[1, 1]]], 
+  imMax = Position[rmnccoil, _?(10^(-10) < # < 10^(-7) &)][[3, 1]], 
+  imMax = Length[rmnccoil]
+]//Quiet;
 WSposTemp[theta_, phi_] = {0, 0, 0};
 Table[coilposTemp[theta_, j] = {0, 0, 0}, {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
 Table[
@@ -128,7 +102,7 @@ plasmapos[theta_, phi_] = Chop[plasmaposTemp[theta, phi], 10^-5];
 WSpos[theta_, phi_] = Chop[WSposTemp[theta, phi], 10^-5];
 Table[coilpos[theta_, j] = Chop[coilposTemp[theta, j], 10^-5], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
 
-npointsCoilPos = 50;
+npointsCoilPos = 70;
 Table[
   coilposTable = Table[{{theta, coilposTemp[theta, j][[1]]}, {theta, coilpos[theta, j][[2]]}, {theta, coilpos[theta, j][[3]]}}, {theta, 0, 2*pi, 2*pi/npointsCoilPos}];
   coilposInterp = {Interpolation[coilposTable[[All, 1]], Method -> "Spline", InterpolationOrder -> 2], Interpolation[coilposTable[[All, 2]], Method -> "Spline", InterpolationOrder -> 2], Interpolation[coilposTable[[All, 3]], Method -> "Spline", InterpolationOrder -> 2]};
@@ -138,7 +112,7 @@ Table[
 (*Surface of Constant Toroidal Flux*)
 plasmaPlot = ParametricPlot3D[plasmapos[theta, phi], {theta, 0, 2*pi}, {phi, 0, 2*pi}, PlotPoints -> {30, 50}, MaxRecursion -> 2, Mesh -> None, PlotStyle -> Directive[Opacity[0.8], Specularity[White, 20]]];
 (*Plot of the Coils*)
-coilsPlot = Show[Table[ParametricPlot3D[coilposFunc[theta, j], {theta, 0, 2*pi}, PlotPoints -> 50, MaxRecursion -> 2, PlotStyle -> {Thickness[0.004], RGBColor[56/255, 122/255, 213/255], Directive[Opacity[1.0], Specularity[White, 20]]}], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}]];
+coilsPlot = Show[Table[ParametricPlot3D[coilposFunc[theta, j], {theta, 0, 2*pi}, PlotPoints -> 70, MaxRecursion -> 2, PlotStyle -> {Thickness[0.004], RGBColor[56/255, 122/255, 213/255], Directive[Opacity[1.0], Specularity[White, 20]]}], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}]];
 (*Winding Surface*)
 (*windingPlot=ParametricPlot3D[WSpos[theta,phi],{theta,0,2*pi},{phi,0,2*pi},PlotPoints->{15,50},MaxRecursion->1,Mesh->None,PlotStyle->Directive[LightBlue,Opacity[0.3]]];*)
 fitRegcoil=Show[plasmaPlot,(*windingPlot,*)coilsPlot, Boxed -> False, Axes -> False];
@@ -146,7 +120,7 @@ fitRegcoil=Show[plasmaPlot,(*windingPlot,*)coilsPlot, Boxed -> False, Axes -> Fa
 If[plotRegcoilSENAC==1,
   Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Original.pdf"], fitRegcoil, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
   ,
-  Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Fit.pdf"], fitRegcoil, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+  Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Fit_ordern"<>ToString[ordern]<>"_nmodes"<>ToString[nmodes]".pdf"], fitRegcoil, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
 ];
 
 (*Finish Evaluation*)

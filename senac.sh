@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 0.1 - R. Jorge IREAP/UMD September 2019
-proj="NCSX"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="W7X"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -10,17 +10,17 @@ vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to re
 runSENAC=1;   #1-> runs SENAC mathematica
 outputToVMEC=1; #compute Fourier Modes and output to VMEC
 plotFit=1;         #Mathematica plots fit results
-plotOriginal=1;    #Mathematica plots original surface
-plotRegcoilFit=1;  #Mathematica plots coils for fit
-plotRegcoilOriginal=1; #Mathematica plots coils for original surface
+plotOriginal=0;    #Mathematica plots original surface
 readFit=0;    #not working yet, 1 -> reads fit parameters from text file
 #======VMEC=====
 runVMECofFit=1;
 #======REGCOIL=====
+runREGCOILfit=0;
+plotRegcoilFit=1;  #Mathematica plots coils for fit
 runREGCOILoriginal=1;
-runREGCOILfit=1;
+plotRegcoilOriginal=0; #Mathematica plots coils for original surface
 #======SENAC INPUT PARAMETERS=====
-ordern=6;       #Near-Axis Expansion Order (has to be greater than 2)
+ordern=3;       #Near-Axis Expansion Order (has to be greater than 2)
 nModes=4;       #number of fourier components in mu, delta and B0
 nsurfaces=6;    #number of surfaces to read and compare from VMEC
 nthetaM=31;     #resolution in theta for fit and Mercier's coordinates
@@ -128,16 +128,16 @@ fi
 #======RUN REGCOIL PLOT=====
 if ( [[ $plotRegcoilOriginal == 1 ]] ); then
 	echo "-----------------------"
-	echo "Running SENAC Plot Original Surface"
+	echo "Running SENAC Plot REGCOIL for Original Surface"
 	plotRegcoilSENAC=1;
-	wolframscript -noprompt -script src/plot_regcoil.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi $nPlotTheta $nPlotPhi $plotPointsFig $maxRecursPlot $ImageSizePlot $ImageResolutionPlot $nfigsSurf $nPlots $plotRegcoilFit $plotRegcoilOriginal $coilsPerHalfPeriod $numHalfPeriodsToPlot $plotRegcoilSENAC | tee data/${proj}/senac_${proj}_output.txt
+	wolframscript -noprompt -script src/plot_regcoil.wls $proj $ordern $nModes $ImageSizePlot $ImageResolutionPlot $nPlots $coilsPerHalfPeriod $numHalfPeriodsToPlot $plotRegcoilSENAC | tee data/${proj}/senac_${proj}_output.txt
 fi
 
 if ( [[ $plotRegcoilFit == 1 ]]  ); then
 	echo "-----------------------"
-	echo "Running SENAC Plot Regcoil"
+	echo "Running SENAC Plot REGCOIL for Fit Surface"
 	plotRegcoilSENAC=2;
-	wolframscript -noprompt -script src/plot_regcoil.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi $nPlotTheta $nPlotPhi $plotPointsFig $maxRecursPlot $ImageSizePlot $ImageResolutionPlot $nfigsSurf $nPlots $plotRegcoilFit $plotRegcoilOriginal $coilsPerHalfPeriod $numHalfPeriodsToPlot $plotRegcoilSENAC | tee data/${proj}/senac_${proj}_output.txt
+	wolframscript -noprompt -script src/plot_regcoil.wls $proj $ordern $nModes  $ImageSizePlot $ImageResolutionPlot $nPlots $coilsPerHalfPeriod $numHalfPeriodsToPlot $plotRegcoilSENAC | tee data/${proj}/senac_${proj}_output.txt
 fi
 
 
