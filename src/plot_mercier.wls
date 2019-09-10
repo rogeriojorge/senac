@@ -19,14 +19,14 @@ If[muDefined==0 && plotOriginal==1,
     If[FileExistsQ[vmecOutput],
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
       bvmecFig[[j]]=DensityPlot[BVMEC[theta, phi, Floor[iradius]], {theta, 0, 2*pi}, {phi, 0, 2*pi}, FrameLabel -> {"Poloidal Angle \[Theta]", "Toroidal Angle \[Phi]"}, Evaluate@PlotOptions, MaxRecursion -> 2, PlotPoints -> 40, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> 750, LegendLabel -> "B(\[Theta],\[Phi])"]];
-      Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_VMEC_magnetic_field_poloidalPlane_"<>ToString[Floor[iradius]]<>"_.pdf"], bvmecFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+      Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_VMEC_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_.pdf"], bvmecFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
       minB0VMEC = FindMinValue[{BVMEC[theta,phi,Floor[iradius]], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
       maxB0VMEC = FindMaxValue[{BVMEC[theta,phi,Floor[iradius]], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
-      figVMEC[[j]]  = ParametricPlot3D[VMECNposvecpsi[theta, phi], {theta, 0, 2*pi}, {phi, phimin[[j]], phimax[[j]]}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Opacity[0.3+0.7*j/nsurfaces], Specularity[White, 20]], PlotPoints -> plotPointsFig, MaxRecursion -> maxRecursPlot,
+      figVMEC[[j]]  = ParametricPlot3D[VMECNposvecpsi[theta, phi], {theta, 0, 2*pi}, {phi, phimin[[j]], phimax[[j]]}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Opacity[0.3+0.7*j/nsurfaces], Specularity[White, 20]], PlotPoints -> {25, plotPointsFig}, MaxRecursion -> maxRecursPlot,
           ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", {minB0VMEC, maxB0VMEC}}][(BVMEC[#4,#5,Floor[iradius]])] &)];
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       ,
@@ -36,7 +36,7 @@ If[muDefined==0 && plotOriginal==1,
       maxB0 = FindMaxValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
-      figVMEC[[j]]  = ParametricPlot3D[VMECNposvecpsi[theta, phi], {theta, 0, 2*pi}, {phi, phimin[[j]], phimax[[j]]}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Opacity[0.3+0.7*j/nsurfaces], Specularity[White, 20]], PlotPoints -> plotPointsFig, MaxRecursion -> maxRecursPlot,
+      figVMEC[[j]]  = ParametricPlot3D[VMECNposvecpsi[theta, phi], {theta, 0, 2*pi}, {phi, phimin[[j]], phimax[[j]]}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Opacity[0.3+0.7*j/nsurfaces], Specularity[White, 20]], PlotPoints -> {25, plotPointsFig}, MaxRecursion -> maxRecursPlot,
           ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", { minB0, maxB0}}][(BFunc[#4,#5])] &)];
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
     ];
@@ -59,17 +59,17 @@ j=0;Table[j=j+1;
   Nposvecpsi[theta_, phi_] = Table[Nposvecpsitemp[[i]][theta, phi], {i, 1, 3}];
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   If[muDefined==0,rhoPlot[theta_, phi_]=rho[theta, phi]/.fitParams[Floor[iradius]]/.PSI->vmecPSI[[Floor[iradius]]],rhoPlot[theta_, phi_]=rho[theta, phi]];
-  BFunc[theta_, phi_]=1 + rhoPlot[theta, phi]*Cos[theta]*curvVMEC[phi];
+  BFunc[theta_, phi_]=(1 + rhoPlot[theta, phi]*Cos[theta]*curvVMEC[phi])*(B0VMEC/.fitParams[Floor[iradius]]);
   timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
   bfitFig[[j]]=DensityPlot[BFunc[thetaMercierFunc[theta,phi], phiAxis[theta,phi]], {theta, 0, 2*pi}, {phi, 0, 2*pi}, FrameLabel -> {"Poloidal Angle \[Theta]", "Toroidal Angle \[Phi]"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotPoints -> 30, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> "B(\[Theta],\[Phi])"]];
-  Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_poloidalPlane_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>"_.pdf"], bfitFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+  Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>"_.pdf"], bfitFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
   minB0 = FindMinValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
   maxB0 = FindMaxValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
-  figFit[[j]]  = ParametricPlot3D[Nposvecpsi[theta, phi], {theta, 0, 2*pi}, {phi, phimin[[j]], phimax[[j]]}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Opacity[0.3+0.7*j/nsurfaces], Specularity[White, 20]], PlotPoints -> plotPointsFig, MaxRecursion -> maxRecursPlot,
+  figFit[[j]]  = ParametricPlot3D[Nposvecpsi[theta, phi], {theta, 0, 2*pi}, {phi, phimin[[j]], phimax[[j]]}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Opacity[0.3+0.7*j/nsurfaces], Specularity[White, 20]], PlotPoints -> {25, plotPointsFig}, MaxRecursion -> maxRecursPlot,
       ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", { minB0, maxB0}}][(BFunc[#4,#5])] &)];
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
 ,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];
@@ -100,8 +100,8 @@ If[muDefined==0,
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
       fig2[Floor[iradius]]=Show[{
-        ParametricPlot[Evaluate[{RBCFit[#,  theta, Floor[iradius]], ZBSFit[#,  theta, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->35, MaxRecursion->1, PlotStyle -> Dashed]//Quiet, 
-        ParametricPlot[Evaluate[{RBCVMEC[theta, #, Floor[iradius]], ZBSVMEC[theta, #, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->35, MaxRecursion->1]//Quiet},
+        ParametricPlot[Evaluate[{RBCFit[#,  theta, Floor[iradius]], ZBSFit[#,  theta, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->40, MaxRecursion->1, PlotStyle -> Dashed]//Quiet, 
+        ParametricPlot[Evaluate[{RBCVMEC[theta, #, Floor[iradius]], ZBSVMEC[theta, #, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->40, MaxRecursion->1]//Quiet},
       PlotRange -> All, PlotOptions, FrameLabel -> {"R [meters]", "Z [meters]"}];
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
@@ -113,8 +113,8 @@ If[muDefined==0,
     WriteString[$Output, "    Plotting Comparison at Different Poloidal Planes..."];timestart = AbsoluteTime[];
     j=0;Table[j=j+1;
       fig2=Show[{
-        ParametricPlot[Evaluate[{RBCFit[phi,  theta, #], ZBSFit[phi,  theta, #]} & /@ Table[iradius, {iradius, 1, nsurfaces}][[1 ;; nsurfaces]]], {theta, 0, 2*pi}, PlotPoints->30, MaxRecursion->1, PlotStyle -> Dashed]//Quiet, 
-        ParametricPlot[Evaluate[{RBCVMEC[theta, phi, #], ZBSVMEC[theta, phi, #]} & /@ Table[iradius, {iradius, 1, nsurfaces}][[1 ;; nsurfaces]]], {theta, 0, 2*pi}, PlotPoints->30, MaxRecursion->1]//Quiet},
+        ParametricPlot[Evaluate[{RBCFit[phi,  theta, #], ZBSFit[phi,  theta, #]} & /@ Table[iradius, {iradius, 1, nsurfaces}][[1 ;; nsurfaces]]], {theta, 0, 2*pi}, PlotPoints->40, MaxRecursion->1, PlotStyle -> Dashed]//Quiet, 
+        ParametricPlot[Evaluate[{RBCVMEC[theta, phi, #], ZBSVMEC[theta, phi, #]} & /@ Table[iradius, {iradius, 1, nsurfaces}][[1 ;; nsurfaces]]], {theta, 0, 2*pi}, PlotPoints->40, MaxRecursion->1]//Quiet},
         PlotRange -> All, PlotOptions, FrameLabel -> {"R [meters]", "Z [meters]"}];
       Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_"<>ToString[j]<>"_ordern_"<>ToString[ordern]<>".pdf"],fig2, "AllowRasterization" -> True];
     ,{phi, 0, 2*pi/vmecNFP*(1 - 1/nPlots), 2*pi/nPlots/vmecNFP}];

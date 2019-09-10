@@ -40,9 +40,13 @@ nPlotPhi       = ToExpression[$ScriptCommandLine[[28]]];
 plotPointsFig  = ToExpression[$ScriptCommandLine[[29]]];
 maxRecursPlot  = ToExpression[$ScriptCommandLine[[30]]];
 ImageSizePlot  = ToExpression[$ScriptCommandLine[[31]]];
-ImageResolutionPlot = ToExpression[$ScriptCommandLine[[32]]];
+ImageResolutionPlot  = ToExpression[$ScriptCommandLine[[32]]];
 nfigsSurf      = ToExpression[$ScriptCommandLine[[33]]];
 nPlots         = ToExpression[$ScriptCommandLine[[34]]];
+plotRegcoilFit = ToExpression[$ScriptCommandLine[[35]]];
+plotRegcoilOriginal  = ToExpression[$ScriptCommandLine[[36]]];
+coilsPerHalfPeriod   = ToExpression[$ScriptCommandLine[[37]]];
+numHalfPeriodsToPlot = ToExpression[$ScriptCommandLine[[38]]];
 
 pi = N[Pi,10];
 
@@ -113,7 +117,7 @@ If[muDefined==0,
 
 (*Compute Iota on Axis from Expression of Near-Axis Expansion*)
 timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing total rotation angle N of the normal vector..."];
-quadrant = 0; nNormal = 0; diffQuadrant = 0; qnew=0;
+quadrant = 0; nNormal = 0; diffQuadrant = 0; qnew=0; printv = "";nl = "\n";
 Table[
   normalx = k0VMEC[t][[1]]*Cos[t] + k0VMEC[t][[2]]*Sin[t];
   normaly = k0VMEC[t][[3]];
@@ -123,10 +127,12 @@ Table[
 , {t, 0, 2*pi, 2*pi/vmecNFP/15}];
 WriteString[$Output, " N="<>ToString[nNormal]<>" Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 If[muDefined==1,
+  printv = printv <> "Iota From Near-Axis Formula" <> nl;
   iota1 = GaussLegendreQuadrature[(D[delta[phi], phi] - torsVMEC[phi]) Sqrt[1 - (mu[phi])^2], {phi, 0, 2*pi}, 70, 20]/(2*pi);
   iota2 = (delta[2*pi] - delta[0])/(2*pi);
   iotaFit = iota1 - iota2 - nNormal;
   Print["  Iota from near-axis formula: "<>ToString[iotaFit]];
+  printv = printv <> ToString[iotaFit] <> nl;
   ,
   iotaFit=ParallelTable[
     iota1 = GaussLegendreQuadrature[(D[deltaVMEC /. fitParams[iradius], phi] - torsVMEC[phi]) Sqrt[1 - (muVMEC /. fitParams[iradius])^2], {phi, 0, 2*pi}, 70, 20]/(2*pi);
@@ -135,10 +141,18 @@ If[muDefined==1,
   {iradius,1,nsurfaces}];
   If[FileExistsQ[vmecOutput],
     Print["  Iota from VMEC: "<>ToString[iotaAxisOut]<>", Iota from near-axis: "<>ToString[iotaFit]];
+    printv = printv <> "Iota From Near-Axis Formula" <> nl;
+    printv = printv <> ToString[iotaFit] <> nl;
+    printv = printv <> "Iota From VMEC" <> nl;
+    printv = printv <> ToString[iotaAxisOut] <> nl;
     ,
     Print["  Iota from near-axis formula: "<>ToString[iotaFit]];
+    printv = printv <> "Iota From Near-Axis Formula" <> nl;
+    printv = printv <> ToString[iotaFit] <> nl;
   ]
 ];
+fitFile = OpenAppend[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_parameters_ordern_"<>ToString[ordern]<>".txt"]];
+WriteString[fitFile, printv];Close[fitFile];
 
 (*Plot Obtained Surfaces*)
 If[plotFit==1 || plotOriginal==1,
@@ -154,5 +168,6 @@ If[outputToVMEC == 1,
    WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 ]
 
+(*Finish Evaluation*)
 WriteString[$Output,"  SENAC Mathematica took "<>ToString[AbsoluteTime[]-overallTimeStart]<>"s\n"]
 CloseKernels[];

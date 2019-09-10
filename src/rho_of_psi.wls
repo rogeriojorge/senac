@@ -8,8 +8,8 @@ psin[theta_, phi_, 1] = 0;
 rhon[theta_, phi_, 0] = 0;
 
 (*Expression for rho of psi*)
-psiSeries[rhoo_, theta_, phi_, orderN_] = Sum[psin[theta, phi, n] rhoo^n, {n, 0, orderN}];
-rhoSeries[psii_, theta_, phi_, orderN_] = Sum[rhon[theta, phi, n] psii^(n/2), {n, 0, orderN - 1}];
+psiSeries[rhoo_, theta_, phi_, orderN_] = Sum[psin[theta, phi, n]*rhoo^n, {n, 0, orderN}];
+rhoSeries[psii_, theta_, phi_, orderN_] = Sum[rhon[theta, phi, n]*psii^(n/2), {n, 0, orderN - 1}];
 rho[theta_, phi_] = rhoSeries[psii, theta, phi, ordern] /. 
   Solve[CoefficientList[Assuming[{rhoo > 0, psii > 0}, 
     Normal[Series[
@@ -22,9 +22,9 @@ rho[theta_, phi_] = rho[theta, phi][[positiveRhoPos]]/.psii->PSI;
 (*Order n psi*)
 Table[psin[theta_, phi_, n] = 
   Sum[If[EvenQ[n], 
-    psic[n, 2 i] Cos[2 i*(theta + deltaVMEC)] + psis[n, 2 i] Sin[2 i*(theta + deltaVMEC)], 
-    psic[n, 2 i + 1] Cos[(2 i + 1)*(theta + deltaVMEC)] + psis[n, 2 i + 1] Sin[(2 i + 1)*(theta + deltaVMEC)]]
-    ,{i, 0, Floor[n/2]}], {n, 0, ordern}];
+    (psic[n, 2 i, 0]+Sum[psic[n, 2 i, 2*j]*Cos[vmecNFP*j*phi]+psic[n, 2 i, 2*j-1]*Sin[vmecNFP*j*phi], {j, 1, nModes}])*Cos[2 i*(theta + deltaVMEC)] + (psis[n, 2 i, 0]+Sum[psis[n, 2 i, 2*j]*Cos[vmecNFP*j*phi]+psis[n, 2 i, 2*j-1]*Sin[vmecNFP*j*phi], {j, 1, nModes}])*Sin[2 i*(theta + deltaVMEC)], 
+    (psic[n, 2 i+1, 0]+Sum[psic[n, 2 i+1, 2*j]*Cos[vmecNFP*j*phi]+psic[n, 2 i+1, 2*j-1]*Sin[vmecNFP*j*phi], {j, 1, nModes}])*Cos[(2 i + 1)*(theta + deltaVMEC)] + (psis[n, 2 i+1, 0]+Sum[psis[n, 2 i+1, 2*j]*Cos[vmecNFP*j*phi]+psis[n, 2 i+1, 2*j-1]*Sin[vmecNFP*j*phi], {j, 1, nModes}])*Sin[(2 i + 1)*(theta + deltaVMEC)]]
+  ,{i, 0, Floor[n/2]}], {n, 0, ordern}];
 
 (*Order 0 and 1 are zero*)
 psin[theta_, phi_, 0] = 0; 
