@@ -3,8 +3,8 @@
 (*Plotting Options*)
 nfigsSurf=Min[nfigsSurf,nsurfaces];
 PlotOptions = Flatten[{LabelStyle -> Directive[FontFamily -> "Latin Modern Roman", FontSize -> 30], ImageSize -> ImageSizePlot, Frame -> True, AspectRatio -> 1}];
-phimax = Table[phi + 2*pi (1 - (nfigsSurf - 1)/nfigsSurf/vmecNFP), {phi, 2*pi/vmecNFP (1 - 1/nfigsSurf), 0, -2*pi/nfigsSurf/vmecNFP/2.4}]-0.0;
-phimin = Table[phi, {phi, 0, 2*pi/vmecNFP (1 - 1/nfigsSurf), 2*pi/nfigsSurf/vmecNFP/2.4}]+0.0;
+phimax = Table[phi + 2*pi (1 - (nfigsSurf - 1)/nfigsSurf/vmecNFP), {phi, 2*pi/vmecNFP (1 - 1/nfigsSurf), 0, -2*pi/nfigsSurf/vmecNFP/2.5}]-0.0;
+phimin = Table[phi, {phi, 0, 2*pi/vmecNFP (1 - 1/nfigsSurf), 2*pi/nfigsSurf/vmecNFP/2.5}]+0.0;
 
 (*Plot Original Surface*)
 If[muDefined==0 && plotOriginal==1,

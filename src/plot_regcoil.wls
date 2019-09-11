@@ -91,8 +91,8 @@ Table[
   plasmaposTemp[theta_, phi_] = plasmaposTemp[theta, phi] + {rmncplasma[[im]]*Cos[angle[theta, phi]]*Cos[phi], rmncplasma[[im]]*Cos[angle[theta, phi]]*Sin[phi], zmnsplasma[[im]]*Sin[angle[theta, phi]]};
 , {im, 1, Length[xmplasma]}];
 
-If[Dimensions[Position[rmnccoil, _?(10^(-13) < # < 10^(-9) &)]][[1]] > 6 && NumberQ[Position[rmnccoil, _?(10^(-13) < # < 10^(-9) &)][[1, 1]]], 
-  imMax = Position[rmnccoil, _?(10^(-13) < # < 10^(-9) &)][[7, 1]], 
+If[Dimensions[Position[rmnccoil, _?(10^(-13) < # < 10^(-8) &)]][[1]] > 5 && NumberQ[Position[rmnccoil, _?(10^(-13) < # < 10^(-8) &)][[1, 1]]], 
+  imMax = Position[rmnccoil, _?(10^(-13) < # < 10^(-8) &)][[6, 1]], 
   imMax = Length[rmnccoil]
 ]//Quiet;
 

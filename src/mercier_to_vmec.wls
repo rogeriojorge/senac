@@ -1,11 +1,15 @@
 (* ::Package:: *)
 
-RBCtoVMEC[theta_, phi_, mm_, nn_] = (Cos[phi]*FluxSurfacenFitVMEC[theta, phi, nsurfaces][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phi, nsurfaces][[2]])*Cos[mm*theta - vmecNFP*nn*phi];
-ZBStoVMEC[theta_, phi_, mm_, nn_] = FluxSurfacenFitVMEC[theta, phi, nsurfaces][[3]]*Sin[mm*theta - vmecNFP*nn*phi];
+timestart = AbsoluteTime[]; WriteString[$Output, "    Creating RBC and ZBS interpolation functions... "];
+RBCtoVMECTable=ParallelTable[{{theta, phi}, Cos[phi]*FluxSurfacenFitVMEC[theta, phi, nsurfaces][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phi, nsurfaces][[2]]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.5}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.5}];
+ZBStoVMECTable=ParallelTable[{{theta, phi}, FluxSurfacenFitVMEC[theta, phi, nsurfaces][[3]]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.2}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.2}];
+RBCtoVMECInterp=Interpolation[Flatten[RBCtoVMECTable, 1], Method -> "Spline", InterpolationOrder -> 3];
+ZBStoVMECInterp=Interpolation[Flatten[ZBStoVMECTable, 1], Method -> "Spline", InterpolationOrder -> 3];
+WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s."];
 
-timestart = AbsoluteTime[]; WriteString[$Output, "    RBCmn Evaluation... "];
+timestart = AbsoluteTime[]; WriteString[$Output, "\n    RBCmn Evaluation... "];
 RBCmn = Quiet[Table[
-  rbstemp = Interpolation[Flatten[ParallelTable[{{theta, phi}, RBCtoVMEC[theta, phi, mm, nn]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.1}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.1}], 1], Method -> "Spline", InterpolationOrder -> 3];
+  rbstemp[theta_,phi_] = RBCtoVMECInterp[theta,phi]*Cos[mm*theta - vmecNFP*nn*phi];(*Interpolation[Flatten[ParallelTable[{{theta, phi}, RBCtoVMEC[theta, phi, mm, nn]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.1}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.1}], 1], Method -> "Spline", InterpolationOrder -> 3];*)
   GaussLegendreQuadrature[GaussLegendreQuadrature[
   rbstemp[theta, phi], {phi, 0, 2*pi}, maxRecursPhi, 10], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 4*pi^2, 2*pi^2],
 {mm, 0, maxm}, {nn, -maxn, maxn}]];
@@ -13,7 +17,7 @@ WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s."]
 
 timestart = AbsoluteTime[]; WriteString[$Output, "\n    ZBSmn Evaluation... "];
 ZBSmn = Quiet[Table[
-  zbstemp = Interpolation[Flatten[ParallelTable[{{theta, phi}, ZBStoVMEC[theta, phi, mm, nn]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.1}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.1}], 1], Method -> "Spline", InterpolationOrder -> 3];
+  zbstemp[theta_,phi_] = ZBStoVMECInterp[theta,phi]*Sin[mm*theta - vmecNFP*nn*phi];(*Interpolation[Flatten[ParallelTable[{{theta, phi}, ZBStoVMEC[theta, phi, mm, nn]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.1}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.1}], 1], Method -> "Spline", InterpolationOrder -> 3];*)
   GaussLegendreQuadrature[GaussLegendreQuadrature[
   zbstemp[theta, phi], {phi, 0, 2*pi}, maxRecursPhi, 10], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 1, 2*pi^2],
 {mm, 0, maxm}, {nn, -maxn, maxn}]];
