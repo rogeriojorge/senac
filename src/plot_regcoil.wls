@@ -15,10 +15,14 @@ ordern         = ToExpression[$ScriptCommandLine[[3]]];
 nModes         = ToExpression[$ScriptCommandLine[[4]]];
 ImageSizePlot  = ToExpression[$ScriptCommandLine[[5]]];
 ImageResolutionPlot  = ToExpression[$ScriptCommandLine[[6]]];
-nPlots         = ToExpression[$ScriptCommandLine[[7]]];
-coilsPerHalfPeriod   = ToExpression[$ScriptCommandLine[[8]]];
-numHalfPeriodsToPlot = ToExpression[$ScriptCommandLine[[9]]];
-plotRegcoilSENAC     = ToExpression[$ScriptCommandLine[[10]]];
+coilsPerHalfPeriod   = ToExpression[$ScriptCommandLine[[7]]];
+numHalfPeriodsToPlot = ToExpression[$ScriptCommandLine[[8]]];
+plotRegcoilSENAC     = ToExpression[$ScriptCommandLine[[9]]];
+npointsContourPlot = ToExpression[$ScriptCommandLine[[10]]];
+npointsInterpolationCoilPos = ToExpression[$ScriptCommandLine[[11]]];
+interpolationOrderCoilPos = ToExpression[$ScriptCommandLine[[12]]];
+plotPointsFig = ToExpression[$ScriptCommandLine[[13]]];
+maxRecursPlot = ToExpression[$ScriptCommandLine[[14]]];
 
 pi = N[Pi,10];
 
@@ -72,59 +76,63 @@ minCurr = FindMinValue[{currentpotential[theta, phi], 0 <= theta <= 2*pi && 0 <=
 maxCurr = FindMaxValue[{currentpotential[theta, phi], 0 <= theta <= 2*pi && 0 <= phi <= 2*pi}, {theta, phi}];
 coilContours = (ParallelTable[(
   Interpolation[
-    ContourPlot[currentpotential[theta, phi] == i, {theta, 0, 2*pi}, {phi, 0, 2*pi}, PlotPoints -> 40, MaxRecursion -> 1][[1, 1, 1]],
+    ContourPlot[currentpotential[theta, phi] == i, {theta, 0, 2*pi}, {phi, 0, 2*pi}, PlotPoints -> npointsContourPlot, MaxRecursion -> 1][[1, 1, 1]],
    Method -> "Spline", InterpolationOrder -> 2])
   // Quiet, {i, minCurr, maxCurr, (maxCurr - minCurr)/(coilsPerHalfPeriod*2*nfpcoil + 1)}] // Quiet)[[2 ;; coilsPerHalfPeriod*2*nfpcoil + 1]] // Quiet;
+
+If[!NumberQ[coilContours[[1]][1]],
+  WriteString[$Output, "    Disconnected contours, closing.\n"];
+  CloseKernels[];Exit[];
+]
 
 plasmaposTemp[theta_, phi_] = {0, 0, 0};
 Table[
   angle[theta_, phi_] = xmplasma[[im]]*theta - xnplasma[[im]]*phi;
   plasmaposTemp[theta_, phi_] = plasmaposTemp[theta, phi] + {rmncplasma[[im]]*Cos[angle[theta, phi]]*Cos[phi], rmncplasma[[im]]*Cos[angle[theta, phi]]*Sin[phi], zmnsplasma[[im]]*Sin[angle[theta, phi]]};
-  , {im, 1, Length[xmplasma]}];
+, {im, 1, Length[xmplasma]}];
 
-If[Dimensions[Position[rmnccoil, _?(10^(-10) < # < 10^(-7) &)]][[1]] > 2 && NumberQ[Position[rmnccoil, _?(10^(-10) < # < 10^(-7) &)][[1, 1]]], 
-  imMax = Position[rmnccoil, _?(10^(-10) < # < 10^(-7) &)][[3, 1]], 
+If[Dimensions[Position[rmnccoil, _?(10^(-13) < # < 10^(-9) &)]][[1]] > 6 && NumberQ[Position[rmnccoil, _?(10^(-13) < # < 10^(-9) &)][[1, 1]]], 
+  imMax = Position[rmnccoil, _?(10^(-13) < # < 10^(-9) &)][[7, 1]], 
   imMax = Length[rmnccoil]
 ]//Quiet;
-WSposTemp[theta_, phi_] = {0, 0, 0};
-Table[coilposTemp[theta_, j] = {0, 0, 0}, {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
-Table[
-  angle[theta_, phi_] = xmcoil[[im]]*theta - xncoil[[im]]*phi;
-  WSposTemp[theta_, phi_] = WSposTemp[theta, phi] + {rmnccoil[[im]]*Cos[angle[theta, phi]]*Cos[phi], rmnccoil[[im]]*Cos[angle[theta, phi]]*Sin[phi], zmnscoil[[im]]*Sin[angle[theta, phi]]};
-  Table[
-   angle2[theta_] = coilContours[[j]][theta];
-   anglec[theta_] = xmcoil[[im]]*theta - xncoil[[im]]*angle2[theta];
-   coilposTemp[theta_, j] = coilposTemp[ theta, j] + {rmnccoil[[im]]*Cos[anglec[theta]]*Cos[angle2[theta]], rmnccoil[[im]]*Cos[anglec[theta]]*Sin[angle2[theta]], zmnscoil[[im]]*Sin[anglec[theta]]};
-   , {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
-  , {im, 1, imMax}];
 
-plasmapos[theta_, phi_] = Chop[plasmaposTemp[theta, phi], 10^-5]; 
-WSpos[theta_, phi_] = Chop[WSposTemp[theta, phi], 10^-5];
-Table[coilpos[theta_, j] = Chop[coilposTemp[theta, j], 10^-5], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
-
-npointsCoilPos = 70;
+WSposTemp[theta_, phi_] = ParallelSum[
+   angle[theta_, phi_] = xmcoil[[im]]*theta - xncoil[[im]]*phi;
+   {rmnccoil[[im]]*Cos[angle[theta, phi]]*Cos[phi], rmnccoil[[im]]*Cos[angle[theta, phi]]*Sin[phi], zmnscoil[[im]]*Sin[angle[theta, phi]]}
+, {im, 1, imMax}];
 Table[
-  coilposTable = Table[{{theta, coilposTemp[theta, j][[1]]}, {theta, coilpos[theta, j][[2]]}, {theta, coilpos[theta, j][[3]]}}, {theta, 0, 2*pi, 2*pi/npointsCoilPos}];
-  coilposInterp = {Interpolation[coilposTable[[All, 1]], Method -> "Spline", InterpolationOrder -> 2], Interpolation[coilposTable[[All, 2]], Method -> "Spline", InterpolationOrder -> 2], Interpolation[coilposTable[[All, 3]], Method -> "Spline", InterpolationOrder -> 2]};
+  coilposTemp[theta_, j] = ParallelSum[
+    angle2[theta_] = coilContours[[j]][theta];
+    anglec[theta_] = xmcoil[[im]]*theta - xncoil[[im]]*angle2[theta];
+    {rmnccoil[[im]]*Cos[anglec[theta]]*Cos[angle2[theta]], rmnccoil[[im]]*Cos[anglec[theta]]*Sin[angle2[theta]], zmnscoil[[im]]*Sin[anglec[theta]]}
+    , {im, 1, imMax}]
+, {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
+
+plasmapos[theta_, phi_] = Chop[plasmaposTemp[theta, phi], 10^-7]; 
+WSpos[theta_, phi_] = Chop[WSposTemp[theta, phi], 10^-7];
+Table[coilpos[theta_, j] = Chop[coilposTemp[theta, j], 10^-7], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
+
+Table[
+  coilposTable = Table[{{theta, coilposTemp[theta, j][[1]]}, {theta, coilpos[theta, j][[2]]}, {theta, coilpos[theta, j][[3]]}}, {theta, 0, 2*pi, 2*pi/npointsInterpolationCoilPos}];
+  coilposInterp = {Interpolation[coilposTable[[All, 1]], Method -> "Spline", InterpolationOrder -> interpolationOrderCoilPos], Interpolation[coilposTable[[All, 2]], Method -> "Spline", InterpolationOrder -> interpolationOrderCoilPos], Interpolation[coilposTable[[All, 3]], Method -> "Spline", InterpolationOrder -> interpolationOrderCoilPos]};
   coilposFunc[theta_, j] = {coilposInterp[[1]][theta], coilposInterp[[2]][theta], coilposInterp[[3]][theta]};
-  , {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
+, {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
 
 (*Surface of Constant Toroidal Flux*)
-plasmaPlot = ParametricPlot3D[plasmapos[theta, phi], {theta, 0, 2*pi}, {phi, 0, 2*pi}, PlotPoints -> {30, 50}, MaxRecursion -> 2, Mesh -> None, PlotStyle -> Directive[Opacity[0.8], Specularity[White, 20]]];
+plasmaPlot = ParametricPlot3D[plasmapos[theta, phi], {theta, 0, 2*pi}, {phi, 0, 2*pi}, PlotPoints -> {25, plotPointsFig}, MaxRecursion -> maxRecursPlot, Mesh -> None, PlotStyle -> Directive[Opacity[0.8], Specularity[White, 20]]];
 (*Plot of the Coils*)
 coilsPlot = Show[Table[ParametricPlot3D[coilposFunc[theta, j], {theta, 0, 2*pi}, PlotPoints -> 70, MaxRecursion -> 2, PlotStyle -> {Thickness[0.004], RGBColor[56/255, 122/255, 213/255], Directive[Opacity[1.0], Specularity[White, 20]]}], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}]];
 (*Winding Surface*)
-(*windingPlot=ParametricPlot3D[WSpos[theta,phi],{theta,0,2*pi},{phi,0,2*pi},PlotPoints->{15,50},MaxRecursion->1,Mesh->None,PlotStyle->Directive[LightBlue,Opacity[0.3]]];*)
+(*windingPlot=ParametricPlot3D[WSpos[theta,phi],{theta,0,2*pi},{phi,0,2*pi},PlotPoints->{25,plotPointsFig},MaxRecursion->1,Mesh->None,PlotStyle->Directive[LightBlue,Opacity[0.3]]];*)
 fitRegcoil=Show[plasmaPlot,(*windingPlot,*)coilsPlot, Boxed -> False, Axes -> False];
-
 If[plotRegcoilSENAC==1,
   Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Original.pdf"], fitRegcoil, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
   ,
-  Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Fit_ordern"<>ToString[ordern]<>"_nmodes"<>ToString[nmodes]".pdf"], fitRegcoil, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+  Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Fit_ordern",ToString[ordern],"_nmodes",ToString[nModes],".pdf"], fitRegcoil, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
 ];
 
 (*Finish Evaluation*)
-WriteString[$Output,"  SENAC Mathematica took "<>ToString[AbsoluteTime[]-overallTimeStart]<>"s\n"]
+WriteString[$Output,"  SENAC plot REGCOIL took "<>ToString[AbsoluteTime[]-overallTimeStart]<>"s\n"]
 CloseKernels[];
 
 (*Along Normal and Binormal Directions*)

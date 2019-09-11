@@ -41,12 +41,12 @@ plotPointsFig  = ToExpression[$ScriptCommandLine[[29]]];
 maxRecursPlot  = ToExpression[$ScriptCommandLine[[30]]];
 ImageSizePlot  = ToExpression[$ScriptCommandLine[[31]]];
 ImageResolutionPlot  = ToExpression[$ScriptCommandLine[[32]]];
-nfigsSurf      = ToExpression[$ScriptCommandLine[[33]]];
-nPlots         = ToExpression[$ScriptCommandLine[[34]]];
-plotRegcoilFit = ToExpression[$ScriptCommandLine[[35]]];
-plotRegcoilOriginal  = ToExpression[$ScriptCommandLine[[36]]];
-coilsPerHalfPeriod   = ToExpression[$ScriptCommandLine[[37]]];
-numHalfPeriodsToPlot = ToExpression[$ScriptCommandLine[[38]]];
+nfigsSurf            = ToExpression[$ScriptCommandLine[[33]]];
+nPlots               = ToExpression[$ScriptCommandLine[[34]]];
+nthetapointsBsurface = ToExpression[$ScriptCommandLine[[35]]];
+ntphipointsBsurface  = ToExpression[$ScriptCommandLine[[36]]];
+npointsPolPlots      = ToExpression[$ScriptCommandLine[[37]]];
+exportBFieldSurface  = ToExpression[$ScriptCommandLine[[38]]];
 
 pi = N[Pi,10];
 
