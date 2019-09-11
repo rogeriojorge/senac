@@ -51,7 +51,7 @@ Table[
     DeleteCases[Flatten[
       {modelVMEC, mucMin < muc[0] < mucMax, 0.2*B0Est<B0c[0], -pi <= deltac[0] <= pi,  deltalmin <= deltal <= deltalmax, 
       Flatten[
-        Table[{{-0.2*Min[Abs[mucMin],Abs[mucMax]] < muc[i] < 0.2*Min[Abs[mucMin],Abs[mucMax]]}, {-0.05*B0Est < B0c[i] < 0.05*B0Est}, {-0.6 < deltas[i] < 0.6}},{i,1,nModes}]
+        Table[{{-0.1*Min[Abs[mucMin],Abs[mucMax]] < muc[i] < 0.1*Min[Abs[mucMin],Abs[mucMax]]}, {-0.03*B0Est < B0c[i] < 0.03*B0Est}, {-0.6 < deltas[i] < 0.6}},{i,1,nModes}]
       ](*,
       If[ordern > 2, Flatten[
         Table[Table[If[EvenQ[n], {{-10<psic[n, 2 i]<10}, {-10<psis[n, 2 i]<10}}, {{-10<psic[n, 2 i + 1]<10}, {-10<psis[n, 2 i + 1]<10}}], {i,0, Floor[n/2]}], {n, 3, ordern}]

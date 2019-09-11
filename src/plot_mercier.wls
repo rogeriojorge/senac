@@ -19,7 +19,7 @@ If[muDefined==0 && plotOriginal==1,
     If[FileExistsQ[vmecOutput],
       If[exportBFieldSurface==1,
         timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
-        bvmecFig[[j]]=DensityPlot[BVMEC[theta, phi, Floor[iradius]], {theta, 0, 2*pi}, {phi, 0, 2*pi}, FrameLabel -> {"Poloidal Angle \[Theta]", "Toroidal Angle \[Phi]"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> 750, LegendLabel -> "B(\[Theta],\[Phi])"]];
+        bvmecFig[[j]]=DensityPlot[BVMEC[theta, phi, Floor[iradius]], {theta, 0, 2*pi}, {phi, 0, 2*pi}, FrameLabel -> {"Poloidal Angle \[Theta]", "Toroidal Angle \[Phi]"}, Evaluate@PlotOptions, MaxRecursion -> 2, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> 750, LegendLabel -> "B(\[Theta],\[Phi])"]];
         Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_VMEC_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_.pdf"], bvmecFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
         WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       ];
