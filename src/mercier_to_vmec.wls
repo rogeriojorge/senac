@@ -7,7 +7,7 @@ timestart = AbsoluteTime[]; WriteString[$Output, "    RBCmn Evaluation... "];
 RBCmn = Quiet[Table[
   rbstemp = Interpolation[Flatten[ParallelTable[{{theta, phi}, RBCtoVMEC[theta, phi, mm, nn]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.1}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.1}], 1], Method -> "Spline", InterpolationOrder -> 3];
   GaussLegendreQuadrature[GaussLegendreQuadrature[
-  rbstemp[theta, phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 4*pi^2, 2*pi^2],
+  rbstemp[theta, phi], {phi, 0, 2*pi}, maxRecursPhi, 10], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 4*pi^2, 2*pi^2],
 {mm, 0, maxm}, {nn, -maxn, maxn}]];
 WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s."];
 
@@ -15,7 +15,7 @@ timestart = AbsoluteTime[]; WriteString[$Output, "\n    ZBSmn Evaluation... "];
 ZBSmn = Quiet[Table[
   zbstemp = Interpolation[Flatten[ParallelTable[{{theta, phi}, ZBStoVMEC[theta, phi, mm, nn]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.1}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.1}], 1], Method -> "Spline", InterpolationOrder -> 3];
   GaussLegendreQuadrature[GaussLegendreQuadrature[
-  zbstemp[theta, phi], {phi, 0, 2*pi}, maxRecursPhi, 20], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 1, 2*pi^2],
+  zbstemp[theta, phi], {phi, 0, 2*pi}, maxRecursPhi, 10], {theta, 0, 2*pi}, maxRecursTheta, 10]/If[mm == 0 && nn == 0, 1, 2*pi^2],
 {mm, 0, maxm}, {nn, -maxn, maxn}]];
 WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s.\n"];
 
@@ -54,7 +54,7 @@ Do[If[m == 0 && n < 0 || Chop[RBCmn[[m + 1, n + maxn + 1]], 10^-8] == 0 && Chop[
 ];
 printv = printv <> "/" <> nl;
 
-CopyFile[vmecInput,StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_SENACtoVMEC_input.txt"], OverwriteTarget -> True];
-newVMECfile = OpenAppend[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_SENACtoVMEC_input.txt"]];
+CopyFile[vmecInput,StringJoin[currentPath,"data/",ToString[proj],"/input.",ToString[proj],"_SENACtoVMEC_ordern",ToString[ordern],"_nmodes",ToString[nModes],".txt"], OverwriteTarget -> True];
+newVMECfile = OpenAppend[StringJoin[currentPath,"data/",ToString[proj],"/input.",ToString[proj],"_SENACtoVMEC_ordern",ToString[ordern],"_nmodes",ToString[nModes],".txt"]];
 WriteString[newVMECfile, printv];
 Close[newVMECfile];

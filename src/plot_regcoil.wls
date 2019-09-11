@@ -28,7 +28,7 @@ pi = N[Pi,10];
 
 (*Plot Regcoil Results*)
 regcoilOriginalFile = StringJoin[currentPath,"../vmec/",ToString[proj],"/regcoil_out_",ToString[proj],".nc"];
-regcoilFitFile = StringJoin[currentPath,"../data/",ToString[proj],"/regcoil_out_",ToString[proj],"_senac_ordern",ToString[ordern],".nc"];
+regcoilFitFile = StringJoin[currentPath,"../data/",ToString[proj],"/regcoil_out_",ToString[proj],"_senac_ordern",ToString[ordern],"_nmodes",ToString[nModes],".nc"];
 
 If[plotRegcoilSENAC==1,
   If[FileExistsQ[regcoilOriginalFile],
