@@ -57,7 +57,8 @@ GaussLegendreQuadrature[f_, {x_, a_, b_}, n_Integer: 10, prec_: MachinePrecision
 
 If[readFit==1,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Reading Fit From Text File...\n"];
-  Get[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_functions.mx"]];
+  (*Get[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_functions.mx"]];*)
+  (*Read from output file for VMEC*)
   WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 ];
 
@@ -80,19 +81,31 @@ If[FileExistsQ[vmecOutput],
 
 (*VMEC Axis Frenet-Serret Frame*)
 timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing VMEC's Frenet-Serret Frame and Surfaces..."]; Off[Simplify::time];
-curvVMEC[t_] = Chop[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/Norm[closedcurvVMEC'[t]]^3, 10^-6]//Re;
-torsVMEC[t_] = Chop[Dot[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]], closedcurvVMEC'''[t]]/Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]^2, 10^-6];
-sprimeVMEC[t_] = Chop[Simplify[Chop[ComplexExpand[Norm[closedcurvVMEC'[t]]], 10^-6], TimeConstraint -> 0.01], 10^-6];
-b0VMEC[t_] = Simplify[Chop[closedcurvVMEC'[t]/sprimeVMEC[t], 10^-6], TimeConstraint -> 0.01];
-k0VMEC[t_] = Simplify[Chop[b0VMEC'[t]/sprimeVMEC[t], 10^-6], TimeConstraint -> 0.01]/curvVMEC[t]//Re;
-t0VMEC[t_] = Chop[Cross[b0VMEC[t], k0VMEC[t]], 10^-6]//Re;
+curvVMEC[t_] = Chop[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/Norm[closedcurvVMEC'[t]]^3, 10^-7]//Re;
+torsVMEC[t_] = Chop[Dot[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]], closedcurvVMEC'''[t]]/Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]^2, 10^-7];
+sprimeVMEC[t_] = Chop[Simplify[Chop[ComplexExpand[Norm[closedcurvVMEC'[t]]], 10^-7], TimeConstraint -> 0.01], 10^-7];
+b0VMEC[t_] = Simplify[Chop[closedcurvVMEC'[t]/sprimeVMEC[t], 10^-7], TimeConstraint -> 0.01];
+k0VMEC[t_] = Simplify[Chop[b0VMEC'[t]/sprimeVMEC[t], 10^-7], TimeConstraint -> 0.01]/curvVMEC[t]//Re;
+t0VMEC[t_] = Chop[Cross[b0VMEC[t], k0VMEC[t]], 10^-7]//Re;
 (*VMEC Flux Surface*)
 If[muDefined==0,
   Table[
-    FluxSurfaceVMEC[theta_, phi_, iradius] = Simplify[Chop[{RBCVMEC[theta, phi, iradius]*Cos[phi], RBCVMEC[theta, phi, iradius]*Sin[phi], ZBSVMEC[theta, phi, iradius]}, 10^-6], TimeConstraint -> 0.01]//Re//Quiet;
+    FluxSurfaceVMEC[theta_, phi_, iradius] = Simplify[Chop[{RBCVMEC[theta, phi, iradius]*Cos[phi], RBCVMEC[theta, phi, iradius]*Sin[phi], ZBSVMEC[theta, phi, iradius]}, 10^-7], TimeConstraint -> 0.01]//Re//Quiet;
   , {iradius,1,nsurfaces}];
 ]
 WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
+
+(*Compute the total rotation angle N of the normal Frenet-Serret vector*)
+timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing total rotation angle N of the normal vector..."];
+quadrant = 0; nNormal = 0; diffQuadrant = 0; qnew=0; printv = "";nl = "\n";
+Table[
+  normalx = k0VMEC[t][[1]]*Cos[t] + k0VMEC[t][[2]]*Sin[t];
+  normaly = k0VMEC[t][[3]];
+  If[Abs[normalx] > Abs[normaly],If[normalx > 0, qnew = 2, qnew = 4],If[normaly > 0, qnew = 1, qnew = 3]];
+  If[quadrant == 0,quadrant = qnew, diffQuadrant = qnew - quadrant;];
+  If[Abs[diffQuadrant] == 3, diffQuadrant = diffQuadrant/3];nNormal = nNormal + diffQuadrant/2; quadrant = qnew;
+, {t, 0, 2*pi, 2*pi/vmecNFP/15}];
+WriteString[$Output, " N="<>ToString[nNormal]<>" Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 
 (*Obtain Desired Surface in Mercier's Coordinates*)
 If[muDefined==0,
@@ -108,36 +121,22 @@ If[muDefined==0,
   ];
   ,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Constructing Mercier's theta and rho..."];
-  rho[theta_, phi_] = Sqrt[(vmecPSI[[nsurfaces]]*Sqrt[1 - mu[phi]^2] )/(2*(B0[phi]) (1 + mu[phi]*Cos[2 (theta + delta[phi])]))];
-  FluxSurfacenFitVMEC[theta_, s_, 1] = Chop[closedcurvVMEC[s] + (rho[theta, s]) (Cos[theta] k0VMEC[s] + Sin[theta] t0VMEC[s]), 10^-6]//Quiet;
+  rho[theta_, phi_] = Sqrt[(vmecPSI[[nsurfaces]]*Sqrt[1 - mu[phi]^2] )/(pi*(B0[phi]) (1 + mu[phi]*Cos[2 (theta + delta[phi])]))];
+  FluxSurfacenFitVMEC[theta_, s_, 1] = Chop[closedcurvVMEC[s] + (rho[theta, s]) (Cos[theta] k0VMEC[s] + Sin[theta] t0VMEC[s]), 10^-7]//Quiet;
 	RBCFit[phi_, theta_, 1] = Re[Cos[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[2]]]//Quiet;
 	ZBSFit[phi_, theta_, 1] = Re[FluxSurfacenFitVMEC[theta, phi, 1][[3]]]//Quiet;
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 ];
 
 (*Compute Iota on Axis from Expression of Near-Axis Expansion*)
-timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing total rotation angle N of the normal vector..."];
-quadrant = 0; nNormal = 0; diffQuadrant = 0; qnew=0; printv = "";nl = "\n";
-Table[
-  normalx = k0VMEC[t][[1]]*Cos[t] + k0VMEC[t][[2]]*Sin[t];
-  normaly = k0VMEC[t][[3]];
-  If[Abs[normalx] > Abs[normaly],If[normalx > 0, qnew = 2, qnew = 4],If[normaly > 0, qnew = 1, qnew = 3]];
-  If[quadrant == 0,quadrant = qnew, diffQuadrant = qnew - quadrant;];
-  If[Abs[diffQuadrant] == 3, diffQuadrant = diffQuadrant/3];nNormal = nNormal + diffQuadrant/2; quadrant = qnew;
-, {t, 0, 2*pi, 2*pi/vmecNFP/15}];
-WriteString[$Output, " N="<>ToString[nNormal]<>" Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 If[muDefined==1,
   printv = printv <> "Iota From Near-Axis Formula" <> nl;
-  iota1 = GaussLegendreQuadrature[(D[delta[phi], phi] - torsVMEC[phi]) Sqrt[1 - (mu[phi])^2], {phi, 0, 2*pi}, 70, 20]/(2*pi);
-  iota2 = (delta[2*pi] - delta[0])/(2*pi);
-  iotaFit = iota1 - iota2 - nNormal;
+  iotaFit = GaussLegendreQuadrature[(-D[delta[phi], phi] + torsVMEC[phi])*Sqrt[1 - (mu[phi])^2]+D[delta[phi], phi], {phi, 0, 2*pi}, 150, 20]/(2*pi)-nNormal;
   Print["  Iota from near-axis formula: "<>ToString[iotaFit]];
   printv = printv <> ToString[iotaFit] <> nl;
   ,
   iotaFit=ParallelTable[
-    iota1 = GaussLegendreQuadrature[(D[deltaVMEC /. fitParams[iradius], phi] - torsVMEC[phi]) Sqrt[1 - (muVMEC /. fitParams[iradius])^2], {phi, 0, 2*pi}, 70, 20]/(2*pi);
-    iota2 = (((deltaVMEC /. fitParams[iradius]) /. phi -> 2*pi) - ((deltaVMEC /. fitParams[iradius]) /. phi -> 0))/(2*pi);
-    iota2 - iota1 - nNormal,
+    GaussLegendreQuadrature[(-D[deltaVMEC /. fitParams[iradius], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (muVMEC /. fitParams[iradius])^2]+D[deltaVMEC /. fitParams[iradius], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal,
   {iradius,1,nsurfaces}];
   If[FileExistsQ[vmecOutput],
     Print["  Iota from VMEC: "<>ToString[iotaAxisOut]<>", Iota from near-axis: "<>ToString[iotaFit]];
@@ -159,15 +158,15 @@ If[plotFit==1 || plotOriginal==1,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Creating Figures...\n"];
   Get[StringJoin[currentPath,"src/plot_mercier.wls"]];
   WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
-]
+];
 
 (*Output VMEC file*)
 If[outputToVMEC == 1,
    timestart1 = AbsoluteTime[]; WriteString[$Output, "  Mercier to VMEC...\n"]
    Get[StringJoin[currentPath,"src/mercier_to_vmec.wls"]];
    WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
-]
+];
 
 (*Finish Evaluation*)
 WriteString[$Output,"  SENAC Mathematica took "<>ToString[AbsoluteTime[]-overallTimeStart]<>"s\n"]
-CloseKernels[];
+CloseKernels[];Exit[];

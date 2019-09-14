@@ -108,9 +108,9 @@ Table[
     , {im, 1, imMax}]
 , {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
 
-plasmapos[theta_, phi_] = Chop[plasmaposTemp[theta, phi], 10^-7]; 
-WSpos[theta_, phi_] = Chop[WSposTemp[theta, phi], 10^-7];
-Table[coilpos[theta_, j] = Chop[coilposTemp[theta, j], 10^-7], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
+plasmapos[theta_, phi_] = Chop[plasmaposTemp[theta, phi], 10^-8]; 
+WSpos[theta_, phi_] = Chop[WSposTemp[theta, phi], 10^-8];
+Table[coilpos[theta_, j] = Chop[coilposTemp[theta, j], 10^-8], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
 
 Table[
   coilposTable = Table[{{theta, coilposTemp[theta, j][[1]]}, {theta, coilpos[theta, j][[2]]}, {theta, coilpos[theta, j][[3]]}}, {theta, 0, 2*pi, 2*pi/npointsInterpolationCoilPos}];

@@ -34,4 +34,4 @@ psin[theta_, phi_, 1] = 0;
 muVMEC = muc[0] + Sum[muc[i]*Cos[vmecNFP i phi], {i, 1, nModes}];
 deltaVMEC = deltal*phi/2 + deltac[0] + Sum[deltas[i]*Sin[vmecNFP i phi], {i, 1, nModes}];
 B0VMEC = B0c[0] + Sum[B0c[i]*Cos[vmecNFP i phi], {i, 1, nModes}];
-psin[theta_, phi_, 2] = 2*(B0VMEC)*(1 + muVMEC*Cos[2*(theta + deltaVMEC)])/Sqrt[1 - (muVMEC)^2];
+psin[theta_, phi_, 2] = pi*(B0VMEC)*(1 + muVMEC*Cos[2*(theta + deltaVMEC)])/Sqrt[1 - (muVMEC)^2];

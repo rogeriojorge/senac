@@ -27,7 +27,7 @@ WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s.\n
 printv = "";nl = "\n";
 printv = printv <> " NFP = "<>ToString[vmecNFP];
 printv = printv <> nl;
-printv = printv <> " PHIEDGE = "<>ToString[vmecPSI[[nsurfaces]]];
+printv = printv <> " PHIEDGE = "<>ToString[DecimalForm[vmecPSI[[nsurfaces]]]];
 printv = printv <> nl;
 rbcs[n_, m_] := " RBC(" <> ToString[n] <> "," <> ToString[m] <> ")=";
 zbcs[n_, m_] := "  ZBS(" <> ToString[n] <> "," <> ToString[m] <> ")=";
