@@ -62,7 +62,7 @@ j=0;Table[j=j+1;
   Nposvecpsitemp = ParallelTable[ListInterpolation[posvecpsiTable[[i]], {{0, 2*pi}, {0, phimax[[j]]}}], {i, 1, 3}];
   Nposvecpsi[theta_, phi_] = Table[Nposvecpsitemp[[i]][theta, phi], {i, 1, 3}];
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
-  If[muDefined==0,rhoPlot[theta_, phi_]=rho[theta, phi]/.fitParams[Floor[iradius]]/.PSI->vmecPSI[[Floor[iradius]]],rhoPlot[theta_, phi_]=rho[theta, phi]];
+  If[muDefined==0,rhoPlot[theta_, phi_]=rho[-theta, phi]/.fitParams[Floor[iradius]]/.PSI->vmecPSI[[Floor[iradius]]],rhoPlot[theta_, phi_]=rho[theta, phi]];
   BFunc[theta_, phi_]=(1 + rhoPlot[theta, phi]*Cos[theta]*curvVMEC[phi])*(B0VMEC/.fitParams[Floor[iradius]]);
   If[exportBFieldSurface==1,
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];

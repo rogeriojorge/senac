@@ -48,9 +48,9 @@ Table[
 
   nlm = NonlinearModelFit[dataVMEC,
     DeleteCases[Flatten[
-      {modelVMEC, mucMin < muc[0] < mucMax, mucMin < (muVMEC/.phi->0) < mucMax, mucMin < (muVMEC/.phi->pi) < mucMax, 0.01<B0c[0], 0.01 < (B0VMEC/.phi->0), 0.01 < (B0VMEC/.phi->pi), -pi <= deltac[0] <= pi,  deltalmin <= deltal <= deltalmax, 
+      {modelVMEC, (*mucMin < muc[0] < mucMax,*) mucMin < (muVMEC/.phi->0) < mucMax, mucMin < (muVMEC/.phi->pi) < mucMax, 0.01<B0c[0], 0.01 < (B0VMEC/.phi->0), 0.01 < (B0VMEC/.phi->pi), -pi <= deltac[0] <= pi,  deltalmin <= deltal <= deltalmax, 
       Flatten[
-        Table[{{mucMin < muc[i] < mucMax}, {-B0Est < B0c[i] < B0Est}, {-pi < deltas[i] < pi}},{i,1,nModes}]
+        Table[{(*{mucMin < muc[i] < mucMax}, {-B0Est < B0c[i] < B0Est},*) {-pi < deltas[i] < pi}},{i,1,nModes}]
       ](*,(*Limit the values of psic and psis*)
       If[ordern > 2, Flatten[
         Table[Table[If[EvenQ[n], {{-10<psic[n, 2 i]<10}, {-10<psis[n, 2 i]<10}}, {{-10<psic[n, 2 i + 1]<10}, {-10<psis[n, 2 i + 1]<10}}], {i,0, Floor[n/2]}], {n, 3, ordern}]

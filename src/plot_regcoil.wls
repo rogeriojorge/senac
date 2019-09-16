@@ -23,6 +23,8 @@ npointsInterpolationCoilPos = ToExpression[$ScriptCommandLine[[11]]];
 interpolationOrderCoilPos = ToExpression[$ScriptCommandLine[[12]]];
 plotPointsFig = ToExpression[$ScriptCommandLine[[13]]];
 maxRecursPlot = ToExpression[$ScriptCommandLine[[14]]];
+coilthickness = ToExpression[$ScriptCommandLine[[15]]];
+plotpointsCoil = ToExpression[$ScriptCommandLine[[16]]];
 
 pi = N[Pi,10];
 
@@ -77,7 +79,7 @@ maxCurr = FindMaxValue[{currentpotential[theta, phi], 0 <= theta <= 2*pi && 0 <=
 coilContours = (ParallelTable[(
   Interpolation[
     ContourPlot[currentpotential[theta, phi] == i, {theta, 0, 2*pi}, {phi, 0, 2*pi}, PlotPoints -> npointsContourPlot, MaxRecursion -> 1][[1, 1, 1]],
-   Method -> "Spline", InterpolationOrder -> 2])
+   Method -> "Spline", InterpolationOrder -> interpolationOrderCoilPos])
   // Quiet, {i, minCurr, maxCurr, (maxCurr - minCurr)/(coilsPerHalfPeriod*2*nfpcoil + 1)}] // Quiet)[[2 ;; coilsPerHalfPeriod*2*nfpcoil + 1]] // Quiet;
 
 If[!NumberQ[coilContours[[1]][1]],
@@ -85,16 +87,21 @@ If[!NumberQ[coilContours[[1]][1]],
   CloseKernels[];Exit[];
 ]
 
-plasmaposTemp[theta_, phi_] = {0, 0, 0};
-Table[
-  angle[theta_, phi_] = xmplasma[[im]]*theta - xnplasma[[im]]*phi;
-  plasmaposTemp[theta_, phi_] = plasmaposTemp[theta, phi] + {rmncplasma[[im]]*Cos[angle[theta, phi]]*Cos[phi], rmncplasma[[im]]*Cos[angle[theta, phi]]*Sin[phi], zmnsplasma[[im]]*Sin[angle[theta, phi]]};
-, {im, 1, Length[xmplasma]}];
+If[Dimensions[Position[rmncplasma, _?(10^-13 < # < 10^-11 &)]][[1]] > 7 && NumberQ[Position[rmncplasma, _?(10^-13 < # < 10^-11 &)][[1, 1]]], 
+  imMaxP = Position[rmncplasma, _?(10^-13 < # < 10^-11 &)][[8, 1]], 
+  imMaxP = Length[rmncplasma]
+];
 
-If[Dimensions[Position[rmnccoil, _?(10^(-13) < # < 10^(-8) &)]][[1]] > 5 && NumberQ[Position[rmnccoil, _?(10^(-13) < # < 10^(-8) &)][[1, 1]]], 
-  imMax = Position[rmnccoil, _?(10^(-13) < # < 10^(-8) &)][[6, 1]], 
+plasmaposTemp[theta_, phi_]=ParallelSum[
+  angle[theta_, phi_] = xmplasma[[im]]*theta - xnplasma[[im]]*phi;
+  {rmncplasma[[im]]*Cos[angle[theta, phi]]*Cos[phi], rmncplasma[[im]]*Cos[angle[theta, phi]]*Sin[phi], zmnsplasma[[im]]*Sin[angle[theta, phi]]}
+, {im, 1, imMaxP}];
+
+If[Dimensions[Position[rmnccoil, _?(10^(-13) < # < 10^(-12) &)]][[1]] > 7 && NumberQ[Position[rmnccoil, _?(10^(-13) < # < 10^(-12) &)][[1, 1]]], 
+  imMax = Position[rmnccoil, _?(10^(-13) < # < 10^(-12) &)][[8, 1]], 
   imMax = Length[rmnccoil]
 ]//Quiet;
+If[imMax < 200 || Length[rmnccoil] > 200, imMax = 200];
 
 WSposTemp[theta_, phi_] = ParallelSum[
    angle[theta_, phi_] = xmcoil[[im]]*theta - xncoil[[im]]*phi;
@@ -119,53 +126,36 @@ Table[
 , {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
 
 (*Surface of Constant Toroidal Flux*)
-plasmaPlot = ParametricPlot3D[plasmapos[theta, phi], {theta, 0, 2*pi}, {phi, 0, 2*pi}, PlotPoints -> {25, plotPointsFig}, MaxRecursion -> maxRecursPlot, Mesh -> None, PlotStyle -> Directive[Opacity[0.8], Specularity[White, 20]]];
+plasmaPlot = ParametricPlot3D[plasmapos[theta, phi], {theta, 0, 2*pi}, {phi, 0, 2*pi}, PlotPoints -> {25, plotPointsFig}, MaxRecursion -> maxRecursPlot, Mesh -> None, PlotStyle -> Directive[Opacity[0.7], Specularity[White, 20]]];
 (*Plot of the Coils*)
-coilsPlot = Show[Table[ParametricPlot3D[coilposFunc[theta, j], {theta, 0, 2*pi}, PlotPoints -> 70, MaxRecursion -> 2, PlotStyle -> {Thickness[0.004], RGBColor[56/255, 122/255, 213/255], Directive[Opacity[1.0], Specularity[White, 20]]}], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}]];
+(*coilsPlot = Show[Table[ParametricPlot3D[coilposFunc[theta, j], {theta, 0, 2*pi}, PlotPoints -> 70, MaxRecursion -> 2, PlotStyle -> {Thickness[0.004], RGBColor[56/255, 122/255, 213/255], Directive[Opacity[1.0], Specularity[White, 20]]}], {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}]];*)
 (*Winding Surface*)
 (*windingPlot=ParametricPlot3D[WSpos[theta,phi],{theta,0,2*pi},{phi,0,2*pi},PlotPoints->{25,plotPointsFig},MaxRecursion->1,Mesh->None,PlotStyle->Directive[LightBlue,Opacity[0.3]]];*)
-fitRegcoil=Show[plasmaPlot,(*windingPlot,*)coilsPlot, Boxed -> False, Axes -> False];
+
+WSposTable =  ParallelTable[{{theta, phi}, WSpos[theta, phi]}, {theta, 0, 2*pi, 2*pi/npointsInterpolationCoilPos}, {phi, 0, 2*pi, 2*pi/npointsInterpolationCoilPos/1.2}];
+WSposInterp = Interpolation[Flatten[WSposTable, 1], Method -> "Spline", InterpolationOrder -> interpolationOrderCoilPos];
+
+regcoilPlotFig = Show[plasmaPlot, Table[
+  tangentTheta[theta_]  = D[WSposInterp[theta, phi], theta] /. phi -> coilContours[[j]][theta];
+  utangentTheta[theta_] = tangentTheta[theta]/Norm[tangentTheta[theta]];
+  tangentPhi[theta_]    = D[WSposInterp[theta, phi], phi] /. phi -> coilContours[[j]][theta];
+  utangentPhi[theta_]   = tangentPhi[theta]/Norm[tangentPhi[theta]];
+  unormalWSpos[theta_]  = Cross[utangentPhi[theta], utangentTheta[theta]]/Norm[Cross[utangentPhi[theta], utangentTheta[theta]]];
+  ParametricPlot3D[{
+    coilposFunc[theta, j] + x*utangentPhi[theta], 
+    coilposFunc[theta, j] + coilthickness utangentPhi[theta] + x*unormalWSpos[theta], 
+    coilposFunc[theta, j] + x*unormalWSpos[theta], 
+    coilposFunc[theta, j] + x*utangentPhi[theta] + coilthickness*unormalWSpos[theta]
+    }, {theta, 0, 2 Pi}, {x, 0, coilthickness}, PlotPoints -> {plotpointsCoil, 6}, MaxRecursion -> maxRecursPlot, 
+    Mesh -> None, PlotStyle -> Directive[Gray, Specularity[White, 20]]]
+, {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}], Boxed -> False, ImageSize -> Large, Axes -> False, PlotRange->All];
+
 If[plotRegcoilSENAC==1,
-  Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Original.pdf"], fitRegcoil, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+  Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Original.pdf"], regcoilPlotFig, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
   ,
-  Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Fit_ordern",ToString[ordern],"_nmodes",ToString[nModes],".pdf"], fitRegcoil, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+  Export[StringJoin[currentPath,"../data/",ToString[proj],"/Figures/",ToString[proj],"_Regcoil_Plot_Fit_ordern",ToString[ordern],"_nmodes",ToString[nModes],".pdf"], regcoilPlotFig, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
 ];
 
 (*Finish Evaluation*)
 WriteString[$Output,"  SENAC plot REGCOIL took "<>ToString[AbsoluteTime[]-overallTimeStart]<>"s\n"]
 CloseKernels[];
-
-(*Along Normal and Binormal Directions*)
-(*For Future Work*)
-(*
-Table[
-  coilposj[t_] = coilposFunc[t, j];
-  tangentCoil[t_] = FrenetSerretSystem[coilposFunc[t, j], t][[2, 1]];
-  normalCoil[t_] = FrenetSerretSystem[coilposFunc[t, j], t][[2, 2]];
-  binormalCoil[t_] = Cross[tangentCoil[t], normalCoil[t]];
-  thickCoils1[j] = 
-   Interpolation[
-    Table[{t, 
-      coilposj[t] + 
-       coilthickness*(normalCoil[t] + binormalCoilTable[t])}, {t, 0, 
-      2*pi, 2*pi/30}], Method -> "Spline", InterpolationOrder -> 2];
-  thickCoils2[j] = 
-   Interpolation[
-    Table[{t, 
-      coilposj[t] + 
-       coilthickness*(normalCoil[t] - binormalCoil[t])}, {t, 0, 2*pi, 
-      2*pi/30}], Method -> "Spline", InterpolationOrder -> 2];
-  thickCoils3[j] = 
-   Interpolation[
-    Table[{t, 
-      coilposj[t] + 
-       coilthickness*(-normalCoil[t] - binormalCoil[t])}, {t, 0, 2*pi,
-       2*pi/30}], Method -> "Spline", InterpolationOrder -> 2];
-  thickCoils4[j] = 
-   Interpolation[
-    Table[{t, 
-      coilposj[t] + 
-       coilthickness*(-normalCoil[t] + binormalCoil[t])}, {t, 0, 2*pi,
-       2*pi/30}], Method -> "Spline", InterpolationOrder -> 2];
-  , {j, 1, coilsPerHalfPeriod*numHalfPeriodsToPlot}];
-  *)
