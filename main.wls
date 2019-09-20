@@ -123,7 +123,7 @@ If[muDefined==0,
   ,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Constructing Mercier's theta and rho..."];
   rho[theta_, phi_] = Sqrt[(vmecPSI[[nsurfaces]]*Sqrt[1 - mu[phi]^2] )/(pi*(B0[phi]) (1 + mu[phi]*Cos[2 (theta + delta[phi])]))];
-  FluxSurfacenFitVMEC[theta_, s_, 1] = Chop[closedcurvVMEC[s] + (rho[theta, s]) (Cos[theta] k0VMEC[s] + Sin[theta] t0VMEC[s]), 10^-5]//Quiet;
+  FluxSurfacenFitVMEC[theta_, s_, 1] = Chop[closedcurvVMEC[s] + (rho[theta, s])*(Cos[theta]*k0VMEC[s] + Sin[theta]*t0VMEC[s]), 10^-5]//Quiet;
 	RBCFit[phi_, theta_, 1] = Re[Cos[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[2]]]//Quiet;
 	ZBSFit[phi_, theta_, 1] = Re[FluxSurfacenFitVMEC[theta, phi, 1][[3]]]//Quiet;
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
@@ -131,9 +131,9 @@ If[muDefined==0,
 
 (*Compute Iota on Axis from Expression of Near-Axis Expansion*)
 If[muDefined==1,
-  printv = printv <> "Iota From Near-Axis Formula" <> nl;
+  printv = printv <> "Iota on Axis From Near-Axis Formula" <> nl;
   iotaFit = GaussLegendreQuadrature[(-D[delta[phi], phi] + torsVMEC[phi])*Sqrt[1 - (mu[phi])^2]+D[delta[phi], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal;
-  Print["  Iota from near-axis formula: "<>ToString[iotaFit]];
+  Print["  Iota on Axis from near-axis formula: "<>ToString[iotaFit]];
   printv = printv <> ToString[iotaFit] <> nl;
   ,
   iotaFit=ParallelTable[
@@ -141,13 +141,13 @@ If[muDefined==1,
   {iradius,1,nsurfaces}];
   If[FileExistsQ[vmecOutput],
     Print["  Iota from VMEC: "<>ToString[iotaAxisOut]<>", Iota from near-axis: "<>ToString[iotaFit]];
-    printv = printv <> "Iota From Near-Axis Formula" <> nl;
+    printv = printv <> "Iota on Axis From Near-Axis Formula" <> nl;
     printv = printv <> ToString[iotaFit] <> nl;
     printv = printv <> "Iota From VMEC" <> nl;
     printv = printv <> ToString[iotaAxisOut] <> nl;
     ,
-    Print["  Iota from near-axis formula: "<>ToString[iotaFit]];
-    printv = printv <> "Iota From Near-Axis Formula" <> nl;
+    Print["  Iota on Axis from near-axis formula: "<>ToString[iotaFit]];
+    printv = printv <> "Iota on Axis From Near-Axis Formula" <> nl;
     printv = printv <> ToString[iotaFit] <> nl;
   ]
 ];
@@ -169,5 +169,6 @@ If[outputToVMEC == 1,
 ];
 
 (*Finish Evaluation*)
-WriteString[$Output,"  SENAC Mathematica took "<>ToString[AbsoluteTime[]-overallTimeStart]<>"s\n"]
-CloseKernels[];Exit[];
+WriteString[$Output,"  SENAC Mathematica took "<>ToString[AbsoluteTime[]-overallTimeStart]<>"s\n"];
+CloseKernels[];
+Exit[];

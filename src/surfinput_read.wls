@@ -6,8 +6,8 @@ If[FileExistsQ[surfInput],
 	vmecPSI = {Abs[StringCases[StringDelete[FindList[surfInput, "PHIEDGE"][[1]], " "], x : NumberString :> ToExpression[x]][[1]]]};
 	vmecRAXIS = StringSplit[FindList[surfInput, "RAXIS"][[1]]];
 	vmecZAXIS = StringSplit[FindList[surfInput, "ZAXIS"][[1]]];
-	nRAXIS[phi_] = Sum[Internal`StringToDouble@vmecRAXIS[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[vmecRAXIS][[1]] - 3}];
-	nZAXIS[phi_] = Sum[Internal`StringToDouble@vmecZAXIS[[nn + 3]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[vmecZAXIS][[1]] - 3}];
+	nRAXIS[phi_] = Sum[Internal`StringToDouble@vmecRAXIS[[nn + 3]]*Cos[vmecNFP nn phi], {nn, 0, Dimensions[vmecRAXIS][[1]] - 3}];
+	nZAXIS[phi_] = Sum[Internal`StringToDouble@vmecZAXIS[[nn + 3]]*Sin[vmecNFP nn phi], {nn, 0, Dimensions[vmecZAXIS][[1]] - 3}];
 	closedcurvVMEC[phi_] = {nRAXIS[phi] Cos[phi], nRAXIS[phi] Sin[phi], nZAXIS[phi]};
 	(*Check if surface parameters or Fourier components are given*)
 	If[SameQ[Find[OpenRead[surfInput],"mu"], EndOfFile], 
@@ -28,7 +28,7 @@ If[FileExistsQ[surfInput],
 		deltaTable = StringSplit[FindList[surfInput, "delta"][[1]]];
 		B0Table    = StringSplit[FindList[surfInput, "B0"][[1]]];
 		mu[phi_] = Sum[Internal`StringToDouble@muTable[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[muTable][[1]] - 3}];
-		delta[phi_] = Internal`StringToDouble@deltaTable[[3]]*phi/2+Internal`StringToDouble@deltaTable[[4]]+Sum[Internal`StringToDouble@deltaTable[[nn + 5]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[deltaTable][[1]] - 5}];
+		delta[phi_] = Internal`StringToDouble@deltaTable[[3]]*phi/2+Internal`StringToDouble@deltaTable[[4]]+Sum[Internal`StringToDouble@deltaTable[[nn + 5]] Sin[vmecNFP nn phi], {nn, 1, Dimensions[deltaTable][[1]] - 5}];
 		B0[phi_] = Sum[Internal`StringToDouble@B0Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[B0Table][[1]] - 3}];
 	];
 	,
@@ -36,4 +36,4 @@ If[FileExistsQ[surfInput],
 	CloseKernels[];
 	Abort[];
 	Run["exit 1"];
-]
+];
