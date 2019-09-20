@@ -17,48 +17,49 @@ runVMECofFit=0;          #run VMEC for fit
 runREGCOILfit=0;         #run REGCOIL for fit
 plotRegcoilFit=0;        #Mathematica plots coils for fit
 runREGCOILoriginal=0;    #run REGCOIL for original/VMEC file
-plotRegcoilOriginal=10   #Mathematica plots coils for original surface
+plotRegcoilOriginal=0;   #Mathematica plots coils for original surface
 #======SENAC INPUT PARAMETERS=====
 ordern=2;                #Near-Axis Expansion Order (has to be greater than 2)
 nModes=3;                #number of fourier components in mu, delta and B0
 nsurfaces=6;             #number of surfaces to read and compare from VMEC
-nthetaM=35;              #resolution in theta for fit and Mercier's coordinates
-nphiM=60;                #resolution in phi for fit and Mercier's coordinates
-maxiterations=2000;      #max number of iterations for fit
+nthetaM=22;              #resolution in theta for fit and Mercier's coordinates
+nphiM=32;                #resolution in phi for fit and Mercier's coordinates
+maxiterations=3500;      #max number of iterations for fit
+keepfit=1;               #use the same fit results for outer surfaces as inner surfaces
 deltac0=1.1;             #initial point for deltac0 betweeon -pi and pi
 deltal0=1.0;             #initial point for deltal
-deltalmin=0.0;           #minimum deltal to help fit
-deltalmax=0.0;           #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
+deltalmin=-5.05;           #minimum deltal to help fit
+deltalmax=-4.95;           #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
 muc0=0.4;                #initial point for muc0
-mucMin=0.2;             #minimum muc0 to help fit
+mucMin=0.2;              #minimum muc0 to help fit
 mucMax=0.9;              #maximum muc0 to help fit
 maxm=7;                  #Maximum poloidal Fourier mode m to output to VMEC
 maxn=8;                  #Maximum toroidal Fourier mode n to output to VMEC
-maxRecursTheta=40;       #Theta resolution in numerical integration in Mercier to VMEC
-maxRecursPhi=400;        #Phi resolution in numerical integration
+maxRecursTheta=35;       #Theta resolution in numerical integration in Mercier to VMEC
+maxRecursPhi=350;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
-exportBFieldSurface=1;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
-nPlotTheta=70;           #number of interpolating points in theta
-nPlotPhi=130;            #number of interpolating points in phi
+exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
+nPlotTheta=100;           #number of interpolating points in theta
+nPlotPhi=200;            #number of interpolating points in phi
 plotPointsFig=60;        #plotpoints for 3D figure
 maxRecursPlot=2;         #max recursion for 3D figure
 ImageSizePlot=700;       #image size for 3D figure
 ImageResolutionPlot=400; #resolution for 3D figure
-nfigsSurf=4;             #number of surfaces to plot in 3D figure
+nfigsSurf=3;             #number of surfaces to plot in 3D figure
 nPlots=4;                #number of poloidal plots to save
 npointsPolPlots=40;      #number of points for poloidal plots
-nthetapointsBsurface=30; #plot points in theta for magnetic field on surface
-nphipointsBsurface=30;   #plot points in phi for magnetic field on surface
+nthetapointsBsurface=25; #plot points in theta for magnetic field on surface
+nphipointsBsurface=25;   #plot points in phi for magnetic field on surface
 coilthickness=0.10;      #thickness of the coils in VMEC units to plot
 npointsContourPlotREGCOIL=60;   #number of points in contourplot when finding coil contours in REGCOIL
 npointsInterpCoilPosREGCOIL=80; #number of points for theta grid in REGCOIL
 interpOrderCoilPosREGCOIL=2;    #interpolation order for theta grid in REGCOIL
-coilsPerHalfPeriod=2;    #number of coils per half period to plot
+coilsPerHalfPeriod=3;    #number of coils per half period to plot
 numHalfPeriodsToPlot=0;  #0 -> plots the whole stellarator
 plotpointsCoil=35;       #plot points in theta for coils
 #=====REGCOIL INPUT PARAMTERS========
 REGCOILtargetvalue=0.3;
-REGCOILseparation=0.18;
+REGCOILseparation=0.15;
 REGCOILnlambda=20;
 #=====TO BE IMPLEMENTED=============
 readFit=0;    		     #1 -> reads fit parameters from text file
@@ -86,7 +87,7 @@ if (( $runSENAC == 1)); then
 	echo "-----------------------"
 	echo "Running SENAC Mathematica"
 	rm -f data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
-	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi $nPlotTheta $nPlotPhi $plotPointsFig $maxRecursPlot $ImageSizePlot $ImageResolutionPlot $nfigsSurf $nPlots $nthetapointsBsurface $nphipointsBsurface $npointsPolPlots $exportBFieldSurface | tee data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
+	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi $nPlotTheta $nPlotPhi $plotPointsFig $maxRecursPlot $ImageSizePlot $ImageResolutionPlot $nfigsSurf $nPlots $nthetapointsBsurface $nphipointsBsurface $npointsPolPlots $exportBFieldSurface $keepfit | tee data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
 fi
 #======RUN VMEC=====
 if (( $runVMECofFit == 1)); then

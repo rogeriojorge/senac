@@ -101,7 +101,7 @@ If[Dimensions[Position[rmnccoil, _?(10^(-13) < # < 10^(-12) &)]][[1]] > 7 && Num
   imMax = Position[rmnccoil, _?(10^(-13) < # < 10^(-12) &)][[8, 1]], 
   imMax = Length[rmnccoil]
 ]//Quiet;
-If[imMax < 200 || Length[rmnccoil] > 200, imMax = 200];
+If[imMax < 300 && Length[rmnccoil] > 300, imMax = 300];
 
 WSposTemp[theta_, phi_] = ParallelSum[
    angle[theta_, phi_] = xmcoil[[im]]*theta - xncoil[[im]]*phi;
