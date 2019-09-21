@@ -7,7 +7,7 @@ Table[
   WriteString[$Output, "    Fiting Surface "<>ToString[iradius]<>" of "<>ToString[nsurfaces]<>"...  "];timestartFitIteration=AbsoluteTime[];
   (*Compute Mercier Angles Theta and Phi as a function VMEC's theta and phi*)
   timestart=AbsoluteTime[];
-  phiAxis[iradius] = Interpolation[Flatten[ParallelTable[{{theta, phi}, x /. FindRoot[Dot[b0VMEC[x], FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[x]], {x, phi}]}, {theta, 0, 2*pi, 2*pi/nthetaM/1.2}, {phi, 0, factorPhi*2*pi/vmecNFP, factorPhi*2*pi/nphiM/vmecNFP/1.4}], 1], Method -> "Spline", InterpolationOrder -> 3];
+  phiAxis[iradius] = Interpolation[Flatten[ParallelTable[{{theta, phi}, x /. FindRoot[Dot[b0VMEC[x], FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[x]], {x, phi}]}, {theta, 0, 2*pi, 2*pi/nthetaM/1.2}, {phi, 0, 2*pi, 2*pi/nphiM/2}], 1], Method -> "Spline", InterpolationOrder -> 3];
   timestartphiAxis=timestartphiAxis+AbsoluteTime[]-timestart;
 
   (*Compute Mercier Angle*)
@@ -57,7 +57,7 @@ Table[
       DeleteCases[Flatten[{
         {{deltal, deltal0}, {B0c[0], B0Est}, {muc[0], muc0}, {deltac[0], deltac0}}, 
         Flatten[Table[{{B0c[i],0.01*B0Est},{muc[i],0.01*Min[Abs[mucMin],Abs[mucMax]]},{deltas[i],0.01}}, {i, 1, nModes}], 1],
-        If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], {{psic[n, 2 i, j], 0.1}, {psis[n, 2 i, j], 0.1}}, {{psic[n, 2 i + 1, j], 0.1}, {psis[n, 2 i + 1, j], 0.1}}], {j,0,2*nModes}], {i,0, Floor[n/2]}], {n, 3, ordern}], 3],xa]
+        If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], {{psic[n, 2 i, j], 0.1}, {psis[n, 2 i, j], 0.1}}, If[j>0,{{psic[n, 2 i + 1, j], 0.1}, {psis[n, 2 i + 1, j], 0.1}},{{psis[n, 2 i + 1, j], 0.1}}]], {j,0,nModes}], {i,0, Floor[n/2]}], {n, 3, ordern}], 3],xa]
       }, 1],xa],
     {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations, AccuracyGoal -> 5, PrecisionGoal -> 5
     ];

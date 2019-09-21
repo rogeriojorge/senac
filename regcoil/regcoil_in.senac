@@ -18,5 +18,5 @@
   nlambda = 20
   target_value = 0.3
   separation = 0.15
-  wout_filename = "/Users/rogeriojorge/Dropbox/senac/data/ESTELL/wout_ESTELL_senac_ordern2_nmodes0.nc"
+  wout_filename = "/Users/rogeriojorge/Dropbox/senac/data/NCSX/wout_NCSX_senac_ordern3_nmodes3.nc"
 /

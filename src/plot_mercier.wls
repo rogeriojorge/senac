@@ -54,7 +54,7 @@ If[muDefined==0 && plotOriginal==1,
 
 If[plotFit==1,
 (*Plot Iota Profiles*)
-If[muDefined==0,
+If[muDefined==0 && nsurfaces>1,
   WriteString[$Output, "    Plotting Iota Profiles...  "];timestart = AbsoluteTime[];
   If[FileExistsQ[vmecOutput],
     fig1=ListPlot[{iotaAxisOut, iotaFit}, PlotOptions, AspectRatio -> 1, FrameLabel -> {"Surface", "Rotational Transform \[Iota]"}, PlotLegends -> {"Original \[Iota]", "Near-Axis \[Iota]"}, PlotStyle -> PointSize[0.018], PlotRange->{{0.9,Automatic},{All,All}}];
@@ -95,19 +95,19 @@ If[muDefined==0,
 ];
 
 (*Plot Obtained Surface*)
+If[export3DSurface==1,
 timestart = AbsoluteTime[]; WriteString[$Output, "    Plotting Obtained Surface...\n"];
 figFit=Array[Null,nfigsSurf];bfitFig=Array[Null,nfigsSurf];
 j=0;Table[j=j+1;
   If[muDefined==0,
-    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Grid for Figure "<>ToString[j]<>" of "<>ToString[nfigsSurf],"..."];
+    (**)timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Grid for Figure "<>ToString[j]<>" of "<>ToString[nfigsSurf],"..."];
     posvecpsiTable = Table[ParallelTable[FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]][[i]], {theta, 0, 2*pi, 2*pi/nPlotTheta}, {phi, phimin[[j]], phimax[[j]], phimax[[j]]/nPlotPhi}], {i, 1, 3}];
     Nposvecpsitemp = ParallelTable[ListInterpolation[posvecpsiTable[[i]], {{0, 2*pi}, {0, phimax[[j]]}}], {i, 1, 3}];
     Nposvecpsi[theta_, phi_] = Table[Nposvecpsitemp[[i]][theta, phi], {i, 1, 3}];
-    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];(**)
     (*Nposvecpsi[theta_, phi_] = FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]];*)
     rhoPlot[theta_, phi_]=rho[theta, phi]/.fitParams[Floor[iradius]]/.PSI->vmecPSI[[Floor[iradius]]];
-    BFuncTemp[theta_, phi_]=(1 + rhoPlot[-theta, phi]*Cos[theta]*curvVMEC[phi])*(B0VMEC/.fitParams[Floor[iradius]]);
-    BFunc[theta_, phi_]=BFuncTemp[thetaMercierFunc[theta, phi, j], phiAxis[j][theta, phi]];
+    BFunc[theta_, phi_]=(1 + rhoPlot[-theta, phi]*Cos[theta]*curvVMEC[phi])*(B0VMEC/.fitParams[Floor[iradius]]);
   ,
     Nposvecpsi[theta_, phi_] = FluxSurfacenFitVMEC[theta, phi, Floor[iradius]];
     rhoPlot[theta_, phi_]=rho[theta, phi];
@@ -115,7 +115,7 @@ j=0;Table[j=j+1;
   ];
   If[exportBFieldSurface==1,
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
-    bfitFig[[j]]=DensityPlot[BFunc[theta, phi], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[Phi]", "Poloidal Angle \[Theta]"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotRange->All, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> "B(\[Theta],\[Phi])"]];
+    bfitFig[[j]]=DensityPlot[BFunc[thetaMercierFunc[theta, phi, j], phiAxis[j][theta, phi]], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[Phi]", "Poloidal Angle \[Theta]"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotRange->All, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> "B(\[Theta],\[Phi])"]];
     Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>"_.pdf"], bfitFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   ];
@@ -133,6 +133,7 @@ timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
 Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_ordern_"<>ToString[ordern]<>".pdf"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
 WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
 WriteString[$Output, "    Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
+];
 
 ];
 Clear[fig1,fig2,posvecpsiTable,figVMEC,figFit,figVMEC,Nposvecpsitemp];
