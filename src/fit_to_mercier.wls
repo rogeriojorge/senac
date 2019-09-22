@@ -14,7 +14,7 @@ Table[
   timestart = AbsoluteTime[];
   ycomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[iradius][theta,phi]], t0VMEC[phiAxis[iradius][theta,phi]]];
   xcomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[iradius][theta,phi]], k0VMEC[phiAxis[iradius][theta,phi]]];
-  thetaMercierFunc[theta_, phi_, iradius] = Chop[ArcTan[xcomponent[theta, phi], ycomponent[theta, phi]], 10^-5];
+  thetaMercierFunc[theta_, phi_, iradius] = Chop[ArcTan[xcomponent[theta, phi], ycomponent[theta, phi]], 10^-6];
   timestartMercierAngle=timestartMercierAngle+AbsoluteTime[]-timestart;Clear[thetaMercierTable];
 
   If[iradius>1 && keepfit==1,
@@ -22,7 +22,7 @@ Table[
   ,
     (*Compute Rho from VMEC*)
     rhoSurf[theta_, phi_] = FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[iradius][theta,phi]];
-    rhonVMEC2[theta_, phi_] = Chop[Dot[rhoSurf[theta, phi], k0VMEC[phiAxis[iradius][theta,phi]]]^2 + Dot[rhoSurf[theta, phi], t0VMEC[phiAxis[iradius][theta,phi]]]^2, 10^-4];
+    rhonVMEC2[theta_, phi_] = Chop[Dot[rhoSurf[theta, phi], k0VMEC[phiAxis[iradius][theta,phi]]]^2 + Dot[rhoSurf[theta, phi], t0VMEC[phiAxis[iradius][theta,phi]]]^2, 10^-6];
 
     (*Flux Surface After Fitting for mu and delta*)
     timestart = AbsoluteTime[];
@@ -69,7 +69,7 @@ Table[
   (*phiBoundary = Interpolation[Flatten[ParallelTable[{{theta, phia}, phi /. FindRoot[phiAxis[iradius][theta, phi] - phia, {phi, phia, 0, 2*pi}]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phia, 0, 2*pi, 2*pi/nphiM}], 1]];*)
 
   (*Construct Obtained Surface*)
-  FluxSurfacenFitVMEC[theta_, phi_, iradius] = Chop[closedcurvVMEC[phi] + (rho[theta, phi] /. fitParams[iradius] /.PSI->vmecPSI[[iradius]])*(Cos[theta]*k0VMEC[phi] + Sin[theta]*t0VMEC[phi]), 10^-5]//Quiet; (*Mercier's Coordinates*)
+  FluxSurfacenFitVMEC[theta_, phi_, iradius] = Chop[closedcurvVMEC[phi] + (rho[theta, phi] /. fitParams[iradius] /.PSI->vmecPSI[[iradius]])*(Cos[theta]*k0VMEC[phi] + Sin[theta]*t0VMEC[phi]), 10^-6]//Quiet; (*Mercier's Coordinates*)
   RBCFit[phi_, theta_, iradius] = Re[Cos[phi]*FluxSurfacenFitVMEC[thetaMercierFunc[theta, phi, iradius], phiAxis[iradius][theta,phi], iradius][[1]] + Sin[phi]*FluxSurfacenFitVMEC[thetaMercierFunc[theta, phi, iradius], phiAxis[iradius][theta,phi], iradius][[2]]]//Quiet; (*VMEC's Coordinates*)
   ZBSFit[phi_, theta_, iradius] = Re[FluxSurfacenFitVMEC[thetaMercierFunc[theta, phi, iradius], phiAxis[iradius][theta,phi], iradius][[3]]]//Quiet; (*VMEC's Coordinates*)
   WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestartFitIteration]<>"s\n"];
