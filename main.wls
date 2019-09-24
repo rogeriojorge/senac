@@ -82,16 +82,16 @@ If[FileExistsQ[vmecOutput],
 
 (*VMEC Axis Frenet-Serret Frame*)
 timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing VMEC's Frenet-Serret Frame and Surfaces..."]; Off[Simplify::time];
-curvVMEC[t_] = Chop[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/Norm[closedcurvVMEC'[t]]^3, 10^-6]//Re;
-torsVMEC[t_] = Chop[Dot[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]], closedcurvVMEC'''[t]]/Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]^2, 10^-6];
-sprimeVMEC[t_] = Chop[Simplify[Chop[ComplexExpand[Norm[closedcurvVMEC'[t]]], 10^-6], TimeConstraint -> 0.01], 10^-6];
-b0VMEC[t_] = Simplify[Chop[closedcurvVMEC'[t]/sprimeVMEC[t], 10^-6], TimeConstraint -> 0.01];
-k0VMEC[t_] = Simplify[Chop[b0VMEC'[t]/sprimeVMEC[t], 10^-6], TimeConstraint -> 0.01]/curvVMEC[t]//Re;
-t0VMEC[t_] = Chop[Cross[b0VMEC[t], k0VMEC[t]], 10^-6]//Re;
+curvVMEC[t_] = Chop[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/Norm[closedcurvVMEC'[t]]^3, 10^-7]//Re;
+torsVMEC[t_] = Chop[Dot[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]], closedcurvVMEC'''[t]]/Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]^2, 10^-7];
+sprimeVMEC[t_] = Chop[Simplify[Chop[ComplexExpand[Norm[closedcurvVMEC'[t]]], 10^-7], TimeConstraint -> 0.01], 10^-7];
+b0VMEC[t_] = Simplify[Chop[closedcurvVMEC'[t]/sprimeVMEC[t], 10^-7], TimeConstraint -> 0.01];
+k0VMEC[t_] = Simplify[Chop[b0VMEC'[t]/sprimeVMEC[t], 10^-7], TimeConstraint -> 0.01]/curvVMEC[t]//Re;
+t0VMEC[t_] = Chop[Cross[b0VMEC[t], k0VMEC[t]], 10^-7]//Re;
 (*VMEC Flux Surface*)
 If[muDefined==0,
   Table[
-    FluxSurfaceVMEC[theta_, phi_, iradius] = Simplify[Chop[{RBCVMEC[theta, phi, iradius]*Cos[phi], RBCVMEC[theta, phi, iradius]*Sin[phi], ZBSVMEC[theta, phi, iradius]}, 10^-6], TimeConstraint -> 0.01]//Re//Quiet;
+    FluxSurfaceVMEC[theta_, phi_, iradius] = Simplify[Chop[{RBCVMEC[theta, phi, iradius]*Cos[phi], RBCVMEC[theta, phi, iradius]*Sin[phi], ZBSVMEC[theta, phi, iradius]}, 10^-7], TimeConstraint -> 0.01]//Re//Quiet;
   , {iradius,1,nsurfaces}];
 ]
 WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
@@ -123,7 +123,7 @@ If[muDefined==0,
   ,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Constructing Mercier's theta and rho..."];
   rho[theta_, phi_] = Sqrt[(vmecPSI[[nsurfaces]]*Sqrt[1 - mu[phi]^2] )/(pi*(B0[phi]) (1 + mu[phi]*Cos[2 (theta + delta[phi])]))];
-  FluxSurfacenFitVMEC[theta_, s_, 1] = Chop[closedcurvVMEC[s] + (rho[theta, s])*(Cos[theta]*k0VMEC[s] + Sin[theta]*t0VMEC[s]), 10^-6]//Quiet;
+  FluxSurfacenFitVMEC[theta_, s_, 1] = Chop[closedcurvVMEC[s] + (rho[theta, s])*(Cos[theta]*k0VMEC[s] + Sin[theta]*t0VMEC[s]), 10^-7]//Quiet;
 	RBCFit[phi_, theta_, 1] = Re[Cos[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[2]]]//Quiet;
 	ZBSFit[phi_, theta_, 1] = Re[FluxSurfacenFitVMEC[theta, phi, 1][[3]]]//Quiet;
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];

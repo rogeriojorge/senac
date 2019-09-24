@@ -87,8 +87,8 @@ If[!NumberQ[coilContours[[1]][1]],
   CloseKernels[];Exit[];
 ]
 
-If[Dimensions[Position[rmncplasma, _?(10^-13 < # < 10^-11 &)]][[1]] > 7 && NumberQ[Position[rmncplasma, _?(10^-13 < # < 10^-11 &)][[1, 1]]], 
-  imMaxP = Position[rmncplasma, _?(10^-13 < # < 10^-11 &)][[8, 1]], 
+If[Dimensions[Position[rmncplasma, _?(10^-13 < # < 10^-10 &)]][[1]] > 7 && NumberQ[Position[rmncplasma, _?(10^-13 < # < 10^-10 &)][[1, 1]]], 
+  imMaxP = Position[rmncplasma, _?(10^-13 < # < 10^-10 &)][[8, 1]], 
   imMaxP = Length[rmncplasma]
 ];
 

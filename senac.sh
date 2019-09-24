@@ -19,7 +19,7 @@ plotRegcoilFit=0;        #Mathematica plots coils for fit
 runREGCOILoriginal=0;    #run REGCOIL for original/VMEC file
 plotRegcoilOriginal=0;   #Mathematica plots coils for original surface
 #======SENAC INPUT PARAMETERS=====
-ordern=2;                #Near-Axis Expansion Order (has to be greater than 2)
+ordern=4;                #Near-Axis Expansion Order (has to be greater than 2)
 nModes=3;                #number of fourier components in mu, delta and B0
 nsurfaces=6;             #number of surfaces to read and compare from VMEC
 nthetaM=20;              #resolution in theta for fit and Mercier's coordinates
@@ -38,29 +38,29 @@ maxn=8;                  #Maximum toroidal Fourier mode n to output to VMEC
 maxRecursTheta=35;       #Theta resolution in numerical integration in Mercier to VMEC
 maxRecursPhi=350;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
-export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
+export3DSurface=0;       #0 -> Don't export 3D toroidal surface, 1 -> Do
 exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
 nPlotTheta=50;           #number of interpolating points in theta
-nPlotPhi=120;            #number of interpolating points in phi
+nPlotPhi=100;            #number of interpolating points in phi
 plotPointsFig=50;        #plotpoints for 3D figure
 maxRecursPlot=2;         #max recursion for 3D figure
 ImageSizePlot=700;       #image size for 3D figure
 ImageResolutionPlot=400; #resolution for 3D figure
 nfigsSurf=3;             #number of surfaces to plot in 3D figure
-nPlots=3;                #number of poloidal plots to save
-npointsPolPlots=30;      #number of points for poloidal plots
-nthetapointsBsurface=25; #plot points in theta for magnetic field on surface
-nphipointsBsurface=25;   #plot points in phi for magnetic field on surface
+nPlots=4;                #number of poloidal plots to save
+npointsPolPlots=20;      #number of points for poloidal plots
+nthetapointsBsurface=30; #plot points in theta for magnetic field on surface
+nphipointsBsurface=30;   #plot points in phi for magnetic field on surface
 coilthickness=0.10;      #thickness of the coils in VMEC units to plot
 npointsContourPlotREGCOIL=60;   #number of points in contourplot when finding coil contours in REGCOIL
 npointsInterpCoilPosREGCOIL=80; #number of points for theta grid in REGCOIL
 interpOrderCoilPosREGCOIL=2;    #interpolation order for theta grid in REGCOIL
-coilsPerHalfPeriod=3;    #number of coils per half period to plot
+coilsPerHalfPeriod=4;    #number of coils per half period to plot
 numHalfPeriodsToPlot=0;  #0 -> plots the whole stellarator
 plotpointsCoil=35;       #plot points in theta for coils
 #=====REGCOIL INPUT PARAMTERS========
-REGCOILtargetvalue=0.3;
-REGCOILseparation=0.25;
+REGCOILtargetvalue=10.0;
+REGCOILseparation=0.15;
 REGCOILnlambda=20;
 #=====TO BE IMPLEMENTED=============
 readFit=0;    		     #1 -> reads fit parameters from text file
