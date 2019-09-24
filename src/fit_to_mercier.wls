@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-factorPhi=1.0;
+factorPhi=2.5;
 (*Initialize Variables*)
 timestartphiAxis=0;timestartMercierAngle=0;timestartrhoVMEC=0;timestartFit=0;
 Table[
@@ -56,8 +56,8 @@ Table[
         ,1],xa],
         DeleteCases[Flatten[{ 
           If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], 
-            If[j > 0, {{psic[n, 2 i, j], 0.1}, {psis[n, 2 i, j], 0.1}}, {{psis[n, 2 i, j], 0.1}}], 
-            If[j > 0, {{psic[n, 2 i + 1, j], 0.1},{psis[n,2 i+1,j],0.1}}, {{psis[n,2 i+1,j],0.1}}]
+            If[j > 0, {{psic[n, 2 i, j], 0.1},    {psis[n, 2 i, j],0.1}}, {{psic[n, 2 i, j], 0.1}}], 
+            If[j > 0, {{psic[n, 2 i + 1, j], 0.1},{psis[n,2 i+1,j],0.1}}, {{psic[n,2 i+1,j], 0.1}}]
           ], {j, 0, nModes}], {i, 0,Floor[n/2]}], {n, ordern, ordern}], 3],xa]
         }, 1],xa],
       {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations, AccuracyGoal -> 5, PrecisionGoal -> 5
@@ -79,8 +79,8 @@ Table[
           {{deltal, deltal0}, {B0c[0], B0Est}, {muc[0], muc0}(*, {deltac[0], deltac0}*)}, 
           Flatten[Table[{{B0c[i],0.01*B0Est},{muc[i],0.01*Min[Abs[mucMin],Abs[mucMax]]},{deltas[i],0.01}}, {i, 1, nModes}], 1],
           If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], 
-            If[j > 0, {{psic[n, 2 i, j], 0.1}, {psis[n, 2 i, j], 0.1}}, {{psis[n, 2 i, j], 0.1}}], 
-            If[j > 0, {{psic[n, 2 i + 1, j], 0.1},{psis[n,2 i+1,j],0.1}}, {{psis[n,2 i+1,j],0.1}}]
+            If[j > 0, {{psic[n, 2 i, j], 0.1},    {psis[n, 2 i, j],0.1}}, {{psic[n, 2 i, j], 0.1}}], 
+            If[j > 0, {{psic[n, 2 i + 1, j], 0.1},{psis[n,2 i+1,j],0.1}}, {{psic[n,2 i+1,j], 0.1}}]
           ], {j, 0, nModes}], {i, 0,Floor[n/2]}], {n, 3, ordern}], 3],xa]
         }, 1],xa],
       {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations, AccuracyGoal -> 5, PrecisionGoal -> 5

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="W7X"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="LHD"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -8,7 +8,7 @@ vmecInput=${currentDIR}"/vmec/vmec_input_template.txt"; #template VMEC input fil
 vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
 #======SENAC=====
 runSENAC=1;              #1-> runs SENAC mathematica
-outputToVMEC=0;          #compute Fourier Modes and output to VMEC
+outputToVMEC=1;          #compute Fourier Modes and output to VMEC
 plotFit=1;               #Mathematica plots fit results
 plotOriginal=0;          #Mathematica plots original surface
 #======VMEC=====
@@ -23,13 +23,13 @@ ordern=4;                #Near-Axis Expansion Order (has to be greater than 2)
 nModes=3;                #number of fourier components in mu, delta and B0
 nsurfaces=6;             #number of surfaces to read and compare from VMEC
 nthetaM=20;              #resolution in theta for fit and Mercier's coordinates
-nphiM=30;                #resolution in phi for fit and Mercier's coordinates
-maxiterations=500;      #max number of iterations for fit
+nphiM=55;                #resolution in phi for fit and Mercier's coordinates
+maxiterations=3500;      #max number of iterations for fit
 keepfit=1;               #use the same fit results for outer surfaces as inner surface
 deltac0=1.1;             #initial point for deltac0 betweeon -pi and pi
 deltal0=1.0;             #initial point for deltal
-deltalmin=-5.01;         #minimum deltal to help fit
-deltalmax=-4.99;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
+deltalmin=3;         #minimum deltal to help fit
+deltalmax=3;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
 muc0=0.4;                #initial point for muc0
 mucMin=0.2;              #minimum muc0 to help fit
 mucMax=0.9;              #maximum muc0 to help fit
@@ -38,17 +38,17 @@ maxn=8;                  #Maximum toroidal Fourier mode n to output to VMEC
 maxRecursTheta=35;       #Theta resolution in numerical integration in Mercier to VMEC
 maxRecursPhi=350;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
-export3DSurface=0;       #0 -> Don't export 3D toroidal surface, 1 -> Do
-exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
+export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
+exportBFieldSurface=1;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
 nPlotTheta=50;           #number of interpolating points in theta
-nPlotPhi=100;            #number of interpolating points in phi
+nPlotPhi=120;            #number of interpolating points in phi
 plotPointsFig=50;        #plotpoints for 3D figure
 maxRecursPlot=2;         #max recursion for 3D figure
 ImageSizePlot=700;       #image size for 3D figure
 ImageResolutionPlot=400; #resolution for 3D figure
 nfigsSurf=3;             #number of surfaces to plot in 3D figure
 nPlots=4;                #number of poloidal plots to save
-npointsPolPlots=20;      #number of points for poloidal plots
+npointsPolPlots=35;      #number of points for poloidal plots
 nthetapointsBsurface=30; #plot points in theta for magnetic field on surface
 nphipointsBsurface=30;   #plot points in phi for magnetic field on surface
 coilthickness=0.10;      #thickness of the coils in VMEC units to plot
