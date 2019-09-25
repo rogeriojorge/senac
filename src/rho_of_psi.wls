@@ -20,7 +20,7 @@ positiveRhoPos = Position[Coefficient[rho[1, 1]/.psii->1, 1/Sqrt[psin[1, 1, 2]]]
 rho[theta_, phi_] = rho[theta, phi][[positiveRhoPos]]/.psii->PSI;
 
 (*Order n psi*)
-Table[psin[theta_, phi_, n] = B0VMEC *
+Table[psin[theta_, phi_, n] = ((B0VMEC)^(n/2)) *
   Sum[If[EvenQ[n], 
     (Sum[psic[n, 2 i,   j]*Cos[vmecNFP*j*phi]+0*psic[n, 2 i,   j]*Sin[vmecNFP*j*phi], {j, 0, nModes}])*Cos[2 i*(      theta + deltaVMEC)] + (Sum[0*psis[n, 2 i,   j]*Cos[vmecNFP*j*phi]+psis[n, 2 i,   j]*Sin[vmecNFP*j*phi], {j, 1, nModes}])*Sin[2 i*(      theta + deltaVMEC)], 
     (Sum[psic[n, 2 i+1, j]*Cos[vmecNFP*j*phi]+0*psic[n, 2 i+1, j]*Sin[vmecNFP*j*phi], {j, 0, nModes}])*Cos[(2 i + 1)*(theta + deltaVMEC)] + (Sum[0*psis[n, 2 i+1, j]*Cos[vmecNFP*j*phi]+psis[n, 2 i+1, j]*Sin[vmecNFP*j*phi], {j, 1, nModes}])*Sin[(2 i + 1)*(theta + deltaVMEC)]]
@@ -32,6 +32,6 @@ psin[theta_, phi_, 1] = 0;
 
 (*Order 2 is an ellipse*)
 muVMEC = muc[0] + Sum[muc[i]*Cos[vmecNFP i phi], {i, 1, nModes}];
-deltaVMEC = deltal*phi/2 + 0*deltac[0] + Sum[deltas[i]*Sin[vmecNFP i phi], {i, 1, nModes}];
+deltaVMEC = deltal*phi/2 + deltac0 + Sum[deltas[i]*Sin[vmecNFP i phi], {i, 1, nModes}];
 B0VMEC = B0c[0] + Sum[B0c[i]*Cos[vmecNFP i phi], {i, 1, nModes}];
 psin[theta_, phi_, 2] = pi*(B0VMEC)*(1 + muVMEC*Cos[2*(theta + deltaVMEC)])/Sqrt[1 - (muVMEC)^2];

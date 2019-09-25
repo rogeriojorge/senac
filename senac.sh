@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="LHD"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="W7X_NoCoilRipple"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -22,14 +22,14 @@ plotRegcoilOriginal=0;   #Mathematica plots coils for original surface
 ordern=4;                #Near-Axis Expansion Order (has to be greater than 2)
 nModes=3;                #number of fourier components in mu, delta and B0
 nsurfaces=6;             #number of surfaces to read and compare from VMEC
-nthetaM=20;              #resolution in theta for fit and Mercier's coordinates
-nphiM=55;                #resolution in phi for fit and Mercier's coordinates
-maxiterations=3500;      #max number of iterations for fit
+nthetaM=30;              #resolution in theta for fit and Mercier's coordinates
+nphiM=110;                #resolution in phi for fit and Mercier's coordinates
+maxiterations=6500;      #max number of iterations for fit
 keepfit=1;               #use the same fit results for outer surfaces as inner surface
-deltac0=1.1;             #initial point for deltac0 betweeon -pi and pi
+deltac0=0.0;             #initial point for deltac0 betweeon -pi and pi
 deltal0=1.0;             #initial point for deltal
-deltalmin=3;         #minimum deltal to help fit
-deltalmax=3;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
+deltalmin=2.99;         #minimum deltal to help fit
+deltalmax=3.01;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
 muc0=0.4;                #initial point for muc0
 mucMin=0.2;              #minimum muc0 to help fit
 mucMax=0.9;              #maximum muc0 to help fit
