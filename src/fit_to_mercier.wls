@@ -34,14 +34,14 @@ Table[
     Off[InterpolatingFunction::dmval]; (*Hack not to specify that the arguments should vary between 0 and 2 pi *)
     modelVMEC = Re[rho[thetaMercierFunc[theta, phi, iradius], phiAxis[iradius][theta,phi]]/.PSI->vmecPSI[[iradius]]];
     If[!FileExistsQ[vmecOutput],B0Est=1];If[deltalmin==deltalmax, deltalmin=-1.2*vmecNFP;deltalmax=1.2*vmecNFP];
-    (*If[iradius<nsurfaces && ordern==2,
+    If[iradius>1 && ordern==2,
       deltalmin = Round[deltal/.fitParams[iradius-1]]-0.001*Abs[Round[deltal/.fitParams[iradius-1]]];
       deltalmax = Round[deltal/.fitParams[iradius-1]]+0.001*Abs[Round[deltal/.fitParams[iradius-1]]];
       deltal0   = Round[deltal/.fitParams[iradius-1]];
       muc0      = muc[0]/.fitParams[iradius-1];
       B0Est     = B0c[0]/.fitParams[iradius-1];
       deltac0   = deltac[0]/.fitParams[iradius-1];
-    ];*)
+    ];
 
     fitParamsFile = Directory[] <> "/data/" <> proj <> "/" <> proj <> "_fit_parameters_ordern_" <> ToString[ordern - 1] <> ".txt";
     If[FileExistsQ[fitParamsFile] && readlowfit==1,
@@ -49,15 +49,17 @@ Table[
         DeleteCases[Flatten[
           {modelVMEC/.ToExpression[Import[fitParamsFile, {"Lines", 1}]],
           If[ordern > 2, Flatten[Table[Table[
-            If[EvenQ[n], {-0.001 < Sum[psics[n, 2 i, j], {j, 1, nModes}] < 0.001, -0.001 < Sum[psisc[n, 2 i, j], {j, 0, nModes}] < 0.001},
+            If[!EvenQ[n],
             {-0.001 < Sum[psics[n, 2 i + 1, j], {j, 1, nModes}] < 0.001, -0.001 < Sum[psisc[n, 2 i + 1, j], {j, 0, nModes}] < 0.001}
+            (*,{-0.001 < Sum[psics[n, 2 i, j], {j, 1, nModes}] < 0.001, -0.001 < Sum[psisc[n, 2 i, j], {j, 0, nModes}] < 0.001},*)
+            ,xa
             ], {i, 0, Floor[n/2]}], {n, ordern, ordern}], 3], xa]
           }
         ,1],xa],
         DeleteCases[Flatten[{ 
           If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], 
-            If[j > 0, {{psics[n, 2 i, j], 10},    {psicc[n, 2 i, j],10}, {psisc[n, 2 i, j], 10},    {psiss[n, 2 i, j],10}}, {{psisc[n, 2 i, j], 10}, {psicc[n, 2 i, j], 10}}], 
-            If[j > 0, {{psics[n, 2 i + 1, j], 10},{psicc[n,2 i+1,j],10}, {psisc[n, 2 i + 1, j], 10},{psiss[n,2 i+1,j],10}}, {{psisc[n,2 i+1,j], 10}, {psicc[n,2 i+1,j], 10}}]
+            If[j > 0, {(*{psics[n, 2 i, j], 10},*){psicc[n, 2 i, j],10}, (*{psisc[n, 2 i, j], 10},*){psiss[n, 2 i, j],10}}, {(*{psisc[n, 2 i, j], 10},*){psicc[n, 2 i, j], 10}}], 
+            If[j > 0, {{psics[n, 2 i + 1, j], 10},(*{psicc[n,2 i+1,j],10},*){psisc[n, 2 i + 1, j], 10}(*,{psiss[n,2 i+1,j],10}*)}, {{psisc[n,2 i+1,j], 10}(*, {psicc[n,2 i+1,j], 10}*)}]
           ], {j, 0, nModes}], {i, 0,Floor[n/2]}], {n, ordern, ordern}], 3],xa]
         }, 1],xa],
       {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations, AccuracyGoal -> 5, PrecisionGoal -> 5
@@ -70,8 +72,10 @@ Table[
           Flatten[
             Table[{{-pi < deltas[i] < pi}},{i,1,nModes}]
           ],If[ordern > 2, Flatten[Table[Table[
-            If[EvenQ[n], {-0.01 < Sum[psics[n, 2 i, j], {j, 1, nModes}] < 0.01, -0.01 < Sum[psisc[n, 2 i, j], {j, 0, nModes}] < 0.01},
-            {-0.01 < Sum[psics[n, 2 i + 1, j], {j, 1, nModes}] < 0.01, -0.01 < Sum[psisc[n, 2 i + 1, j], {j, 0, nModes}] < 0.01}
+            If[!EvenQ[n],
+            {-0.001 < Sum[psics[n, 2 i + 1, j], {j, 1, nModes}] < 0.001, -0.001 < Sum[psisc[n, 2 i + 1, j], {j, 0, nModes}] < 0.001}
+            (*,{-0.001 < Sum[psics[n, 2 i, j], {j, 1, nModes}] < 0.001, -0.001 < Sum[psisc[n, 2 i, j], {j, 0, nModes}] < 0.001},*)
+            ,xa
             ], {i, 0, Floor[n/2]}], {n, ordern, ordern}], 3], xa]
           }
         ,1],xa],
@@ -79,8 +83,8 @@ Table[
           {{deltal, deltal0}, {B0c[0], B0Est}, {muc[0], muc0}}, 
           Flatten[Table[{{B0c[i],0.01*B0Est},{muc[i],0.01*Min[Abs[mucMin],Abs[mucMax]]},{deltas[i],0.01}}, {i, 1, nModes}], 1], 
           If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], 
-            If[j > 0, {{psics[n, 2 i, j], 10},    {psicc[n, 2 i, j],10}, {psisc[n, 2 i, j], 10},    {psiss[n, 2 i, j],10}}, {{psisc[n, 2 i, j], 10}, {psicc[n, 2 i, j], 10}}], 
-            If[j > 0, {{psics[n, 2 i + 1, j], 10},{psicc[n,2 i+1,j],10}, {psisc[n, 2 i + 1, j], 10},{psiss[n,2 i+1,j],10}}, {{psisc[n,2 i+1,j], 10}, {psicc[n,2 i+1,j], 10}}]
+            If[j > 0, {(*{psics[n, 2 i, j], 10},*){psicc[n, 2 i, j],10}, (*{psisc[n, 2 i, j], 10},*){psiss[n, 2 i, j],10}}, {(*{psisc[n, 2 i, j], 10},*){psicc[n, 2 i, j], 10}}], 
+            If[j > 0, {{psics[n, 2 i + 1, j], 10},(*{psicc[n,2 i+1,j],10},*){psisc[n, 2 i + 1, j], 10}(*,{psiss[n,2 i+1,j],10}*)}, {{psisc[n,2 i+1,j], 10}(*, {psicc[n,2 i+1,j], 10}*)}]
           ], {j, 0, nModes}], {i, 0,Floor[n/2]}], {n, ordern, ordern}], 3],xa]
         }, 1],xa],
       {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations, AccuracyGoal -> 5, PrecisionGoal -> 5
