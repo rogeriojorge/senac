@@ -49,6 +49,7 @@ npointsPolPlots      = ToExpression[$ScriptCommandLine[[37]]];
 exportBFieldSurface  = ToExpression[$ScriptCommandLine[[38]]];
 keepfit              = ToExpression[$ScriptCommandLine[[39]]];
 export3DSurface      = ToExpression[$ScriptCommandLine[[40]]];
+readlowfit           = ToExpression[$ScriptCommandLine[[41]]];
 pi = N[Pi,10];
 
 (*Fast Numerical Integrator*)

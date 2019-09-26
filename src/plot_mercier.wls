@@ -21,7 +21,7 @@ If[muDefined==0 && plotOriginal==1,
     If[FileExistsQ[vmecOutput],
       If[exportBFieldSurface==1,
         timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
-        bvmecFig[[j]]=DensityPlot[BVMEC[theta, phi, Floor[iradius]], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[Phi]", "Poloidal Angle \[Theta]"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> 750, LegendLabel -> "B(\[Theta],\[Phi])"]];
+        bvmecFig[[j]]=DensityPlot[BVMEC[theta, phi, Floor[iradius]], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[Phi]", "Poloidal Angle \[Theta]_V"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> 750, LegendLabel -> "B(\[Theta],\[Phi])"]];
         Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_VMEC_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_.pdf"], bvmecFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
         WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       ];
@@ -57,7 +57,7 @@ If[plotFit==1,
 If[muDefined==0 && nsurfaces>1,
   WriteString[$Output, "    Plotting Iota Profiles...  "];timestart = AbsoluteTime[];
   If[FileExistsQ[vmecOutput],
-    fig1=ListPlot[{iotaAxisOut, iotaFit}, PlotOptions, AspectRatio -> 1, FrameLabel -> {"Surface", "Rotational Transform \[Iota]"}, PlotLegends -> {"Original \[Iota]", "Near-Axis \[Iota]"}, PlotStyle -> PointSize[0.018], PlotRange->{{0.9,Automatic},{All,All}}];
+    fig1=ListPlot[{iotaAxisOut, iotaFit}, PlotOptions, AspectRatio -> 1, FrameLabel -> {"Surface", "Rotational Transform \[Iota]"}, PlotLegends -> {"Original \[Iota]", "Near-Axis \[Iota] on Axis"}, PlotStyle -> PointSize[0.018], PlotRange->{{0.9,Automatic},{All,All}}];
     ,
     fig1=ListPlot[iotaFit, AspectRatio -> 1, PlotOptions, FrameLabel -> {"Surface", "Rotational Transform \[Iota]"}, PlotStyle -> PointSize[0.018]];
   ];
@@ -67,31 +67,32 @@ If[muDefined==0 && nsurfaces>1,
 
 (*Compare VMEC and Fitted Surface*)
 If[muDefined==0,
-  If[nfigsSurf==1,
-    WriteString[$Output, "    Plotting Comparison at Different Poloidal Planes...  \n"];timestart = AbsoluteTime[];
+  If[nfigsSurf>1,
+    WriteString[$Output, "    Plotting Comparison at Different Poloidal Planes 1...\n"];timestart = AbsoluteTime[];
     j=0;Table[j=j+1;
-      timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
-      fig2[Floor[iradius]]=Show[{
-        ParametricPlot[Evaluate[{RBCFit[#,  theta, Floor[iradius]], ZBSFit[#,  theta, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->npointsPolPlots, MaxRecursion->1, PlotStyle -> Dashed]//Quiet, 
-        ParametricPlot[Evaluate[{RBCVMEC[theta, #, Floor[iradius]], ZBSVMEC[theta, #, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->npointsPolPlots, MaxRecursion->1]//Quiet},
-      PlotRange -> All, AspectRatio -> Automatic, PlotOptions, FrameLabel -> {"R [meters]", "Z [meters]"}];
-      WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
-      timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
-      Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_Surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>".pdf"],fig2[Floor[iradius]], "AllowRasterization" -> True];
-      WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
-    ,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];
-    WriteString[$Output, "    Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
-    ,
-    WriteString[$Output, "    Plotting Comparison at Different Poloidal Planes..."];timestart = AbsoluteTime[];
-    j=0;Table[j=j+1;
+      timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot for figure "<>ToString[j]<>" of "<>ToString[nPlots]<>"..."];
       fig2=Show[{
         ParametricPlot[Evaluate[{RBCFit[phi,  theta, #], ZBSFit[phi,  theta, #]} & /@ Table[iradius, {iradius, 1, nsurfaces}][[1 ;; nsurfaces]]], {theta, 0, 2*pi}, PlotPoints->npointsPolPlots, MaxRecursion->1, PlotStyle -> Dashed]//Quiet, 
         ParametricPlot[Evaluate[{RBCVMEC[theta, phi, #], ZBSVMEC[theta, phi, #]} & /@ Table[iradius, {iradius, 1, nsurfaces}][[1 ;; nsurfaces]]], {theta, 0, 2*pi}, PlotPoints->npointsPolPlots, MaxRecursion->1]//Quiet},
         PlotRange -> All, AspectRatio -> Automatic, PlotOptions, FrameLabel -> {"R [meters]", "Z [meters]"}];
       Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_"<>ToString[j]<>"_ordern_"<>ToString[ordern]<>".pdf"],fig2, "AllowRasterization" -> True];
+      WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
     ,{phi, 0, 2*pi/vmecNFP*(1 - 1/nPlots), 2*pi/nPlots/vmecNFP}];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
   ];
+  WriteString[$Output, "    Plotting Comparison at Different Poloidal Planes 2...  \n"];timestart = AbsoluteTime[];
+  j=0;Table[j=j+1;
+    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot for figure "<>ToString[j]<>" of "<>ToString[nsurfaces]<>"..."];
+    fig3[j]=Show[{
+      ParametricPlot[Evaluate[{RBCFit[#,  theta, Floor[iradius]], ZBSFit[#,  theta, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->npointsPolPlots, MaxRecursion->1, PlotStyle -> Dashed]//Quiet, 
+      ParametricPlot[Evaluate[{RBCVMEC[theta, #, Floor[iradius]], ZBSVMEC[theta, #, Floor[iradius]]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->npointsPolPlots, MaxRecursion->1]//Quiet},
+    PlotRange -> All, AspectRatio -> Automatic, PlotOptions, FrameLabel -> {"R [meters]", "Z [meters]"}];
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
+    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_Surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>".pdf"],fig3[j], "AllowRasterization" -> True];
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
+  ,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];
+  WriteString[$Output, "    Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
 ];
 
 (*Plot Obtained Surface*)
@@ -119,7 +120,7 @@ j=0;Table[j=j+1;
   ];
   If[exportBFieldSurface==1,
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
-    bfitFig[[j]]=DensityPlot[BFuncExportB[theta,phi], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[Phi]", "Poloidal Angle \[Theta]"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotRange->All, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> "B(\[Theta],\[Phi])"]];
+    bfitFig[[j]]=DensityPlot[BFuncExportB[theta,phi], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[Phi]", "Poloidal Angle \[Theta]_V"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotRange->All, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> "B(\[Theta],\[Phi])"]];
     Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>"_.pdf"], bfitFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   ];

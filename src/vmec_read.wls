@@ -26,4 +26,6 @@ j=0;Table[j=j+1;
 	BVMEC  [theta_, phi_, j] = Chop[Sum[bmnc[[Floor[iradius], i]]*Cos[xmnyq[[i]] theta - xnnyq[[i]] phi], {i, 1, Length[xnnyq]}], 10^-7];
 	iotaAxisOut[[j]]         = VMECdatasets[[1]][[Floor[iradius]]];
 	vmecPSI[[j]]             = Abs[VMECdatasets[[6]][[Floor[iradius]]]];
-, {iradius,2,If[nsurfaces==1,2,nns],If[nsurfaces==1,1,(nns-2)/(nsurfaces-1)]}];
+, {iradius,4,If[nsurfaces==1,4,nns],If[nsurfaces==1,1,(nns-4)/(nsurfaces-1)]}];
+WriteString[$Output, "Psi on the surfaces = "<>ToString[vmecPSI]<>".\n"];
+WriteString[$Output, "Sqrt(psi/psi_b)     = "<>ToString[Sqrt[vmecPSI/(vmecPSI//Last)]]<>".\n"];
