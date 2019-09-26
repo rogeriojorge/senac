@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="LHD"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="test"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -8,7 +8,7 @@ vmecInput=${currentDIR}"/vmec/vmec_input_template.txt"; #template VMEC input fil
 vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
 #======SENAC=====
 runSENAC=1;              #1-> runs SENAC mathematica
-outputToVMEC=1;          #compute Fourier Modes and output to VMEC
+outputToVMEC=0;          #compute Fourier Modes and output to VMEC
 plotFit=1;               #Mathematica plots fit results
 plotOriginal=0;          #Mathematica plots original surface
 #======VMEC=====
@@ -19,7 +19,7 @@ plotRegcoilFit=0;        #Mathematica plots coils for fit
 runREGCOILoriginal=0;    #run REGCOIL for original/VMEC file
 plotRegcoilOriginal=0;   #Mathematica plots coils for original surface
 #======SENAC INPUT PARAMETERS=====
-ordern=2;                #Near-Axis Expansion Order (has to be greater than 2)
+ordern=3;                #Near-Axis Expansion Order (has to be greater than 2)
 nModes=3;                #number of fourier components in mu, delta and B0
 nsurfaces=6;             #number of surfaces to read and compare from VMEC
 nthetaM=20;              #resolution in theta for fit and Mercier's coordinates
@@ -40,7 +40,7 @@ maxRecursTheta=35;       #Theta resolution in numerical integration in Mercier t
 maxRecursPhi=350;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
 export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
-exportBFieldSurface=1;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
+exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
 nPlotTheta=50;           #number of interpolating points in theta
 nPlotPhi=140;            #number of interpolating points in phi
 plotPointsFig=50;        #plotpoints for 3D figure
@@ -50,8 +50,8 @@ ImageResolutionPlot=400; #resolution for 3D figure
 nfigsSurf=3;             #number of surfaces to plot in 3D figure
 nPlots=4;                #number of poloidal plots to save
 npointsPolPlots=35;      #number of points for poloidal plots
-nthetapointsBsurface=30; #plot points in theta for magnetic field on surface
-nphipointsBsurface=30;   #plot points in phi for magnetic field on surface
+nthetapointsBsurface=25; #plot points in theta for magnetic field on surface
+nphipointsBsurface=25;   #plot points in phi for magnetic field on surface
 coilthickness=0.10;      #thickness of the coils in VMEC units to plot
 npointsContourPlotREGCOIL=60;   #number of points in contourplot when finding coil contours in REGCOIL
 npointsInterpCoilPosREGCOIL=80; #number of points for theta grid in REGCOIL
