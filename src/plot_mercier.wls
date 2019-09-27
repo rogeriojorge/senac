@@ -26,12 +26,12 @@ If[muDefined==0 && plotOriginal==1,
         WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       ];
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
-      minB0VMEC = FindMinValue[{BVMEC[theta,phi,Floor[iradius]], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
-      maxB0VMEC = FindMaxValue[{BVMEC[theta,phi,Floor[iradius]], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
+      minB0VMEC[j] = FindMinValue[{BVMEC[theta,phi,Floor[iradius]], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
+      maxB0VMEC[j] = FindMaxValue[{BVMEC[theta,phi,Floor[iradius]], 0 <= theta <= 2*pi && phimin[[j]] <= phi <= phimax[[j]]}, {theta, phi}] // Quiet;
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
       figVMEC[[j]]  = ParametricPlot3D[(*VMECNposvecpsi[theta, phi]*)FluxSurfaceVMEC[theta, phi, Floor[iradius]], {theta, 0, 2*pi}, {phi, phimin[[j]], phimax[[j]]}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Opacity[0.3+0.7*j/nfigsSurf], Specularity[White, 20]], PlotPoints -> {30, plotPointsFig}, MaxRecursion -> maxRecursPlot
-        , ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", {minB0VMEC, maxB0VMEC}}][(BVMEC[#4,#5,Floor[iradius]])] &)];
+        , ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", {minB0VMEC[j], maxB0VMEC[j]}}][(BVMEC[#4,#5,Floor[iradius]])] &)];
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       ,
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
@@ -66,7 +66,7 @@ If[muDefined==0 && nsurfaces>1,
 ];
 
 (*Compare VMEC and Fitted Surface*)
-If[muDefined==0,
+If[muDefined==0 && plotPolFig==1,
   If[nfigsSurf>1,
     WriteString[$Output, "    Plotting Comparison at Different Poloidal Planes 1...\n"];timestart = AbsoluteTime[];
     j=0;Table[j=j+1;

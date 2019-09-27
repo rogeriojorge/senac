@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-factorPhi=1.0;
+factorPhi=1.1;
 (*Initialize Variables*)
 timestartphiAxis=0;timestartMercierAngle=0;timestartrhoVMEC=0;timestartFit=0;
 Table[
@@ -44,52 +44,32 @@ Table[
     ];
 
     fitParamsFile = Directory[] <> "/data/" <> proj <> "/" <> proj <> "_fit_parameters_ordern_" <> ToString[ordern - 1] <> ".txt";
-    If[FileExistsQ[fitParamsFile] && readlowfit==1,
       nlm = FindFit[dataVMEC,
         DeleteCases[Flatten[
-          {modelVMEC/.ToExpression[Import[fitParamsFile, {"Lines", 1}]],
-          If[ordern > 2, Flatten[Table[Table[
-            If[!EvenQ[n],
-            {-0.001 < Sum[psics[n, 2 i + 1, j], {j, 1, nModes}] < 0.001, -0.001 < Sum[psisc[n, 2 i + 1, j], {j, 0, nModes}] < 0.001}
-            (*,{-0.001 < Sum[psics[n, 2 i, j], {j, 1, nModes}] < 0.001, -0.001 < Sum[psisc[n, 2 i, j], {j, 0, nModes}] < 0.001},*)
-            ,xa
-            ], {i, 0, Floor[n/2]}], {n, ordern, ordern}], 3], xa]
-          }
-        ,1],xa],
+          If[FileExistsQ[fitParamsFile] && readlowfit==1,
+            {modelVMEC/.ToExpression[Import[fitParamsFile, {"Lines", 1}]]}
+          ,
+            {modelVMEC, mucMin < (muVMEC/.phi->0) < mucMax, mucMin < (muVMEC/.phi->pi) < mucMax, 0.01<B0c[0], 0.01 < (B0VMEC/.phi->0), 0.01 < (B0VMEC/.phi->pi), deltalmin <= deltal <= deltalmax, 
+              Flatten[Table[{{-pi < deltas[i] < pi}},{i,1,nModes}]]}
+          ],1],xa],
+        If[FileExistsQ[fitParamsFile] && readlowfit==1,
         DeleteCases[Flatten[{ 
           If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], 
-            If[j > 0, {(*{psics[n, 2 i, j], 10},*){psicc[n, 2 i, j],10}, (*{psisc[n, 2 i, j], 10},*){psiss[n, 2 i, j],10}}, {(*{psisc[n, 2 i, j], 10},*){psicc[n, 2 i, j], 10}}], 
-            If[j > 0, {{psics[n, 2 i + 1, j], 10},(*{psicc[n,2 i+1,j],10},*){psisc[n, 2 i + 1, j], 10}(*,{psiss[n,2 i+1,j],10}*)}, {{psisc[n,2 i+1,j], 10}(*, {psicc[n,2 i+1,j], 10}*)}]
+            {{psic[n, 2 i, j], 10}}, {{psic[n, 2 i + 1, j],10}}
           ], {j, 0, nModes}], {i, 0,Floor[n/2]}], {n, ordern, ordern}], 3],xa]
-        }, 1],xa],
-      {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations, AccuracyGoal -> 5, PrecisionGoal -> 5
-      ];
-      fitParams[iradius] = Flatten[Append[nlm,ToExpression[Import[fitParamsFile, {"Lines", iradius}]]]];
-    ,
-      fitParams[iradius] = FindFit[dataVMEC,
-        DeleteCases[Flatten[
-          {modelVMEC, mucMin < (muVMEC/.phi->0) < mucMax, mucMin < (muVMEC/.phi->pi) < mucMax, 0.01<B0c[0], 0.01 < (B0VMEC/.phi->0), 0.01 < (B0VMEC/.phi->pi), deltalmin <= deltal <= deltalmax, 
-          Flatten[
-            Table[{{-pi < deltas[i] < pi}},{i,1,nModes}]
-          ],If[ordern > 2, Flatten[Table[Table[
-            If[!EvenQ[n],
-            {-0.001 < Sum[psics[n, 2 i + 1, j], {j, 1, nModes}] < 0.001, -0.001 < Sum[psisc[n, 2 i + 1, j], {j, 0, nModes}] < 0.001}
-            (*,{-0.001 < Sum[psics[n, 2 i, j], {j, 1, nModes}] < 0.001, -0.001 < Sum[psisc[n, 2 i, j], {j, 0, nModes}] < 0.001},*)
-            ,xa
-            ], {i, 0, Floor[n/2]}], {n, ordern, ordern}], 3], xa]
-          }
-        ,1],xa],
+        }, 1],xa]
+        ,
         DeleteCases[Flatten[{
           {{deltal, deltal0}, {B0c[0], B0Est}, {muc[0], muc0}}, 
           Flatten[Table[{{B0c[i],0.01*B0Est},{muc[i],0.01*Min[Abs[mucMin],Abs[mucMax]]},{deltas[i],0.01}}, {i, 1, nModes}], 1], 
           If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], 
-            If[j > 0, {(*{psics[n, 2 i, j], 10},*){psicc[n, 2 i, j],10}, (*{psisc[n, 2 i, j], 10},*){psiss[n, 2 i, j],10}}, {(*{psisc[n, 2 i, j], 10},*){psicc[n, 2 i, j], 10}}], 
-            If[j > 0, {{psics[n, 2 i + 1, j], 10},(*{psicc[n,2 i+1,j],10},*){psisc[n, 2 i + 1, j], 10}(*,{psiss[n,2 i+1,j],10}*)}, {{psisc[n,2 i+1,j], 10}(*, {psicc[n,2 i+1,j], 10}*)}]
+            {{psic[n, 2 i, j], 10}}, {{psic[n, 2 i + 1, j],10}}
           ], {j, 0, nModes}], {i, 0,Floor[n/2]}], {n, ordern, ordern}], 3],xa]
-        }, 1],xa],
+        }, 1],xa]
+        ],
       {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations, AccuracyGoal -> 5, PrecisionGoal -> 5
       ];
-    ];
+      fitParams[iradius] = If[FileExistsQ[fitParamsFile] && readlowfit==1, Flatten[Append[nlm,ToExpression[Import[fitParamsFile, {"Lines", iradius}]]]], nlm];
     WriteString[$Output, "    Best fit parameters of surface "<>ToString[iradius]<>" - "<>ToString[fitParams[iradius]]<>"\n"];
     timestartFit=timestartFit+AbsoluteTime[]-timestart;
   ];

@@ -20,11 +20,10 @@ positiveRhoPos = Position[Coefficient[rho[1, 1]/.psii->1, 1/Sqrt[psin[1, 1, 2]]]
 rho[theta_, phi_] = rho[theta, phi][[positiveRhoPos]]/.psii->PSI;
 
 (*Order n psi*)
-Table[psin[theta_, phi_, n] = ((B0VMEC)^(n/2)) *
-  Sum[If[EvenQ[n], 
-    (Sum[psicc[n, 2 i,   j]*Cos[vmecNFP*j*phi]+0*psics[n, 2 i,   j]*Sin[vmecNFP*j*phi], {j, 0, nModes}])*Cos[2 i*(      theta + deltaVMEC)] + (Sum[0*psisc[n, 2 i,   j]*Cos[vmecNFP*j*phi]+psiss[n, 2 i,   j]*Sin[vmecNFP*j*phi], {j, 0, nModes}])*Sin[2 i*(      theta + deltaVMEC)], 
-    (Sum[0*psicc[n, 2 i+1, j]*Cos[vmecNFP*j*phi]+psics[n, 2 i+1, j]*Sin[vmecNFP*j*phi], {j, 0, nModes}])*Cos[(2 i + 1)*(theta + deltaVMEC)] + (Sum[psisc[n, 2 i+1, j]*Cos[vmecNFP*j*phi]+0*psiss[n, 2 i+1, j]*Sin[vmecNFP*j*phi], {j, 0, nModes}])*Sin[(2 i + 1)*(theta + deltaVMEC)]]
-  ,{i, 0, Floor[n/2]}], {n, 0, ordern}];
+Table[psin[theta_, phi_, n] = ((B0VMEC)^(n/2)) * Sum[If[EvenQ[n], 
+  Sum[psic[n, 2 i  , j]*Cos[2*i*theta       - vmecNFP*j*phi]+0*psis[n, 2 i,   j]*Sin[2*i*theta       - vmecNFP*j*phi], {j, 0, nModes}], 
+  Sum[psic[n, 2 i+1, j]*Cos[(2*i + 1)*theta - vmecNFP*j*phi]+0*psis[n, 2 i+1, j]*Sin[(2*i + 1)*theta - vmecNFP*j*phi], {j, 0, nModes}]]
+,{i, 0, Floor[n/2]}], {n, 0, ordern}];
 
 (*Order 0 and 1 are zero*)
 psin[theta_, phi_, 0] = 0; 
