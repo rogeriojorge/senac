@@ -58,13 +58,6 @@ GaussLegendreQuadrature[f_, {x_, a_, b_}, n_Integer: 10, prec_: MachinePrecision
   Module[{nodes, weights}, {nodes, weights} = Most[NIntegrate`GaussRuleData[n, prec]];
    (b - a) weights.Map[Function[x, f], Rescale[nodes, {0, 1}, {a, b}]]];
 
-If[readFit==1,
-  timestart1 = AbsoluteTime[]; WriteString[$Output, "  Reading Fit From Text File...\n"];
-  (*Get[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_functions.mx"]];*)
-  (*Read from output file for VMEC*)
-  WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
-];
-
 (*Obtain Axis and Surface Parameters*)
 If[FileExistsQ[vmecOutput],
     timestart1 = AbsoluteTime[]; WriteString[$Output, "  Read from VMEC file...\n"];
@@ -116,12 +109,10 @@ If[muDefined==0,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Constructing rho of psi..."];
   Get[StringJoin[currentPath,"src/rho_of_psi.wls"]];
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
-  If[readFit==0,
-    (*Perform Fit*)
-    timestart1 = AbsoluteTime[]; WriteString[$Output, "  Fitting VMEC to Mercier's theta and rho...\n"];
-    Get[StringJoin[currentPath,"src/fit_to_mercier.wls"]];
-    WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
-  ];
+  (*Perform Fit*)
+  timestart1 = AbsoluteTime[]; WriteString[$Output, "  Fitting VMEC to Mercier's theta and rho...\n"];
+  Get[StringJoin[currentPath,"src/fit_to_mercier.wls"]];
+  WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
   ,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Constructing Mercier's theta and rho..."];
   rho[theta_, phi_] = Sqrt[(vmecPSI[[nsurfaces]]*Sqrt[1 - mu[phi]^2] )/(pi*(B0[phi]) (1 + mu[phi]*Cos[2 (theta + delta[phi])]))];

@@ -17,6 +17,8 @@ Table[
   thetaMercierFunc[theta_, phi_, iradius] = Chop[ArcTan[xcomponent[theta, phi], ycomponent[theta, phi]], 10^-7];
   timestartMercierAngle=timestartMercierAngle+AbsoluteTime[]-timestart;Clear[thetaMercierTable];
 
+fitParamsFile[order_] := Directory[] <> "/data/" <> proj <> "/" <> proj <> "_fit_parameters_ordern_" <> ToString[order] <> ".txt";
+If[readFit==1, fitParams[iradius] = ToExpression[Import[fitParamsFile[ordern], {"Lines", iradius}]],
   If[iradius>1 && keepfit==1,
     fitParams[iradius] = fitParams[iradius-1];
   ,
@@ -42,17 +44,15 @@ Table[
       B0Est     = B0c[0]/.fitParams[iradius-1];
       deltac0   = deltac[0]/.fitParams[iradius-1];
     ];
-
-    fitParamsFile = Directory[] <> "/data/" <> proj <> "/" <> proj <> "_fit_parameters_ordern_" <> ToString[ordern - 1] <> ".txt";
       nlm = FindFit[dataVMEC,
         DeleteCases[Flatten[
-          If[FileExistsQ[fitParamsFile] && readlowfit==1,
-            {modelVMEC/.ToExpression[Import[fitParamsFile, {"Lines", 1}]]}
+          If[FileExistsQ[fitParamsFile[ordern-1]] && readlowfit==1,
+            {modelVMEC/.ToExpression[Import[fitParamsFile[ordern-1], {"Lines", 1}]]}
           ,
             {modelVMEC, mucMin < (muVMEC/.phi->0) < mucMax, mucMin < (muVMEC/.phi->pi) < mucMax, 0.01<B0c[0], 0.01 < (B0VMEC/.phi->0), 0.01 < (B0VMEC/.phi->pi), deltalmin <= deltal <= deltalmax, 
               Flatten[Table[{{-pi < deltas[i] < pi}},{i,1,nModes}]]}
           ],1],xa],
-        If[FileExistsQ[fitParamsFile] && readlowfit==1,
+        If[FileExistsQ[fitParamsFile[ordern-1]] && readlowfit==1,
         DeleteCases[Flatten[{ 
           If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], 
             {{psic[n, 2 i, j], 10}}, {{psic[n, 2 i + 1, j],10}}
@@ -69,10 +69,11 @@ Table[
         ],
       {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations, AccuracyGoal -> 5, PrecisionGoal -> 5
       ];
-      fitParams[iradius] = If[FileExistsQ[fitParamsFile] && readlowfit==1, Flatten[Append[nlm,ToExpression[Import[fitParamsFile, {"Lines", iradius}]]]], nlm];
+      fitParams[iradius] = If[FileExistsQ[fitParamsFile[ordern-1]] && readlowfit==1, Flatten[Append[nlm,ToExpression[Import[fitParamsFile[ordern-1], {"Lines", iradius}]]]], nlm];
     WriteString[$Output, "    Best fit parameters of surface "<>ToString[iradius]<>" - "<>ToString[fitParams[iradius]]<>"\n"];
     timestartFit=timestartFit+AbsoluteTime[]-timestart;
   ];
+];
   (*The inverse transform phi_axis -> phi_boundary if needed*)
   (*phiBoundary = Interpolation[Flatten[ParallelTable[{{theta, phia}, phi /. FindRoot[phiAxis[iradius][theta, phi] - phia, {phi, phia, 0, 2*pi}]}, {theta, 0, 2*pi, 2*pi/nthetaM}, {phia, 0, 2*pi, 2*pi/nphiM}], 1]];*)
 
@@ -82,9 +83,9 @@ Table[
   ZBSFit[phi_, theta_, iradius] = Re[FluxSurfacenFitVMEC[thetaMercierFunc[theta, phi, iradius], phiAxis[iradius][theta,phi], iradius][[3]]]//Quiet; (*VMEC's Coordinates*)
   WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestartFitIteration]<>"s\n"];
 
-  iotaFitSurf = GaussLegendreQuadrature[(-D[deltaVMEC /. fitParams[iradius], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (muVMEC /. fitParams[iradius])^2]+D[deltaVMEC /. fitParams[iradius], phi], {phi, 0, 2*pi}, 250, 5]/(2*pi)-nNormal;
+  (*iotaFitSurf = GaussLegendreQuadrature[(-D[deltaVMEC /. fitParams[iradius], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (muVMEC /. fitParams[iradius])^2]+D[deltaVMEC /. fitParams[iradius], phi], {phi, 0, 2*pi}, 100, 5]/(2*pi)-nNormal;
   If[FileExistsQ[vmecOutput],WriteString[$Output, "Iota From VMEC "<>ToString[iotaAxisOut[[iradius]]]<>", "]];
-  WriteString[$Output, "Iota from Near-Axis:  "<>ToString[iotaFitSurf]<>"\n"];
+  WriteString[$Output, "Iota from Near-Axis:  "<>ToString[iotaFitSurf]<>"\n"];*)
 
 ,{iradius,1,nsurfaces}];Clear[dataVMEC];
 
