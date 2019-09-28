@@ -125,11 +125,11 @@ j=0;Table[j=j+1;
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   ];
   timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
-  minB0 = FindMinValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phiMmin <= phi <= phiMmax}, {theta, phi}] // Quiet;
-  maxB0 = FindMaxValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phiMmin <= phi <= phiMmax}, {theta, phi}] // Quiet;
+  minB0 = FindMinValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && 0 <= phi <= 2*pi}, {theta, phi}] // Quiet;
+  maxB0 = FindMaxValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && 0 <= phi <= 2*pi}, {theta, phi}] // Quiet;
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
-  figFit[[j]]  = ParametricPlot3D[Nposvecpsi[theta, phi](*FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]]*), {theta, 0, 2*pi}, {phi, phiMmin, phiMmax}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Opacity[0.3+0.7*j/nfigsSurf], Specularity[White, 20]], PlotPoints -> {30, plotPointsFig}, MaxRecursion -> maxRecursPlot
+  figFit[[j]]  = ParametricPlot3D[Nposvecpsi[theta, phi](*FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]]*), {theta, 0, 2*pi}, {phi, 0, 2*pi}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[Opacity[0.3+0.7*j/nfigsSurf], Specularity[White, 20]], PlotPoints -> {30, plotPointsFig}, MaxRecursion -> maxRecursPlot
   , ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", { minB0, maxB0}}][(BFunc[#4,#5])] &)];
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
 ,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];

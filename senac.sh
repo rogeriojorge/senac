@@ -8,10 +8,10 @@ vmecInput=${currentDIR}"/vmec/vmec_input_template.txt"; #template VMEC input fil
 vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
 #======SENAC=====
 runSENAC=1;              #1-> runs SENAC mathematica
-outputToVMEC=0;          #compute Fourier Modes and output to VMEC
+outputToVMEC=1;          #compute Fourier Modes and output to VMEC
 plotFit=1;               #Mathematica plots fit results
 plotOriginal=0;          #Mathematica plots original surface
-plotPolFig=0;            #Mathematica plots comparison at different poloidal plmaes
+plotPolFig=1;            #Mathematica plots comparison at different poloidal plmaes
 #======VMEC=====
 runVMECofFit=0;          #run VMEC for fit
 #======REGCOIL=====
@@ -20,18 +20,18 @@ plotRegcoilFit=0;        #Mathematica plots coils for fit
 runREGCOILoriginal=0;    #run REGCOIL for original/VMEC file
 plotRegcoilOriginal=0;   #Mathematica plots coils for original surface
 #======SENAC INPUT PARAMETERS=====
-ordern=2;                #Near-Axis Expansion Order (has to be greater than 2)
+ordern=3;                #Near-Axis Expansion Order (has to be greater than 2)
 nModes=4;                #number of fourier components in mu, delta and B0
 nsurfaces=6;             #number of surfaces to read and compare from VMEC
 nthetaM=20;              #resolution in theta for fit and Mercier's coordinates
 nphiM=40;                #resolution in phi for fit and Mercier's coordinates
-maxiterations=500;      #max number of iterations for fit
+maxiterations=5500;      #max number of iterations for fit
 keepfit=1;               #use the same fit results for outer surfaces as inner surface
 readlowfit=1;            #use the fit results of lower order to construct higher order fit
 deltac0=0.0;             #initial point for deltac0 betweeon -pi and pi
 deltal0=1.0;             #initial point for deltal
-deltalmin=-10.01;         #minimum deltal to help fit
-deltalmax=-9.99;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
+deltalmin=1.99;         #minimum deltal to help fit
+deltalmax=2.01;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
 muc0=0.4;                #initial point for muc0
 mucMin=0.2;              #minimum muc0 to help fit
 mucMax=0.9;              #maximum muc0 to help fit
@@ -41,7 +41,7 @@ maxRecursTheta=35;       #Theta resolution in numerical integration in Mercier t
 maxRecursPhi=350;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
 export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
-exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
+exportBFieldSurface=1;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
 nPlotTheta=50;           #number of interpolating points in theta
 nPlotPhi=150;            #number of interpolating points in phi
 plotPointsFig=50;        #plotpoints for 3D figure
@@ -51,8 +51,8 @@ ImageResolutionPlot=400; #resolution for 3D figure
 nfigsSurf=4;             #number of surfaces to plot in 3D figure
 nPlots=10;                #number of poloidal plots to save
 npointsPolPlots=40;      #number of points for poloidal plots
-nthetapointsBsurface=20; #plot points in theta for magnetic field on surface
-nphipointsBsurface=20;   #plot points in phi for magnetic field on surface
+nthetapointsBsurface=25; #plot points in theta for magnetic field on surface
+nphipointsBsurface=25;   #plot points in phi for magnetic field on surface
 coilthickness=0.10;      #thickness of the coils in VMEC units to plot
 npointsContourPlotREGCOIL=60;   #number of points in contourplot when finding coil contours in REGCOIL
 npointsInterpCoilPosREGCOIL=80; #number of points for theta grid in REGCOIL
