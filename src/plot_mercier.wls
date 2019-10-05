@@ -58,7 +58,7 @@ If[muDefined==0 && plotOriginal==1,
 
 If[plotFit==1,
 (*Plot Iota Profiles*)
-If[muDefined==10 && nsurfaces>1,
+If[muDefined==0 && nsurfaces>1,
   WriteString[$Output, "    Plotting Iota Profiles...  "];timestart = AbsoluteTime[];
   If[FileExistsQ[vmecOutput],
     fig1=ListPlot[{iotaAxisOut, iotaFit}, PlotOptions, AspectRatio -> 1, FrameLabel -> {"Surface", "Rotational Transform \[Iota]"}, PlotLegends -> {"Original \[Iota]", "Near-Axis \[Iota] on Axis"}, PlotStyle -> PointSize[0.018], PlotRange->{{0.9,Automatic},{All,All}}];
@@ -117,8 +117,8 @@ j=0;Table[j=j+1;
     B0N = B0VMEC /. fitParams[Floor[iradius]];dmuN = D[muN,phi]/sprimeVMEC[phi];ddmuN = D[dmuN,phi]/sprimeVMEC[phi];
     ddeltaN = D[deltaN,phi]/sprimeVMEC[phi];dddeltaN = D[ddeltaN,phi]/sprimeVMEC[phi];
     dB0N = D[B0N,phi]/sprimeVMEC[phi];dtorsVMEC = D[torsVMEC[phi],phi];dcurvVMEC = D[curvVMEC[phi],phi];
-    rhoN[theta_,phi_] = rho[-theta, phi] /. fitParams[Floor[iradius]] /.PSI->vmecPSI[[Floor[iradius]]];
-    BFunc[theta_, phi_]=(1 + rhoN[theta, phi]*Cos[theta]*curvVMEC[phi])*(B0VMEC/.fitParams[Floor[iradius]]);
+    rhoN[theta_,phi_] = rho[theta, phi] /. fitParams[Floor[iradius]] /.PSI->vmecPSI[[Floor[iradius]]];
+    BFunc[theta_, phi_]=(1 + rhoN[theta, phi]*Cos[theta]*curvVMEC[phi])*(B0N);
     If[ordern==3, BFunc[theta_, phi_] = BFunc[theta,phi] + 1/2 B0N rhoN[theta, phi]^2 (-((dmuN^2 muN Cos[2 (deltaN + theta)])/(-1 + muN^2)^2) + (ddmuN Cos[2 (deltaN + theta)])/(2 (-1 + muN^2)) + (dB0N dmuN Cos[2 (deltaN + theta)])/(2 B0N (-1 + muN^2)) + 2 Cos[theta]^2 curvVMEC[phi]^2 + (dddeltaN - dtorsVMEC) muN Sin[2 (deltaN + theta)] + (-((B0N dmuN Sin[2 (deltaN + theta)])/(2 (-1 + muN^2))) + B0N muN Cos[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]))^2/B0N^2 + ((B0N dmuN Cos[2 (deltaN + theta)])/(2 (-1 + muN^2)) + B0N muN Sin[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]))^2/B0N^2 + dmuN Sin[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]) + (dB0N muN Sin[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]))/B0N + 2 muN Cos[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi])^2 + (dmuN Sin[2 (deltaN + theta)] (-ddeltaN + torsVMEC[phi]))/(-1 + muN^2))];
   ,
     phiMmin=0;phiMmax=2*pi;
@@ -141,7 +141,7 @@ j=0;Table[j=j+1;
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
   figFit[[j]]  = ParametricPlot3D[Nposvecpsi[theta, phi](*FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]]*), {theta, 0, 2*pi}, {phi, phiMmin, phiMmax}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[(*Opacity[0.3+0.7*j/nfigsSurf],*) Specularity[White, 20]], PlotPoints -> {30, plotPointsFig}, MaxRecursion -> maxRecursPlot
-  , ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", { minB0, maxB0}}][(BFunc[#4,#5])] &)];
+  , ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", { minB0, maxB0}}][(BFunc[-#4,#5])] &)];
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
 ,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];
 timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
