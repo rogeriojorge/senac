@@ -29,8 +29,18 @@ Table[psin[theta_, phi_, n] = ((B0VMEC)^(n/2)) * Sum[If[EvenQ[n],
 psin[theta_, phi_, 0] = 0; 
 psin[theta_, phi_, 1] = 0;
 
+deltal0=-vmecNFP;
+deltac0=0;
+
+Switch[proj,
+  "TJII", deltal0=0,
+  "ARIES", deltal0=3,
+  "NCSX", deltal0=3,
+  "ESTELL", deltac0=pi/2; deltal0=2
+];
+
 (*Order 2 is an ellipse*)
 muVMEC = muc[0] + Sum[muc[i]*Cos[vmecNFP i phi], {i, 1, nModes}];
-deltaVMEC = deltal*phi/2 + deltac0 + Sum[deltas[i]*Sin[vmecNFP i phi], {i, 1, nModes}];
+deltaVMEC = deltal0*phi/2 + deltac0 + Sum[deltas[i]*Sin[vmecNFP i phi], {i, 1, nModes}];
 B0VMEC = B0c[0] + Sum[B0c[i]*Cos[vmecNFP i phi], {i, 1, nModes}];
 psin[theta_, phi_, 2] = pi*(B0VMEC)*(1 + muVMEC*Cos[2*(theta + deltaVMEC)])/Sqrt[1 - (muVMEC)^2];

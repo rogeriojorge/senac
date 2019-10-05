@@ -77,8 +77,8 @@ If[FileExistsQ[vmecOutput],
 
 (*VMEC Axis Frenet-Serret Frame*)
 timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing VMEC's Frenet-Serret Frame and Surfaces..."]; Off[Simplify::time];
-curvVMEC[t_] = Chop[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/Norm[closedcurvVMEC'[t]]^3, 10^-7]//Re;
-torsVMEC[t_] = Chop[Dot[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]], closedcurvVMEC'''[t]]/Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]^2, 10^-7];
+curvVMEC[t_] = Chop[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/ComplexExpand[Norm[closedcurvVMEC'[t]]^3, 10^-7]]//Re;
+torsVMEC[t_] = Chop[Dot[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]], closedcurvVMEC'''[t]]/ComplexExpand[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]]^2, 10^-7];
 sprimeVMEC[t_] = Chop[Simplify[Chop[ComplexExpand[Norm[closedcurvVMEC'[t]]], 10^-7], TimeConstraint -> 0.01], 10^-7];
 b0VMEC[t_] = Simplify[Chop[closedcurvVMEC'[t]/sprimeVMEC[t], 10^-7], TimeConstraint -> 0.01];
 k0VMEC[t_] = Simplify[Chop[b0VMEC'[t]/sprimeVMEC[t], 10^-7], TimeConstraint -> 0.01]/curvVMEC[t]//Re;
@@ -125,7 +125,7 @@ If[muDefined==0,
 (*Compute Iota on Axis from Expression of Near-Axis Expansion*)
 If[muDefined==1,
   printv = printv <> "Iota on Axis From Near-Axis Formula" <> nl;
-  iotaFit = GaussLegendreQuadrature[(-D[delta[phi], phi] + torsVMEC[phi])*Sqrt[1 - (mu[phi])^2]+D[delta[phi], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal;
+  iotaFit = GaussLegendreQuadrature[(-D[delta[phi], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (mu[phi])^2]+D[delta[phi], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal;
   Print["  Iota on Axis from near-axis formula: "<>ToString[iotaFit]];
   printv = printv <> ToString[iotaFit] <> nl;
   ,
