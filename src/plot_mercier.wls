@@ -21,7 +21,7 @@ If[muDefined==0 && plotOriginal==1,
     If[FileExistsQ[vmecOutput],
       If[exportBFieldSurface==1,
         timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
-        bvmecFig[[j]]=DensityPlot[BVMEC[theta, phi, Floor[iradius]], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[Phi]", HoldForm["Poloidal Angle " Subscript[\[Theta], V]]}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> 750, LegendLabel -> HoldForm["B(" Subscript[\[Theta], V] ",\[Phi])"]]];
+        bvmecFig[[j]]=DensityPlot[BVMEC[theta, phi, Floor[iradius]], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[CapitalPhi]", HoldForm["Poloidal Angle " Subscript[\[Theta], V]]}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> 750, LegendLabel -> HoldForm["B(" Subscript[\[Theta], V] ",\[CapitalPhi])"]]];
         Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_VMEC_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_.pdf"], bvmecFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
         WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       ];
@@ -61,7 +61,9 @@ If[plotFit==1,
 If[muDefined==0 && nsurfaces>1,
   WriteString[$Output, "    Plotting Iota Profiles...  "];timestart = AbsoluteTime[];
   If[FileExistsQ[vmecOutput],
-    fig1=ListPlot[{iotaAxisOut, iotaFit}, PlotOptions, AspectRatio -> 1, FrameLabel -> {"Surface", "Rotational Transform \[Iota]"}, PlotLegends -> {"Original \[Iota]", "Near-Axis \[Iota] on Axis"}, PlotStyle -> PointSize[0.018], PlotRange->{{0.9,Automatic},{All,All}}];
+    iotaFitPlot=Table[{psiTable[[j]],iotaFit[[j]]},{j,1,Length[iotaFit]}];
+    iotaAxisOutPlot=Table[{psiTable[[j]],iotaAxisOut[[j]]},{j,1,Length[iotaAxisOut]}];
+    fig1=ListPlot[{iotaAxisOutPlot, iotaFitPlot}, PlotOptions, AspectRatio -> 1, FrameLabel -> {HoldForm["\[Psi]/" Subscript[\[Psi], b]], "Rotational Transform \[Iota]"}, PlotLegends -> {"VMEC \[Iota]", "Near-Axis \[Iota] on Axis"}, PlotStyle -> PointSize[0.018], PlotRange->{{0.,Automatic},{All,All}}];
     ,
     fig1=ListPlot[iotaFit, AspectRatio -> 1, PlotOptions, FrameLabel -> {"Surface", "Rotational Transform \[Iota]"}, PlotStyle -> PointSize[0.018]];
   ];
@@ -100,60 +102,74 @@ If[muDefined==0 && plotPolFig==1,
 ];
 
 (*Plot Obtained Surface*)
-If[export3DSurface==1,
-timestart = AbsoluteTime[]; WriteString[$Output, "    Plotting Obtained Surface...\n"];
-figFit=Array[Null,nfigsSurf];bfitFig=Array[Null,nfigsSurf];
-j=0;Table[j=j+1;
+If[export3DSurface==1 || exportBFieldSurface==1,
+  timestartplotfit = AbsoluteTime[]; WriteString[$Output, "    Plotting Obtained Surface...\n"];
+  figFit=Array[Null,nfigsSurf];
+  j=0;Table[j=j+1;WriteString[$Output, "     Surface "<>ToString[j]<>" of "<>ToString[nfigsSurf],"...\n"];
   If[muDefined==0,
     phiMmin=phiAxis[j][0,phimin[[j]]];
     phiMmax=phiAxis[j][0,phimax[[j]]];
-    (**)timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Grid for Figure "<>ToString[j]<>" of "<>ToString[nfigsSurf],"..."];
-    posvecpsiTable = Table[ParallelTable[FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]][[i]], {theta, 0, 2*pi, 2*pi/nPlotTheta}, {phi, phiMmin, phiMmax, (phiMmax-phiMmin)/nPlotPhi}], {i, 1, 3}];
-    Nposvecpsitemp = ParallelTable[ListInterpolation[posvecpsiTable[[i]], {{0, 2*pi}, {phiMmin, phiMmax}}], {i, 1, 3}];
-    Nposvecpsi[theta_, phi_] = Table[Nposvecpsitemp[[i]][theta, phi], {i, 1, 3}];
-    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];(**)
-    (*Nposvecpsi[theta_, phi_] = FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]];*)
+    If[export3DSurface==1,
+      (**)timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Grid for Figure "<>ToString[j]<>" of "<>ToString[nfigsSurf],"..."];
+      posvecpsiTable = Table[ParallelTable[FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]][[i]], {theta, 0, 2*pi, 2*pi/nPlotTheta}, {phi, phiMmin, phiMmax, (phiMmax-phiMmin)/nPlotPhi}], {i, 1, 3}];
+      Nposvecpsitemp = ParallelTable[ListInterpolation[posvecpsiTable[[i]], {{0, 2*pi}, {phiMmin, phiMmax}}], {i, 1, 3}];
+      Nposvecpsi[theta_, phi_] = Table[Nposvecpsitemp[[i]][theta, phi], {i, 1, 3}];
+      WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];(**)
+      (*Nposvecpsi[theta_, phi_] = FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]];*)
+    ];
     muN = muVMEC /. fitParams[Floor[iradius]];deltaN = deltaVMEC /. fitParams[Floor[iradius]];
     B0N = B0VMEC /. fitParams[Floor[iradius]];dmuN = D[muN,phi]/sprimeVMEC[phi];ddmuN = D[dmuN,phi]/sprimeVMEC[phi];
     ddeltaN = D[deltaN,phi]/sprimeVMEC[phi];dddeltaN = D[ddeltaN,phi]/sprimeVMEC[phi];
-    dB0N = D[B0N,phi]/sprimeVMEC[phi];dtorsVMEC = D[torsVMEC[phi],phi];dcurvVMEC = D[curvVMEC[phi],phi];
+    dB0N = D[B0N,phi]/sprimeVMEC[phi];dtorsVMEC = D[torsVMEC[phi],phi]/sprimeVMEC[phi];dcurvVMEC = D[curvVMEC[phi],phi]/sprimeVMEC[phi];
     rhoN[theta_,phi_] = rho[theta, phi] /. fitParams[Floor[iradius]] /.PSI->vmecPSI[[Floor[iradius]]];
-    BFunc[theta_, phi_]=(1 + rhoN[theta, phi]*Cos[theta]*curvVMEC[phi])*(B0N);
-    If[ordern==3, BFunc[theta_, phi_] = BFunc[theta,phi] + 1/2 B0N rhoN[theta, phi]^2 (-((dmuN^2 muN Cos[2 (deltaN + theta)])/(-1 + muN^2)^2) + (ddmuN Cos[2 (deltaN + theta)])/(2 (-1 + muN^2)) + (dB0N dmuN Cos[2 (deltaN + theta)])/(2 B0N (-1 + muN^2)) + 2 Cos[theta]^2 curvVMEC[phi]^2 + (dddeltaN - dtorsVMEC) muN Sin[2 (deltaN + theta)] + (-((B0N dmuN Sin[2 (deltaN + theta)])/(2 (-1 + muN^2))) + B0N muN Cos[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]))^2/B0N^2 + ((B0N dmuN Cos[2 (deltaN + theta)])/(2 (-1 + muN^2)) + B0N muN Sin[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]))^2/B0N^2 + dmuN Sin[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]) + (dB0N muN Sin[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]))/B0N + 2 muN Cos[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi])^2 + (dmuN Sin[2 (deltaN + theta)] (-ddeltaN + torsVMEC[phi]))/(-1 + muN^2))];
+    BFunc[theta_, phi_]=Chop[(1 + rhoN[theta, phi]*Cos[theta]*curvVMEC[phi])*(B0N),10^-6];
+    If[ordern==3, BFunc[theta_, phi_] = Chop[BFunc[theta,phi] + 1/2 B0N rhoN[theta, phi]^2 (-((dmuN^2 muN Cos[2 (deltaN + theta)])/(-1 + muN^2)^2) + (ddmuN Cos[2 (deltaN + theta)])/(2 (-1 + muN^2)) + (dB0N dmuN Cos[2 (deltaN + theta)])/(2 B0N (-1 + muN^2)) + 2 Cos[theta]^2 curvVMEC[phi]^2 + (dddeltaN - dtorsVMEC) muN Sin[2 (deltaN + theta)] + (-((B0N dmuN Sin[2 (deltaN + theta)])/(2 (-1 + muN^2))) + B0N muN Cos[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]))^2/B0N^2 + ((B0N dmuN Cos[2 (deltaN + theta)])/(2 (-1 + muN^2)) + B0N muN Sin[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]))^2/B0N^2 + dmuN Sin[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]) + (dB0N muN Sin[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi]))/B0N + 2 muN Cos[2 (deltaN + theta)] (ddeltaN - torsVMEC[phi])^2 + (dmuN Sin[2 (deltaN + theta)] (-ddeltaN + torsVMEC[phi]))/(-1 + muN^2)),10^-6]];
   ,
     phiMmin=0;phiMmax=2*pi;
-    Nposvecpsi[theta_, phi_] = FluxSurfacenFitVMEC[theta, phi, Floor[iradius]];
-    rhoPlot[theta_, phi_]=rho[theta, phi];
+    If[export3DSurface==1,
+      Nposvecpsi[theta_, phi_] = FluxSurfacenFitVMEC[theta, phi, Floor[iradius]];
+    ];
     BFunc[theta_, phi_]=(1 + rho[theta, phi]*Cos[theta]*curvVMEC[phi])*B0[phi];
     BFuncExportB[theta_, phi_]=BFunc[theta, phi];
   ];
   If[exportBFieldSurface==1,
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
-    thetaMercierInterp=ListInterpolation[ParallelTable[thetaMercierFunc[theta, phi, Floor[iradius]], {theta, 0, 2*pi, 2*pi/nthetapointsBsurface}, {phi, 0, 2*pi/vmecNFP, 2*pi/vmecNFP/ntphipointsBsurface}], {{0,2*pi}, {0,2*pi/vmecNFP}}];
-    BFuncExportB = ListInterpolation[ParallelTable[BFunc[thetaMercierInterp[theta, phi],phiAxis[Floor[iradius]][theta,phi]], {theta, 0, 2*pi, 2*pi/nthetapointsBsurface}, {phi, 0, 2*pi/vmecNFP, 2*pi/vmecNFP/ntphipointsBsurface}], {{0,2*pi}, {0,2*pi/vmecNFP}}];
-    bfitFig[[j]]=DensityPlot[BFuncExportB[theta, phi], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[Phi]", HoldForm["Poloidal Angle " Subscript[\[Theta], V]]}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotRange->All, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> HoldForm["B(" Subscript[\[Theta], V] ",\[Phi])"]]];
-    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>"_.pdf"], bfitFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+    (*timestart=AbsoluteTime[];WriteString[$Output, "\n        Computing thetaMercierInterp..."];
+    thetaMercierInterp=ListInterpolation[Table[thetaMercierFunc[theta, phi, Floor[iradius]], {theta, 0, 2*pi, 2*pi/nthetapointsBsurface}, {phi, 0, 2*pi/vmecNFP, 2*pi/vmecNFP/ntphipointsBsurface}], {{0,2*pi}, {0,2*pi/vmecNFP}}];
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];*)
+    timestart=AbsoluteTime[];WriteString[$Output, "\n        Computing BFuncExportBp..."];
+    BFuncExportB = ListInterpolation[Table[BFunc[thetaMercierFunc[theta, phi, Floor[iradius]], phiAxis[Floor[iradius]][theta,phi]], {theta, 0, 2*pi, 2*pi/nthetapointsBsurface}, {phi, 0, 2*pi/vmecNFP, 2*pi/vmecNFP/ntphipointsBsurface}], {{0,2*pi}, {0,2*pi/vmecNFP}}];
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
+    timestart=AbsoluteTime[];WriteString[$Output, "        Creating figure..."];
+    bfitFig=DensityPlot[BFuncExportB[theta, phi], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[CapitalPhi]", HoldForm["Poloidal Angle " Subscript[\[Theta], V]]}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotRange->All, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> HoldForm["B(" Subscript[\[Theta], V] ",\[CapitalPhi])"]]];
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
+    timestart=AbsoluteTime[];WriteString[$Output, "        Exporting BField figure..."];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>"_.pdf"], bfitFig, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
+    WriteString[$Output, "      Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
+  ];
+  If[export3DSurface==1,
+    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
+    minB0 = FindMinValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phiMmin <= phi <= phiMmax}, {theta, phi}] // Quiet;
+    maxB0 = FindMaxValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phiMmin <= phi <= phiMmax}, {theta, phi}] // Quiet;
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
+    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
+    figFit[[j]]  = ParametricPlot3D[Nposvecpsi[theta, phi], {theta, 0, 2*pi}, {phi, phiMmin, phiMmax}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[(*Opacity[0.3+0.7*j/nfigsSurf],*) Specularity[White, 20]], PlotPoints -> {30, plotPointsFig}, MaxRecursion -> maxRecursPlot
+    , ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", { minB0, maxB0}}][(BFunc[-#4,#5])] &)];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   ];
-  timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
-  minB0 = FindMinValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phiMmin <= phi <= phiMmax}, {theta, phi}] // Quiet;
-  maxB0 = FindMaxValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phiMmin <= phi <= phiMmax}, {theta, phi}] // Quiet;
-  WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
-  timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
-  figFit[[j]]  = ParametricPlot3D[Nposvecpsi[theta, phi](*FluxSurfacenFitVMEC[-theta, phi, Floor[iradius]]*), {theta, 0, 2*pi}, {phi, phiMmin, phiMmax}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[(*Opacity[0.3+0.7*j/nfigsSurf],*) Specularity[White, 20]], PlotPoints -> {30, plotPointsFig}, MaxRecursion -> maxRecursPlot
-  , ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", { minB0, maxB0}}][(BFunc[-#4,#5])] &)];
-  WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
-,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];
-timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
-figFitPlot=Show[figFit(*,ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi},PlotStyle->Black]*)];
-Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_all_ordern_"<>ToString[ordern]<>".pdf"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
-WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
-timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
-figFitPlot=Show[figFit[[1 ;; Floor[0.75*nfigsSurf]]](*,ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi},PlotStyle->Black]*)];
-Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_half_ordern_"<>ToString[ordern]<>".pdf"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
-WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
-WriteString[$Output, "    Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
+  ,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];
+  If[export3DSurface==1,
+    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
+    figFitPlot=Show[figFit(*,ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi},PlotStyle->Black]*)];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_all_ordern_"<>ToString[ordern]<>".pdf"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
+    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
+    figFitPlot=Show[figFit[[1 ;; Floor[0.75*nfigsSurf]]](*,ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi},PlotStyle->Black]*)];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_half_ordern_"<>ToString[ordern]<>".pdf"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
+  ];
+  WriteString[$Output, "    Successful in "<>ToString[AbsoluteTime[]-timestartplotfit]<>"s\n"];
 ];
-
 ];
 Clear[fig1,fig2,posvecpsiTable,figVMEC,figFit,figVMEC,Nposvecpsitemp];
