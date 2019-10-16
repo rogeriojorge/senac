@@ -1,0 +1,9 @@
+NFP = 3;
+nphi = 500;
+R0 = 1;
+epsilon = 0.045;
+etab = -0.9;
+sigma0 = 0;
+iota0 = 0.418;
+L = 6.340043e+00;
+nNormal = 0;
