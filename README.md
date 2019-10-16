@@ -20,6 +20,7 @@ Mathematica
 Add wolframscript to the workspace, or give its location to senac.sh to run SENAC
 For first time Mac users, run 
 sudo ln -s /Applications/Mathematica.app/Contents/MacOS/WolframScript /usr/local/bin/
+sudo ln -s /Applications/MATLAB_RXXXx.app/bin/matlab /usr/local/bin
 
 VMEC (optional)
 

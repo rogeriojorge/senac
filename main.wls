@@ -51,6 +51,11 @@ keepfit              = ToExpression[$ScriptCommandLine[[39]]];
 export3DSurface      = ToExpression[$ScriptCommandLine[[40]]];
 readlowfit           = ToExpression[$ScriptCommandLine[[41]]];
 plotPolFig           = ToExpression[$ScriptCommandLine[[42]]];
+quasisymmetry        = ToExpression[$ScriptCommandLine[[43]]];
+surfInputQS          = $ScriptCommandLine[[44]];
+phiedge              = ToExpression[$ScriptCommandLine[[45]]];
+Bzero                = ToExpression[$ScriptCommandLine[[46]]];
+If[quasisymmetry==1,surfInput=surfInputQS];
 pi = N[Pi,10];
 $HistoryLength = 0;
 
@@ -116,7 +121,7 @@ If[muDefined==0,
   WriteString[$Output, "  Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
   ,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Constructing Mercier's theta and rho..."];
-  rho[theta_, phi_] = Sqrt[(vmecPSI[[nsurfaces]]*Sqrt[1 - mu[phi]^2] )/(pi*(B0[phi]) (1 + mu[phi]*Cos[2 (theta + delta[phi])]))];
+  rho[theta_, phi_] = Sqrt[(vmecPSI[[nsurfaces]]*Sqrt[1 - mu[phi]^2] )/(pi*(B0[phi])*(1 + mu[phi]*Cos[2 (theta + delta[phi])]))];
   FluxSurfacenFitVMEC[theta_, s_, 1] = Chop[closedcurvVMEC[s] + (rho[theta, s])*(Cos[theta]*k0VMEC[s] + Sin[theta]*t0VMEC[s]), 10^-6]//Quiet;
 	RBCFit[phi_, theta_, 1] = Re[Cos[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phi, 1][[2]]]//Quiet;
 	ZBSFit[phi_, theta_, 1] = Re[FluxSurfacenFitVMEC[theta, phi, 1][[3]]]//Quiet;
@@ -129,6 +134,10 @@ If[muDefined==1,
   iotaFit = GaussLegendreQuadrature[(-D[delta[phi], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (mu[phi])^2]+D[delta[phi], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal;
   Print["  Iota on Axis from near-axis formula: "<>ToString[iotaFit]];
   printv = printv <> ToString[iotaFit] <> nl;
+  If[quasisymmetry==1,
+    iotaQS = StringCases[StringDelete[FindList[surfInput, "iota"][[1]], " "], x : NumberString :> ToExpression[x]][[1]];
+    Print["  Iota on Axis from QS Garren-Boozer: "<>ToString[iotaQS]];
+  ]
   ,
   iotaFit=ParallelTable[
     GaussLegendreQuadrature[(-D[deltaVMEC /. fitParams[iradius], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (muVMEC /. fitParams[iradius])^2]+D[deltaVMEC /. fitParams[iradius], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal,

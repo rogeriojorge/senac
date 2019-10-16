@@ -63,7 +63,7 @@ end
 fid = fopen('inconds.m','r');
 str = textscan(fid,'%s','Delimiter','\n');
 fclose(fid);
-str2 = str{1}(1:7);
+str2 = str{1}(1:9);
 fid2 = fopen('inconds.m','w');
 fprintf(fid2,'%s\n', str2{:});
 fprintf(fid2, 'L = %d;\n',L);
@@ -83,6 +83,7 @@ options = bvpset('RelTol',10^-3,'AbsTol',10^-5,'NMax',nphi);
 sol = bvp4c(@sigmaEq, @sigmaBC, solinit, options, torsfit, curvfit, sprimefit);
 sigma = sol.y(1,:);
 iota=sol.parameters;
+disp(['iota on axis = ',num2str(iota)]);
 
 nphiSigma = size(sol.x);
 nphiSigma = nphiSigma(2);
@@ -107,17 +108,20 @@ deltavalues = coeffvalues(deltafit);
 %Write mu and delta to SENAC
 fid = fopen('surf_input_QS.txt','w');
 fprintf(fid2,'NFP = %d\n', NFP);
-fprintf(fid2,'RAXIS = %d\n', epsilon);
-fprintf(fid, 'ZAXIS = %d\n', epsilon);
-fprintf(fid, 'mu = %d', muvalues(1));
+fprintf(fid2,'PHIEDGE = %5f\n', phiedge);
+fprintf(fid2,'RAXIS = %5f %5f\n', R0, epsilon);
+fprintf(fid, 'ZAXIS = %5f', 0.0);
+fprintf(fid, ' %5f\n', -epsilon);
+fprintf(fid, 'mu = %5f', muvalues(1));
 for i=1:8
-    fprintf(fid, ' %d', muvalues(2*i));
+    fprintf(fid, ' %5f', muvalues(2*i));
 end
-fprintf(fid, '\ndelta = %d', 1);
+fprintf(fid, '\ndelta = %5f', -NFP);
 for i=1:8
-    fprintf(fid, ' %d', deltavalues(2*i+1));
+    fprintf(fid, ' %5f', deltavalues(2*i+1));
 end
-fprintf(fid, '\nB0 = %d', 1);
+fprintf(fid, '\nB0 = %5f', Bzero);
+fprintf(fid, '\niota = %5f', iota);
 fclose(fid2);
 
 function F = mercierFromGB(x, sigma, k, etab)

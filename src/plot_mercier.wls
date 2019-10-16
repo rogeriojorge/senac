@@ -3,6 +3,7 @@
 (*PLOT MU AND DELTA AS A FUNCTION OF PHI*)
 
 (*Plotting Options*)
+If[muDefined==1,nfigsSurf=1];
 nfigsSurf=Min[nfigsSurf,nsurfaces];
 PlotOptions = Flatten[{LabelStyle -> Directive[FontFamily -> "Latin Modern Roman", FontSize -> 30], ImageSize -> ImageSizePlot, Frame -> True}];
 phimax = Table[phi + 2*pi (1 - (nfigsSurf - 1)/nfigsSurf/vmecNFP), {phi, 2*pi/vmecNFP (1 - 1/nfigsSurf), 0, -2*pi/nfigsSurf/vmecNFP/2.5}]-0.0;
@@ -149,13 +150,14 @@ If[export3DSurface==1 || exportBFieldSurface==1,
     WriteString[$Output, "      Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   ];
   If[export3DSurface==1,
+    If[muDefined==1,signB=1,signB=-1];
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Computing Maximum and Minimum B..."];
     minB0 = FindMinValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phiMmin <= phi <= phiMmax}, {theta, phi}] // Quiet;
     maxB0 = FindMaxValue[{BFunc[theta,phi], 0 <= theta <= 2*pi && phiMmin <= phi <= phiMmax}, {theta, phi}] // Quiet;
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Creating Plot..."];
     figFit[[j]]  = ParametricPlot3D[Nposvecpsi[theta, phi], {theta, 0, 2*pi}, {phi, phiMmin, phiMmax}, Boxed -> False, Axes -> False, ImageSize -> Large, Mesh -> None, PlotStyle -> Directive[(*Opacity[0.3+0.7*j/nfigsSurf],*) Specularity[White, 20]], PlotPoints -> {30, plotPointsFig}, MaxRecursion -> maxRecursPlot
-    , ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", { minB0, maxB0}}][(BFunc[-#4,#5])] &)];
+    , ColorFunctionScaling -> False, ColorFunction -> (ColorData[{"Rainbow", { minB0, maxB0}}][(BFunc[#4*signB,#5])] &)];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   ];
   ,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];
@@ -164,10 +166,12 @@ If[export3DSurface==1 || exportBFieldSurface==1,
     figFitPlot=Show[figFit(*,ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi},PlotStyle->Black]*)];
     Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_all_ordern_"<>ToString[ordern]<>".pdf"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
-    timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
-    figFitPlot=Show[figFit[[1 ;; Floor[0.75*nfigsSurf]]](*,ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi},PlotStyle->Black]*)];
-    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_half_ordern_"<>ToString[ordern]<>".pdf"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
-    WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
+    If[nfigsSurf>1,
+      timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
+      figFitPlot=Show[figFit[[1 ;; Floor[0.75*nfigsSurf]]](*,ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi},PlotStyle->Black]*)];
+      Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_half_ordern_"<>ToString[ordern]<>".pdf"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+      WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
+    ];
   ];
   WriteString[$Output, "    Successful in "<>ToString[AbsoluteTime[]-timestartplotfit]<>"s\n"];
 ];

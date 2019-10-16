@@ -7,5 +7,3 @@ sigma0 = 0;
 iota0 = 0.418;
 phiedge = 0.1;
 Bzero = 3.0;
-L = 6.340217e+00;
-nNormal = 0;

@@ -1,20 +1,33 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="NCSX"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="test"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
+surfInputQS=${currentDIR}"/quasisymmetry/surf_input_QS.txt"; #input file with surface parameters
 vmecInput=${currentDIR}"/vmec/vmec_input_template.txt"; #template VMEC input file
 vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
 #======SENAC=====
 runSENAC=1;              #1-> runs SENAC mathematica
-readFit=1;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
-outputToVMEC=1;          #compute Fourier Modes and output to VMEC
+readFit=0;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
+outputToVMEC=0;          #compute Fourier Modes and output to VMEC
 plotFit=1;               #Mathematica plots fit results
 plotOriginal=0;          #Mathematica plots original surface
 plotPolFig=1;            #Mathematica plots comparison at different poloidal planes
 export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
-exportBFieldSurface=1;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
+exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
+quasisymmetry=1;         #1 -> run quasisymmetric SENAC
+#======QUASISYMMETRY PARAMETERS=====
+runQSmatlab=0;			 #run QS matlab script to get new delta and mu
+NFP=3;					 #number of field periods
+phiedge=0.1; 			 #toroidal flux in the edge
+Bzero=2.0;			     #magnetic field on axis
+nphi=1500;				 #resolution in phi
+R0=1;                    #major radius
+epsilon=0.045;           #bumpiness
+etab=-0.9;               #eta bar
+sigma0=0;                #initial condition for sigma (0 if stellarator symmetric)
+iota0=0.418;             #initial guess for iota0
 #======VMEC=====
 runVMECofFit=0;          #run VMEC for fit
 #======REGCOIL=====
@@ -43,17 +56,17 @@ maxn=7;                  #Maximum toroidal Fourier mode n to output to VMEC
 maxRecursTheta=35;       #Theta resolution in numerical integration in Mercier to VMEC
 maxRecursPhi=350;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
-nPlotTheta=100;           #number of interpolating points in theta
-nPlotPhi=250;            #number of interpolating points in phi
-plotPointsFig=70;        #plotpoints for 3D figure
+nPlotTheta=40;           #number of interpolating points in theta
+nPlotPhi=100;            #number of interpolating points in phi
+plotPointsFig=50;        #plotpoints for 3D figure
 maxRecursPlot=2;         #max recursion for 3D figure
 ImageSizePlot=700;       #image size for 3D figure
 ImageResolutionPlot=400; #resolution for 3D figure
 nfigsSurf=4;             #number of surfaces to plot in 3D figure
 nPlots=8;                #number of poloidal plots to save
-npointsPolPlots=40;      #number of points for poloidal plots
-nthetapointsBsurface=70; #plot points in theta for magnetic field on surface
-nphipointsBsurface=70;   #plot points in phi for magnetic field on surface
+npointsPolPlots=30;      #number of points for poloidal plots
+nthetapointsBsurface=50; #plot points in theta for magnetic field on surface
+nphipointsBsurface=50;   #plot points in phi for magnetic field on surface
 coilthickness=0.10;      #thickness of the coils in VMEC units to plot
 npointsContourPlotREGCOIL=60;   #number of points in contourplot when finding coil contours in REGCOIL
 npointsInterpCoilPosREGCOIL=80; #number of points for theta grid in REGCOIL
@@ -65,8 +78,6 @@ plotpointsCoil=35;       #plot points in theta for coils
 REGCOILtargetvalue=10.0;
 REGCOILseparation=0.15;
 REGCOILnlambda=20;
-#=====TO BE IMPLEMENTED=============
-quasisymmetry=0;         #1 -> run quasisymmetric SENAC
 
 #======START================
  echo "===================SENAC===================="
@@ -87,10 +98,27 @@ fi
 
 #======RUN SENAC=====
 if (( $runSENAC == 1)); then
+	if (( $quasisymmetry == 1 & $runQSmatlab == 1)); then
+		echo "-----------------------"
+		echo "Running QuasiSymmetry Matlab"
+		cd quasisymmetry
+		mv inconds.m inconds_backup.m
+		echo 'NFP = '$NFP';' >> inconds.m
+		echo 'nphi = '$nphi';' >> inconds.m
+		echo 'R0 = '$R0';' >> inconds.m
+		echo 'epsilon = '$epsilon';' >> inconds.m
+		echo 'etab = '$etab';' >> inconds.m
+		echo 'sigma0 = '$sigma0';' >> inconds.m
+		echo 'iota0 = '$iota0';' >> inconds.m
+		echo 'phiedge = '$phiedge';' >> inconds.m
+		echo 'Bzero = '$Bzero';' >> inconds.m
+		matlab -nodisplay -nodesktop -nosplash -r "QSsol;exit;"
+		cd ..
+	fi
 	echo "-----------------------"
 	echo "Running SENAC Mathematica"
 	rm -f data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
-	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi $nPlotTheta $nPlotPhi $plotPointsFig $maxRecursPlot $ImageSizePlot $ImageResolutionPlot $nfigsSurf $nPlots $nthetapointsBsurface $nphipointsBsurface $npointsPolPlots $exportBFieldSurface $keepfit $export3DSurface $readlowfit $plotPolFig | tee data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
+	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi $nPlotTheta $nPlotPhi $plotPointsFig $maxRecursPlot $ImageSizePlot $ImageResolutionPlot $nfigsSurf $nPlots $nthetapointsBsurface $nphipointsBsurface $npointsPolPlots $exportBFieldSurface $keepfit $export3DSurface $readlowfit $plotPolFig $quasisymmetry $surfInputQS $phiedge $Bzero | tee data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
 fi
 #======RUN VMEC=====
 if (( $runVMECofFit == 1)); then
