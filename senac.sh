@@ -18,16 +18,17 @@ export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
 exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
 quasisymmetry=1;         #1 -> run quasisymmetric SENAC
 #======QUASISYMMETRY PARAMETERS=====
-runQSmatlab=0;			 #run QS matlab script to get new delta and mu
-NFP=3;					 #number of field periods
+runQSmatlab=1;			 #run QS matlab script to get new delta and mu
+NFP=4;					 #number of field periods
 phiedge=0.1; 			 #toroidal flux in the edge
-Bzero=2.0;			     #magnetic field on axis
-nphi=1500;				 #resolution in phi
+Bzero=3.0;			     #magnetic field on axis
+nphi=500;				 #resolution in phi
 R0=1;                    #major radius
-epsilon=0.045;           #bumpiness
-etab=-0.9;               #eta bar
+epsilonR=0.265;          #bumpiness of the axis in R
+epsilonZ=0.21;           #bumpiness of the axis in Z
+etab=-2.25;              #eta bar
 sigma0=0;                #initial condition for sigma (0 if stellarator symmetric)
-iota0=0.418;             #initial guess for iota0
+iota0=0.4;             #initial guess for iota0
 #======VMEC=====
 runVMECofFit=0;          #run VMEC for fit
 #======REGCOIL=====
@@ -56,7 +57,7 @@ maxn=7;                  #Maximum toroidal Fourier mode n to output to VMEC
 maxRecursTheta=35;       #Theta resolution in numerical integration in Mercier to VMEC
 maxRecursPhi=350;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
-nPlotTheta=40;           #number of interpolating points in theta
+nPlotTheta=50;           #number of interpolating points in theta
 nPlotPhi=100;            #number of interpolating points in phi
 plotPointsFig=50;        #plotpoints for 3D figure
 maxRecursPlot=2;         #max recursion for 3D figure
@@ -106,12 +107,11 @@ if (( $runSENAC == 1)); then
 		echo 'NFP = '$NFP';' >> inconds.m
 		echo 'nphi = '$nphi';' >> inconds.m
 		echo 'R0 = '$R0';' >> inconds.m
-		echo 'epsilon = '$epsilon';' >> inconds.m
+		echo 'epsilonR = '$epsilonR';' >> inconds.m
+		echo 'epsilonZ = '$epsilonZ';' >> inconds.m
 		echo 'etab = '$etab';' >> inconds.m
 		echo 'sigma0 = '$sigma0';' >> inconds.m
 		echo 'iota0 = '$iota0';' >> inconds.m
-		echo 'phiedge = '$phiedge';' >> inconds.m
-		echo 'Bzero = '$Bzero';' >> inconds.m
 		matlab -nodisplay -nodesktop -nosplash -r "QSsol;exit;"
 		cd ..
 	fi

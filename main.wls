@@ -136,7 +136,7 @@ If[muDefined==1,
   printv = printv <> ToString[iotaFit] <> nl;
   If[quasisymmetry==1,
     iotaQS = StringCases[StringDelete[FindList[surfInput, "iota"][[1]], " "], x : NumberString :> ToExpression[x]][[1]];
-    Print["  Iota on Axis from QS Garren-Boozer: "<>ToString[iotaQS]];
+    Print["  Iota on Axis from QS Garren-Boozer: "<>ToString[-iotaQS]];
   ]
   ,
   iotaFit=ParallelTable[

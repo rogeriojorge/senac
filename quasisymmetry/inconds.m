@@ -1,11 +1,8 @@
-NFP = 3;
+NFP = 4;
 nphi = 1500;
 R0 = 1;
-epsilon = 0.045;
-etab = -0.9;
+epsilonR = 0.265;
+epsilonZ = 0.21;
+etab = -2.25;
 sigma0 = 0;
-iota0 = 0.418;
-phiedge = 0.1;
-Bzero = 3.0;
-L = 6.340217e+00;
-nNormal = 0;
+iota0 = 0.4;
