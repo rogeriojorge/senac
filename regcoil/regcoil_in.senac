@@ -16,7 +16,7 @@
   geometry_option_coil = 2 ! Uniform offset from plasma surface 
   
   nlambda = 20
-  target_value = 10.0
+  target_value = 1.0
   separation = 0.15
-  wout_filename = "/Users/rogeriojorge/Dropbox/senac/data/HSX/wout_HSX_senac_ordern2_nmodes3.nc"
+  wout_filename = "/Users/rogeriojorge/Dropbox/senac/data/test/wout_test_senac_ordern2_nmodes5.nc"
 /

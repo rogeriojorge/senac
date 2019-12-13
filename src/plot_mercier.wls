@@ -83,6 +83,7 @@ If[muDefined==0 && plotPolFig==1,
         ParametricPlot[Evaluate[{RBCVMEC[theta, phi, #], ZBSVMEC[theta, phi, #]} & /@ Table[iradius, {iradius, 1, nsurfaces}][[1 ;; nsurfaces]]], {theta, 0, 2*pi}, PlotPoints->npointsPolPlots, MaxRecursion->1]//Quiet},
         PlotRange -> All, AspectRatio -> Automatic, PlotOptions, FrameLabel -> {"R [meters]", "Z [meters]"}];
       Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_"<>ToString[j]<>"_ordern_"<>ToString[ordern]<>".pdf"],fig2, "AllowRasterization" -> True];
+      Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_"<>ToString[j]<>"_ordern_"<>ToString[ordern]<>".mx"],fig2, "AllowRasterization" -> True];
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
     ,{phi, 0, 2*pi/vmecNFP*(1 - 1/nPlots), 2*pi/nPlots/vmecNFP}];
     WriteString[$Output, "    Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
@@ -97,6 +98,7 @@ If[muDefined==0 && plotPolFig==1,
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
     Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_Surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>".pdf"],fig3[j], "AllowRasterization" -> True];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_Surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>".mx"],fig3[j], "AllowRasterization" -> True];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   ,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];
   WriteString[$Output, "    Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
@@ -131,7 +133,6 @@ If[export3DSurface==1 || exportBFieldSurface==1,
       Nposvecpsi[theta_, phi_] = FluxSurfacenFitVMEC[theta, phi, Floor[iradius]];
     ];
     BFunc[theta_, phi_]=(1 + rho[theta, phi]*Cos[theta]*curvVMEC[phi])*B0[phi];
-    BFuncExportB[theta_, phi_]=BFunc[theta, phi];
   ];
   If[exportBFieldSurface==1,
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
@@ -139,13 +140,17 @@ If[export3DSurface==1 || exportBFieldSurface==1,
     thetaMercierInterp=ListInterpolation[Table[thetaMercierFunc[theta, phi, Floor[iradius]], {theta, 0, 2*pi, 2*pi/nthetapointsBsurface}, {phi, 0, 2*pi/vmecNFP, 2*pi/vmecNFP/ntphipointsBsurface}], {{0,2*pi}, {0,2*pi/vmecNFP}}];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];*)
     timestart=AbsoluteTime[];WriteString[$Output, "\n        Computing BFuncExportBp..."];
-    BFuncExportB = ListInterpolation[Table[BFunc[thetaMercierFunc[theta, phi, Floor[iradius]], phiAxis[Floor[iradius]][theta,phi]], {theta, 0, 2*pi, 2*pi/nthetapointsBsurface}, {phi, 0, 2*pi/vmecNFP, 2*pi/vmecNFP/ntphipointsBsurface}], {{0,2*pi}, {0,2*pi/vmecNFP}}];
+    If[muDefined==0,
+      BFuncExportB = ListInterpolation[Table[BFunc[thetaMercierFunc[theta, phi, Floor[iradius]], phiAxis[Floor[iradius]][theta,phi]], {theta, 0, 2*pi, 2*pi/nthetapointsBsurface}, {phi, 0, 2*pi/vmecNFP, 2*pi/vmecNFP/ntphipointsBsurface}], {{0,2*pi}, {0,2*pi/vmecNFP}}],
+      BFuncExportB[theta_, phi_]=BFunc[theta, phi];
+    ];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
     timestart=AbsoluteTime[];WriteString[$Output, "        Creating figure..."];
     bfitFig=DensityPlot[BFuncExportB[theta, phi], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[CapitalPhi]", HoldForm["Poloidal Angle " Subscript[\[Theta], V]]}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotRange->All, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> HoldForm["B(" Subscript[\[Theta], V] ",\[CapitalPhi])"]]];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
     timestart=AbsoluteTime[];WriteString[$Output, "        Exporting BField figure..."];
-    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>"_.pdf"], bfitFig, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>".pdf"], bfitFig, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>".mx"], bfitFig, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
     WriteString[$Output, "      Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
   ];
@@ -163,8 +168,9 @@ If[export3DSurface==1 || exportBFieldSurface==1,
   ,{iradius,1,nsurfaces,If[nfigsSurf==1,1,(nsurfaces-1)/(nfigsSurf-1)]}];
   If[export3DSurface==1,
     timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
-    figFitPlot=Show[figFit(*,ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi},PlotStyle->Black]*)];
+    figFitPlot=Show[figFit(*,ParametricPlot3D[closedcurvVMEC[phi],{phi,0,2*pi},PlotStyle->Black ]*)];
     Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_all_ordern_"<>ToString[ordern]<>".pdf"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_senac_3Dsurface_all_ordern_"<>ToString[ordern]<>".mx"], figFitPlot, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
     If[nfigsSurf>1,
       timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting Figure..."];
@@ -176,4 +182,18 @@ If[export3DSurface==1 || exportBFieldSurface==1,
   WriteString[$Output, "    Successful in "<>ToString[AbsoluteTime[]-timestartplotfit]<>"s\n"];
 ];
 ];
+
+If[muDefined==1 && plotPolFig==1,
+    WriteString[$Output, "    Plotting Comparison at Different Poloidal Planes..."];timestart = AbsoluteTime[];
+    (*fig2=Show[ParametricPlot[Evaluate[{RBCFittrue[#,  theta, 1], ZBSFittrue[#,  theta, 1]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->npointsPolPlots, MaxRecursion->1, PlotStyle -> Dashed],
+      PlotRange -> All, AspectRatio -> Automatic, PlotOptions, FrameLabel -> {"R [meters]", "Z [meters]"}];*)
+    fig3=Show[ParametricPlot[Evaluate[{    RBCFit[#,  theta, 1],     ZBSFit[#,  theta, 1]} & /@ Table[phi, {phi, 0, 2*pi/vmecNFP, 2*pi/nPlots/vmecNFP}][[1 ;; nPlots]]], {theta, 0, 2*pi}, PlotPoints->npointsPolPlots, MaxRecursion->1, PlotStyle -> Dashed],
+      PlotRange -> All, AspectRatio -> Automatic, PlotOptions, FrameLabel -> {"R [meters]", "Z [meters]"}];
+    (*Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_ordern_"<>ToString[ordern]<>"_true.pdf"],fig2, "AllowRasterization" -> True];*)
+    (*Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_"<>ToString[j]<>"_ordern_"<>ToString[ordern]<>"_true.mx"],fig2, "AllowRasterization" -> True];*)
+    Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_ordern_"<>ToString[ordern]<>".pdf"],fig3, "AllowRasterization" -> True];
+    (*Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_poloidalPlane_"<>ToString[j]<>"_ordern_"<>ToString[ordern]<>".mx"],fig3, "AllowRasterization" -> True];*)
+    WriteString[$Output, "\n    Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
+  ];
+
 Clear[fig1,fig2,posvecpsiTable,figVMEC,figFit,figVMEC,Nposvecpsitemp];

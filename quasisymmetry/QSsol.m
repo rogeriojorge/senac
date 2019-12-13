@@ -1,5 +1,13 @@
 tic;
-inconds;
+
+NFP = 3;
+nphi = 100;
+R0 = 1;
+sigma0 = 0;
+etab=0.9;
+iota0 = 0.1;
+epsilonR=0.045;
+epsilonZ=0.045;
 
 %Compute closed curve
 phi=0:2*pi/(nphi-1):2*pi;
@@ -16,14 +24,18 @@ dddr = gradient(ddr,2*pi/(nphi-1));
 
 %Curvature
 curv = sqrt(sum(cross(dr,ddr).^2))./sqrt(sum(dr.^2)).^3;
-dcurv = gradient(curv,2*pi/(nphi-1));
 curv(end-1)=curv(end-2);curv(end)=curv(end-1);curv(1)=curv(end);curv(2)=curv(1);
-dcurv(end-2)=dcurv(end-3);dcurv(end-1)=dcurv(end-2);dcurv(end)=dcurv(end-1);dcurv(1)=dcurv(end);dcurv(2)=dcurv(1);dcurv(3)=dcurv(2);
-kpok=dcurv./curv;
-
 %Torsion
 tors = dot(dr,cross(ddr,dddr))./sum(cross(dr,ddr).^2);
-tors(end-2)=tors(end-3);tors(end-1)=tors(end-2);tors(end)=tors(end-1);tors(1)=tors(end);tors(2)=tors(1);tors(3)=tors(2);
+tors(end)=tors(end-1);tors(1)=tors(end);tors(2)=tors(1);
+
+curvfit=fit(phi',curv','fourier8');
+torsfit=fit(phi',tors','fourier8');
+sprimefit=fit(phi',sprime','fourier8');
+
+curv=feval(curvfit,phi)';
+tors=feval(torsfit,phi)';
+sprime=feval(sprimefit,phi)';
 
 %Length of the axis
 L = trapz(phi,sprime);
@@ -60,50 +72,69 @@ for i=1:nphi
     quadrant = qnew;
 end
 
-curvfit=fit(phi',curv','fourier8');
-torsfit=fit(phi',tors','fourier8');
-sprimefit=fit(phi',sprime','fourier8');
+%Compute derivative matrix
+N = nphi; h = 2*pi/N; x = h*(1:N)';
+column = [0 .5*(-1).^(1:N-1).*cot((1:N-1)*h/2)]';
+D = toeplitz(column,column([1 N:-1:2]));
 
-%Initial conditions for QS equations
-solinit = bvpinit(phi, @sigmaGuess, iota0);
-
-%Solution of QS equations
-options = bvpset('RelTol',10^-3,'AbsTol',10^-5,'NMax',nphi);
-
-sol = bvp4c(@sigmaEq, @sigmaBC, solinit, options, torsfit, curvfit, sprimefit, L, nNormal, etab);
-sigma = sol.y(1,:);
-iota=sol.parameters;
-
-% %Scan in etabar
-% nPoints=100;
-% etabVec=linspace(-5,5,nPoints);
-% iotaVec=zeros(nPoints,1);
-% parfor i=1:nPoints
-%     sol = bvp4c(@sigmaEq, @sigmaBC, solinit, options, torsfit, curvfit, sprimefit, L, nNormal, etabVec(i));
-%     iotaVec(i)=sol.parameters;
-% end
-% figure();plot(etabVec,iotaVec);
-
-disp(['iota on axis = ',num2str(iota)]);
-
-nphiSigma = size(sol.x);
-nphiSigma = nphiSigma(2);
-options = optimset('Display','off','FinDiffType','central','MaxFunEvals',1000,'MaxIter',3000);
-mercierParams = zeros(nphi,2);mutemp=0.5;deltatemp=0;
-for i=1:nphi
-    isigma = ceil(i*nphiSigma/nphi);
-    fun = @(x) mercierFromGB(x,sigma(isigma),curv(i),etab);
-    x0 = [mutemp,deltatemp-NFP*2*pi/2/nphi];
-    mercierParams(i,:) = fsolve(fun,x0,options);
-    mutemp=mercierParams(i,1);
-    deltatemp=mercierParams(i,2);
+%Find sigma
+sigma = 0.1.*cos(NFP.*x);iota=iota0;
+sprime = sprime';tors=tors';curv=curv';
+tol=1.e-5;totalIt=30;totalLineSearch=8;deltaold=0;tic;
+for i=1:totalIt
+    [f,Jacf] = qs_residual_sigma(D,sigma,tors,curv,sprime,etab,nNormal,iota,L,N,sigma0);
+    deltay = -Jacf\f;
+    if i>5 && norm((deltay-deltaold))/sqrt(N)<tol
+        break
+    end
+    
+    for j=1:totalLineSearch
+        [newf,~] = qs_residual_sigma(D,sigma+deltay(1:N),tors,curv,sprime,etab,nNormal,iota+deltay(N+1),L,N,sigma0);
+        if abs(norm(newf))<abs(norm(f))
+            break;
+        else
+            deltay=deltay/2;
+        end
+    end
+    
+    sigma = sigma+deltay(1:N);
+    iota  = iota+deltay(N+1);
+    deltaold = deltay;
 end
+timeT=toc;
+disp(['iota = ',num2str(iota),' after ',num2str(timeT),'s and ',num2str(i),' iterations.',]);
+return
+%find mu and delta
+mu=0.6+0.01.*cos(NFP.*x);
+delta=0.1.*sin(NFP.*x)-NFP.*x/2;
+tol=1.e-4;totalIt=30;totalLineSearch=8;deltaold=0;tic;
+for i=1:totalIt
+    [f,Jacf] = qs_residual_mercierGB(sigma,mu,delta,etab,curv);
+    deltay = -Jacf\f;
 
-mu = mercierParams(:,1);
-if abs(mercierParams(end,2))>abs(mercierParams(1,2)+2*pi)
-    delta = mercierParams(:,2)+NFP.*phi'/2;
-else
-    delta = mercierParams(:,2);
+    if i>5 && norm((deltay-deltaold))/sqrt(N)<tol
+        break
+    end
+    
+    for j=1:totalLineSearch
+        [newf,~] = qs_residual_mercierGB(sigma,mu+deltay(1:N),delta+deltay(N+1:2*N),etab,curv);
+        if abs(norm(newf))<abs(norm(f))
+            break;
+        else
+            deltay=deltay/2;
+        end
+    end
+    
+    mu    = mu + deltay(1:N);
+    delta = delta + deltay(N+1:2*N);
+end
+timeT=toc;
+disp(['Found mu and delta after ',num2str(timeT),'s and ',num2str(i),' iterations.',]);
+figure();hold on;plot(x,mu);plot(x,delta+NFP.*x/2);
+
+deltaold=delta;
+if abs(delta(end))>abs(delta(1)+2*pi)
+    delta = delta+NFP.*x/2;
 end
 
 mufit=fit(phi',mu,'fourier8');
@@ -122,7 +153,7 @@ fprintf(fid, 'mu = %5f', muvalues(1));
 for i=1:8
     fprintf(fid, ' %5f', muvalues(2*i));
 end
-if abs(mercierParams(end,2))>abs(mercierParams(1,2)+2*pi)
+if abs(deltaold(end))>abs(deltaold(1)+2*pi)
     fprintf(fid, '\ndelta = %5f', -NFP);
 else
     fprintf(fid, '\ndelta = %5f', 0);
@@ -134,25 +165,3 @@ fprintf(fid, '\niota = %5f', iota);
 fclose(fid);
 
 toc
-
-function yinit = sigmaGuess(s)
-    inconds;
-    yinit = sin(NFP*s);
-end
-
-function dYdt = sigmaEq(s,Y,iota,torsfit,curvfit,sprimefit,L,nNormal,etab)
-
-    dYdt = -sprimefit(s)*(2*pi*(1/L)*(iota-nNormal)*(1+Y(1)^2+etab^4/curvfit(s)^4)+2*etab^2*torsfit(s)/curvfit(s)^2);
-    
-end
-
-function res = sigmaBC(ya,yb,~,~,~,~,~,~,~)
-    inconds;
-    res = [ya(1) - yb(1)
-           ya(1)-sigma0];
-end
-
-function F = mercierFromGB(x, sigma, k, etab)
-    F(1) = sigma-x(1)*sin(2*x(2))/sqrt(1-x(1)^2);
-    F(2) = etab^2/k^2-(1-x(1)*cos(2*x(2)))/sqrt(1-x(1)^2);
-end
