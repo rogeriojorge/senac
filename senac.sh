@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="test"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="QSNFP2case2"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -8,29 +8,29 @@ surfInputQS=${currentDIR}"/quasisymmetry/surf_input_QS.txt"; #input file with su
 vmecInput=${currentDIR}"/vmec/vmec_input_template.txt"; #template VMEC input file
 vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
 #======SENAC=====
-runSENAC=1;              #1-> runs SENAC mathematica
-readFit=1;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
-outputToVMEC=0;          #compute Fourier Modes and output to VMEC
+runSENAC=0;              #1-> runs SENAC mathematica
+readFit=0;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
+outputToVMEC=1;          #compute Fourier Modes and output to VMEC
 plotFit=1;               #Mathematica plots fit results
-plotOriginal=0;          #Mathematica plots original surface
+plotOriginal=1;          #Mathematica plots original surface
 plotPolFig=1;            #Mathematica plots comparison at different poloidal planes
 export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
 exportBFieldSurface=1;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
 quasisymmetry=1;         #1 -> run quasisymmetric SENAC
 #======QUASISYMMETRY PARAMETERS=====
 runQSmatlab=0;			 #run QS matlab script to get new delta and mu
-NFP=3;					 #number of field periods
-phiedge=0.015; 			 #toroidal flux in the edge
+NFP=2;					 #number of field periods
+phiedge=0.01; 			 #toroidal flux in the edge
 Bzero=1.0;			     #magnetic field on axis
-nphi=500;				 #resolution in phi
+nphi=400;				 #resolution in phi
 R0=1;                    #major radius
-epsilonR=0.265;          #bumpiness of the axis in R
-epsilonZ=0.21;           #bumpiness of the axis in Z
-etab=-2.25;              #eta bar
+epsilonR=0.04;#0.16;          #bumpiness of the axis in R
+epsilonZ=0.04;#0.14;           #bumpiness of the axis in Z
+etab=0.7;#1.4;              #eta bar
 sigma0=0;                #initial condition for sigma (0 if stellarator symmetric)
-iota0=0.4;             #initial guess for iota0
+iota0=0.3;             #initial guess for iota0
 #======VMEC=====
-runVMECofFit=0;          #run VMEC for fit
+runVMECofFit=1;          #run VMEC for fit
 #======REGCOIL=====
 runREGCOILfit=0;         #run REGCOIL for fit
 plotRegcoilFit=0;        #Mathematica plots coils for fit
@@ -54,31 +54,31 @@ mucMin=0.2;              #minimum muc0 to help fit
 mucMax=0.9;              #maximum muc0 to help fit
 maxm=8;                  #Maximum poloidal Fourier mode m to output to VMEC
 maxn=8;                  #Maximum toroidal Fourier mode n to output to VMEC
-maxRecursTheta=45;       #Theta resolution in numerical integration in Mercier to VMEC
-maxRecursPhi=450;        #Phi resolution in numerical integration
+maxRecursTheta=50;       #Theta resolution in numerical integration in Mercier to VMEC
+maxRecursPhi=400;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
-nPlotTheta=70;           #number of interpolating points in theta
-nPlotPhi=150;            #number of interpolating points in phi
+nPlotTheta=50;           #number of interpolating points in theta
+nPlotPhi=140;            #number of interpolating points in phi
 plotPointsFig=50;        #plotpoints for 3D figure
 maxRecursPlot=2;         #max recursion for 3D figure
-ImageSizePlot=700;       #image size for 3D figure
-ImageResolutionPlot=500; #resolution for 3D figure
+ImageSizePlot=900;       #image size for 3D figure
+ImageResolutionPlot=600; #resolution for 3D figure
 nfigsSurf=4;             #number of surfaces to plot in 3D figure
 nPlots=8;                #number of poloidal plots to save
 npointsPolPlots=60;      #number of points for poloidal plots
 nthetapointsBsurface=40; #plot points in theta for magnetic field on surface
 nphipointsBsurface=40;   #plot points in phi for magnetic field on surface
-coilthickness=0.10;      #thickness of the coils in VMEC units to plot
-npointsContourPlotREGCOIL=60;   #number of points in contourplot when finding coil contours in REGCOIL
+coilthickness=0.02;      #thickness of the coils in VMEC units to plot
+npointsContourPlotREGCOIL=50;   #number of points in contourplot when finding coil contours in REGCOIL
 npointsInterpCoilPosREGCOIL=80; #number of points for theta grid in REGCOIL
 interpOrderCoilPosREGCOIL=2;    #interpolation order for theta grid in REGCOIL
-coilsPerHalfPeriod=4;    #number of coils per half period to plot
+coilsPerHalfPeriod=6;    #number of coils per half period to plot
 numHalfPeriodsToPlot=0;  #0 -> plots the whole stellarator
 plotpointsCoil=35;       #plot points in theta for coils
 #=====REGCOIL INPUT PARAMTERS========
-REGCOILtargetvalue=1.0;
-REGCOILseparation=0.15;
-REGCOILnlambda=20;
+REGCOILtargetvalue=9.;
+REGCOILseparation=0.05;
+REGCOILnlambda=100;
 
 #======START================
  echo "===================SENAC===================="

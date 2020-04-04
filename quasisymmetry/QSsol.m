@@ -1,20 +1,24 @@
 tic;
 
-NFP = 3;
-nphi = 100;
+inconds;
+
+NFP = 4;
+nphi = 500;
 R0 = 1;
+% epsilonR = 0.04;
+% epsilonZ = 0.04;
+etab = 1.51013;
 sigma0 = 0;
-etab=0.9;
-iota0 = 0.1;
-epsilonR=0.045;
-epsilonZ=0.045;
+iota0 = 3.1;
 
 %Compute closed curve
 phi=0:2*pi/(nphi-1):2*pi;
-R = R0+epsilonR.*cos(NFP.*phi);
+R = R0+0.360407.*cos(1.*NFP.*phi)-0.0669714.*cos(2.*NFP.*phi)+0.00460894.*cos(3.*NFP.*phi)-0.000223451.*cos(4.*NFP.*phi);
+%R = R0+epsilonR.*cos(NFP.*phi);
 x = R.*cos(phi);
 y = R.*sin(phi);
-z = -epsilonZ.*sin(NFP.*phi);
+z = 0.4.*sin(1.*NFP.*phi)-0.0693047.*sin(2.*NFP.*phi)+0.00480132.*sin(3.*NFP.*phi)-0.000227014.*sin(4.*NFP.*phi);
+%z = -epsilonZ.*sin(NFP.*phi);
 %Derivatives of closed curve vector
 r = [x; y; z];
 dr = gradient(r,2*pi/(nphi-1));
@@ -78,9 +82,9 @@ column = [0 .5*(-1).^(1:N-1).*cot((1:N-1)*h/2)]';
 D = toeplitz(column,column([1 N:-1:2]));
 
 %Find sigma
-sigma = 0.1.*cos(NFP.*x);iota=iota0;
+sigma = 0.1*cos(NFP.*x);iota=iota0;
 sprime = sprime';tors=tors';curv=curv';
-tol=1.e-5;totalIt=30;totalLineSearch=8;deltaold=0;tic;
+tol=1.e-15;totalIt=50;totalLineSearch=15;deltaold=0;tic;
 for i=1:totalIt
     [f,Jacf] = qs_residual_sigma(D,sigma,tors,curv,sprime,etab,nNormal,iota,L,N,sigma0);
     deltay = -Jacf\f;
@@ -90,7 +94,7 @@ for i=1:totalIt
     
     for j=1:totalLineSearch
         [newf,~] = qs_residual_sigma(D,sigma+deltay(1:N),tors,curv,sprime,etab,nNormal,iota+deltay(N+1),L,N,sigma0);
-        if abs(norm(newf))<abs(norm(f))
+        if abs(norm(newf))<abs(norm(f))/1.2
             break;
         else
             deltay=deltay/2;
@@ -102,12 +106,15 @@ for i=1:totalIt
     deltaold = deltay;
 end
 timeT=toc;
-disp(['iota = ',num2str(iota),' after ',num2str(timeT),'s and ',num2str(i),' iterations.',]);
-return
+disp(['iota = ',num2str(iota),' after ',num2str(timeT),'s and ',num2str(i),' iterations. N = ',num2str(nNormal)]);
 %find mu and delta
-mu=0.6+0.01.*cos(NFP.*x);
-delta=0.1.*sin(NFP.*x)-NFP.*x/2;
-tol=1.e-4;totalIt=30;totalLineSearch=8;deltaold=0;tic;
+mu=0.7+0.001.*cos(NFP.*x);
+if nNormal~=0
+    delta=0.05.*sin(NFP.*x)+0.1.*sin(2.*NFP.*x);
+else
+    delta=0.1.*sin(NFP.*x)+0.01.*sin(2.*NFP.*x)-NFP.*x/2;
+end
+tol=1.e-15;totalIt=70;totalLineSearch=12;deltaold=0;tic;
 for i=1:totalIt
     [f,Jacf] = qs_residual_mercierGB(sigma,mu,delta,etab,curv);
     deltay = -Jacf\f;
@@ -118,7 +125,7 @@ for i=1:totalIt
     
     for j=1:totalLineSearch
         [newf,~] = qs_residual_mercierGB(sigma,mu+deltay(1:N),delta+deltay(N+1:2*N),etab,curv);
-        if abs(norm(newf))<abs(norm(f))
+        if abs(norm(newf))<abs(norm(f))/1.3
             break;
         else
             deltay=deltay/2;
@@ -130,10 +137,13 @@ for i=1:totalIt
 end
 timeT=toc;
 disp(['Found mu and delta after ',num2str(timeT),'s and ',num2str(i),' iterations.',]);
-figure();hold on;plot(x,mu);plot(x,delta+NFP.*x/2);
+figure();hold on;plot(x,mu);
 
 deltaold=delta;
-if abs(delta(end))>abs(delta(1)+2*pi)
+if nNormal~=0
+    plot(x,delta);
+else
+    plot(x,delta+NFP.*x/2);
     delta = delta+NFP.*x/2;
 end
 
@@ -142,6 +152,8 @@ deltafit=fit(phi',delta,'fourier8');
 
 muvalues = coeffvalues(mufit);
 deltavalues = coeffvalues(deltafit);
+
+%return;
 
 %Write mu and delta to SENAC
 fid = fopen('surf_input_QS.txt','w');
@@ -162,6 +174,10 @@ for i=1:8
     fprintf(fid, ' %5f', deltavalues(2*i+1));
 end
 fprintf(fid, '\niota = %5f', iota);
+fprintf(fid, '\npsi31 = 0');
+fprintf(fid, '\npsi32 = 0');
+fprintf(fid, '\npsi33 = 0');
+fprintf(fid, '\npsi34 = 0');
 fclose(fid);
 
 toc

@@ -22,7 +22,7 @@ If[muDefined==0 && plotOriginal==1,
     If[FileExistsQ[vmecOutput],
       If[exportBFieldSurface==1,
         timestart2 = AbsoluteTime[]; WriteString[$Output, "      Exporting magnetic field at surface..."];
-        bvmecFig[[j]]=DensityPlot[BVMEC[theta, phi, Floor[iradius]], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[CapitalPhi]", HoldForm["Poloidal Angle " Subscript[\[Theta], V]]}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> 750, LegendLabel -> HoldForm["B(" Subscript[\[Theta], V] ",\[CapitalPhi])"]]];
+        bvmecFig[[j]]=DensityPlot[BVMEC[theta, phi, Floor[iradius]], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[CapitalPhi]", (*HoldForm["Poloidal Angle " Subscript[\[Theta], V]]*)"Poloidal Angle \[Theta]"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> 750, LegendLabel -> HoldForm["B(" Subscript[\[Theta], V] ",\[CapitalPhi])"]]];
         Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_VMEC_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_.pdf"], bvmecFig[[j]], ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
         WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart2]<>"s\n"];
       ];
@@ -146,7 +146,7 @@ If[export3DSurface==1 || exportBFieldSurface==1,
     ];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
     timestart=AbsoluteTime[];WriteString[$Output, "        Creating figure..."];
-    bfitFig=DensityPlot[BFuncExportB[theta, phi], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[CapitalPhi]", HoldForm["Poloidal Angle " Subscript[\[Theta], V]]}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotRange->All, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> HoldForm["B(" Subscript[\[Theta], V] ",\[CapitalPhi])"]]];
+    bfitFig=DensityPlot[BFuncExportB[theta, phi], {phi, 0, 2*pi/vmecNFP}, {theta, 0, 2*pi}, FrameLabel -> {"Toroidal Angle \[CapitalPhi]", (*HoldForm["Poloidal Angle " Subscript[\[Theta], V]]*)"Poloidal Angle \[Theta]"}, Evaluate@PlotOptions, MaxRecursion -> 1, PlotRange->All, PlotPoints -> {nthetapointsBsurface,ntphipointsBsurface}, ColorFunction -> "Rainbow", PlotLegends -> BarLegend[Automatic, LegendMarkerSize -> ImageSizePlot, LegendLabel -> HoldForm["B(" Subscript[\[Theta], V] ",\[CapitalPhi])"]]];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
     timestart=AbsoluteTime[];WriteString[$Output, "        Exporting BField figure..."];
     Export[StringJoin[currentPath,"data/",ToString[proj],"/Figures/",ToString[proj],"_fit_magnetic_field_surface_"<>ToString[Floor[iradius]]<>"_ordern_"<>ToString[ordern]<>".pdf"], bfitFig, ImageSize->ImageSizePlot, ImageResolution->ImageResolutionPlot];
