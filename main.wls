@@ -57,6 +57,7 @@ phiedge              = ToExpression[$ScriptCommandLine[[45]]];
 Bzero                = ToExpression[$ScriptCommandLine[[46]]];
 If[quasisymmetry==1,surfInput=surfInputQS];
 pi = N[Pi,10];
+mu0const = 4*pi*10^(-7);
 $HistoryLength = 0;
 
 (*Fast Numerical Integrator*)
@@ -137,7 +138,7 @@ If[muDefined==0,
 (*Compute Iota on Axis from Expression of Near-Axis Expansion*)
 If[muDefined==1,
   printv = printv <> "Iota on Axis From Near-Axis Formula" <> nl;
-  iotaFit = GaussLegendreQuadrature[(-D[delta[phi], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (mu[phi])^2]+D[delta[phi], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal;
+  iotaFit = GaussLegendreQuadrature[(-torCurVMEC*sprimeVMEC[phi]/2-D[delta[phi], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (mu[phi])^2]+D[delta[phi], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal;
   Print["  Iota on Axis from near-axis formula: "<>ToString[iotaFit]];
   printv = printv <> ToString[iotaFit] <> nl;
   If[quasisymmetry==1,
@@ -146,7 +147,7 @@ If[muDefined==1,
   ]
   ,
   iotaFit=ParallelTable[
-    GaussLegendreQuadrature[(-D[deltaVMEC /. fitParams[iradius], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (muVMEC /. fitParams[iradius])^2]+D[deltaVMEC /. fitParams[iradius], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal,
+    GaussLegendreQuadrature[(-torCurVMEC*sprimeVMEC[phi]/2-D[deltaVMEC /. fitParams[iradius], phi] + torsVMEC[phi]*sprimeVMEC[phi])*Sqrt[1 - (muVMEC /. fitParams[iradius])^2]+D[deltaVMEC /. fitParams[iradius], phi], {phi, 0, 2*pi}, 250, 20]/(2*pi)-nNormal,
   {iradius,1,nsurfaces}];
   If[FileExistsQ[vmecOutput],
     Print["  Iota from VMEC:      "<>ToString[iotaAxisOut]];
@@ -161,6 +162,78 @@ If[muDefined==1,
     printv = printv <> ToString[iotaFit] <> nl;
   ]
 ];
+
+(*Compute Magnetic Well*)
+psia = Last[psiiVMEC];
+shalf = Table[(1. (i - 1/2))/(nns - 1), {i, 1, nns - 1, 1}];
+data = Drop[gmnc[[All, 1]], 1];
+fitRes = Fit[Transpose@{shalf[[1 ;; 15]], data[[1 ;; 15]]}, {1, x, x^2},x][[2]] /. x -> 1;
+Vwell0VMEC = -((2*pi)^2)*fitRes/psia^2;
+
+VppTemp[s_]=0.5*1/(4 Pi^2 B0R[s]^4 (1 - muR[s]^2)^(5/2)) (3 Pi (-1 + muR[s]^2)^2 (B0R'[s]*(sprimeVMEC[s]^(-1)))^2 + Pi B0R[s]^2 (-(-1 + muR[s]^2)^2 (-lambda^2 + curvVMEC[s]^2 (2 - 2 Cos[2 deltaR[s]] muR[s])
+            + muR[s]^2 (lambda + 2 torsVMEC[s] - 2 deltaR'[s]*(sprimeVMEC[s]^(-1))) (lambda - 2 torsVMEC[s] + 2 deltaR'[s]*(sprimeVMEC[s]^(-1)))) + (muR'[s]*(sprimeVMEC[s]^(-1)))^2) +
+            4 B0R[s] (-1 + muR[s]^2) (-Sqrt[1 - muR[s]^2] (Pi^2 pprime0 + 2 curvVMEC[s] (Cos[deltaR[s]] Psi31c[s] + 
+            Sin[deltaR[s]] Psi31s[s])) + muR[s]^2 Sqrt[1 - muR[s]^2] (Pi^2 pprime0 + curvVMEC[s] (-Cos[deltaR[s]] (Psi31c[s] + 3 Psi33c[s]) - 
+            Sin[deltaR[s]] (Psi31s[s] - 3 Psi33s[s]))) + muR[s] (3 curvVMEC[s] Sqrt[1 - muR[s]^2] (Cos[deltaR[s]] (Psi31c[s] + Psi33c[s]) + 
+            Sin[deltaR[s]] (-Psi31s[s] + Psi33s[s])) + Pi B0R'[s]*(sprimeVMEC[s]^(-1))*muR'[s]*(sprimeVMEC[s]^(-1)))));
+
+(*Compute DWell*)
+Laxis=GaussLegendreQuadrature[sprimeVMEC[phi], {phi, 0, 2*pi}, 250, 20];
+signPsi=1;
+DwellTemp[s_]=(pprime0/((2*pi)^1))*(Laxis/(4*pi*PsiI))*(signPsi*VppP/Laxis-pprime0/(B0R[s]^3));
+
+(*Integrate them over s to get final answer*)
+If[muDefined==1,
+  lambda       = 0;
+  pprime0      = 0;
+  B0R[phi_]    = B0[phi];
+  deltaR[phi_] = delta[phi];
+  muR[phi_]    = mu[phi];
+  Psi31c[phi_] = Pi*B0[phi]*(Cos[  deltaR[s]]*psi31[phi] - psi32[phi]*Sin[deltaR[s]]);
+  Psi31s[phi_] = Pi*B0[phi]*(Cos[  deltaR[s]]*psi32[phi] + psi31[phi]*Sin[deltaR[s]]);
+  Psi33c[phi_] = Pi*B0[phi]*(Cos[3*deltaR[s]]*psi33[phi] - psi34[phi]*Sin[3 deltaR[s]]);
+  Psi33s[phi_] = Pi*B0[phi]*(Cos[3*deltaR[s]]*psi34[phi] + psi33[phi]*Sin[3 deltaR[s]]);
+  PsiI         = vmecPSI[[1]];
+  Vpp   = GaussLegendreQuadrature[VppTemp[phi]*sprimeVMEC[phi], {phi, 0, 2*pi}, 250, 20];
+  Dwell = GaussLegendreQuadrature[DwellTemp[phi]*sprimeVMEC[phi], {phi, 0, 2*pi}, 250, 20];
+  Print["  Magnetic well: from near-axis = "<>ToString[Vpp]<>", from VMEC = "<>ToString[Vwell0VMEC]];
+  printv = printv <> "Magnetic well near-axis" <> nl;
+  printv = printv <> ToString[Vpp] <> nl;
+  printv = printv <> "Magnetic well VMEC" <> nl;
+  printv = printv <> ToString[Vwell0VMEC] <> nl;
+  ,
+  vPPDwell=ParallelTable[
+    B0R[phi_]    = B0VMEC /. fitParams[iradius];
+    deltaR[phi_] = deltaVMEC /. fitParams[iradius];
+    muR[phi_]    = muVMEC /. fitParams[iradius];
+    pprime0      = pprime0VMEC;
+    lambda       = torCurVMEC;
+    PsiI         = vmecPSI[[iradius]];
+    If[ordern>2,
+      Psi31c[phi_] = (B0R[phi]^(3/2))*Sum[Cos[m*vmecNFP*phi + deltaR[phi]]*psic[3, 1, m] /. fitParams[iradius], {m, 0, nModes}];
+      Psi31s[phi_] = (B0R[phi]^(3/2))*Sum[Sin[m*vmecNFP*phi + deltaR[phi]]*psic[3, 1, m] /. fitParams[iradius], {m, 0, nModes}];
+      Psi33c[phi_] = (B0R[phi]^(3/2))*Sum[Cos[m*vmecNFP*phi + deltaR[phi]]*psic[3, 3, m] /. fitParams[iradius], {m, 0, nModes}];
+      Psi33s[phi_] = (B0R[phi]^(3/2))*Sum[Sin[m*vmecNFP*phi + deltaR[phi]]*psic[3, 3, m] /. fitParams[iradius], {m, 0, nModes}];
+      ,Psi31c[phi_] = 0;Psi31s[phi_] = 0;Psi33c[phi_] = 0;Psi33s[phi_] = 0;
+    ];
+    VpptempI=GaussLegendreQuadrature[VppTemp[phi]*sprimeVMEC[phi], {phi, 0, 2*pi}, 200, 15];
+    DwelltempI=GaussLegendreQuadrature[(DwellTemp[phi]/.VppP->VpptempI)*sprimeVMEC[phi], {phi, 0, 2*pi}, 200, 15];
+    {VpptempI,DwelltempI}
+  ,{iradius,1,nsurfaces}];
+  Vpp=vPPDwell[[All,1]];
+  Dwell=vPPDwell[[All,2]];
+  Print["  Magnetic well: from near-axis = "<>ToString[Vpp]<>", from VMEC = "<>ToString[Vwell0VMEC]];
+  printv = printv <> "Magnetic well near-axis" <> nl;
+  printv = printv <> ToString[Vpp] <> nl;
+  printv = printv <> "Magnetic well VMEC" <> nl;
+  printv = printv <> ToString[Vwell0VMEC] <> nl;
+  Print["  Dwell: from near-axis = "<>ToString[Dwell]<>", from VMEC = "<>ToString[DWellVMEC]];
+  printv = printv <> "Dwell" <> nl;
+  printv = printv <> ToString[Dwell] <> nl;
+  printv = printv <> "Dwell VMEC" <> nl;
+  printv = printv <> ToString[DWellVMEC] <> nl;
+];
+
 fitFile = OpenAppend[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_parameters_ordern_"<>ToString[ordern]<>".txt"]];
 WriteString[fitFile, printv];Close[fitFile];
 

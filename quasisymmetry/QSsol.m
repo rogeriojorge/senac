@@ -2,23 +2,23 @@ tic;
 
 inconds;
 
-NFP = 4;
-nphi = 500;
-R0 = 1;
+%NFP = 4;
+%nphi = 500;
+%R0 = 1;
 % epsilonR = 0.04;
 % epsilonZ = 0.04;
-etab = 1.51013;
-sigma0 = 0;
-iota0 = 3.1;
+%etab = 1.51013;
+%sigma0 = 0;
+%iota0 = 3.1;
 
 %Compute closed curve
 phi=0:2*pi/(nphi-1):2*pi;
-R = R0+0.360407.*cos(1.*NFP.*phi)-0.0669714.*cos(2.*NFP.*phi)+0.00460894.*cos(3.*NFP.*phi)-0.000223451.*cos(4.*NFP.*phi);
-%R = R0+epsilonR.*cos(NFP.*phi);
+%R = R0+0.360407.*cos(1.*NFP.*phi)-0.0669714.*cos(2.*NFP.*phi)+0.00460894.*cos(3.*NFP.*phi)-0.000223451.*cos(4.*NFP.*phi);
+R = R0+epsilonR.*cos(NFP.*phi);
 x = R.*cos(phi);
 y = R.*sin(phi);
-z = 0.4.*sin(1.*NFP.*phi)-0.0693047.*sin(2.*NFP.*phi)+0.00480132.*sin(3.*NFP.*phi)-0.000227014.*sin(4.*NFP.*phi);
-%z = -epsilonZ.*sin(NFP.*phi);
+%z = 0.4.*sin(1.*NFP.*phi)-0.0693047.*sin(2.*NFP.*phi)+0.00480132.*sin(3.*NFP.*phi)-0.000227014.*sin(4.*NFP.*phi);
+z = -epsilonZ.*sin(NFP.*phi);
 %Derivatives of closed curve vector
 r = [x; y; z];
 dr = gradient(r,2*pi/(nphi-1));
@@ -87,6 +87,8 @@ sprime = sprime';tors=tors';curv=curv';
 tol=1.e-15;totalIt=50;totalLineSearch=15;deltaold=0;tic;
 for i=1:totalIt
     [f,Jacf] = qs_residual_sigma(D,sigma,tors,curv,sprime,etab,nNormal,iota,L,N,sigma0);
+    Jacf
+    return;
     deltay = -Jacf\f;
     if i>5 && norm((deltay-deltaold))/sqrt(N)<tol
         break
@@ -105,6 +107,7 @@ for i=1:totalIt
     iota  = iota+deltay(N+1);
     deltaold = deltay;
 end
+plot(phi,sigma);
 timeT=toc;
 disp(['iota = ',num2str(iota),' after ',num2str(timeT),'s and ',num2str(i),' iterations. N = ',num2str(nNormal)]);
 %find mu and delta
