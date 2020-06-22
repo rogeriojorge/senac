@@ -6,6 +6,8 @@ If[FileExistsQ[surfInput],
 	If[quasisymmetry==1,vmecPSI={phiedge},vmecPSI = {Abs[StringCases[StringDelete[FindList[surfInput, "PHIEDGE"][[1]], " "], x : NumberString :> ToExpression[x]][[1]]]}];
 	vmecRAXIS = StringSplit[FindList[surfInput, "RAXIS"][[1]]];
 	vmecZAXIS = StringSplit[FindList[surfInput, "ZAXIS"][[1]]];
+	torCurVMEC = StringCases[StringDelete[FindList[surfInput, "torCurr"][[1]], " "], x : NumberString :> ToExpression[x]][[1]];
+	pprime0VMEC = StringCases[StringDelete[FindList[surfInput, "pressGr"][[1]], " "], x : NumberString :> ToExpression[x]][[1]];
 	nRAXIS[phi_] = Sum[Internal`StringToDouble@vmecRAXIS[[nn + 3]]*Cos[vmecNFP nn phi], {nn, 0, Dimensions[vmecRAXIS][[1]] - 3}];
 	nZAXIS[phi_] = Sum[Internal`StringToDouble@vmecZAXIS[[nn + 3]]*Sin[vmecNFP nn phi], {nn, 0, Dimensions[vmecZAXIS][[1]] - 3}];
 	closedcurvVMEC[phi_] = {nRAXIS[phi] Cos[phi], nRAXIS[phi] Sin[phi], nZAXIS[phi]};
