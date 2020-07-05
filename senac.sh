@@ -11,11 +11,11 @@ vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to re
 runSENAC=1;              #1-> runs SENAC mathematica
 readFit=0;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
 outputToVMEC=0;          #compute Fourier Modes and output to VMEC
-plotFit=0;               #Mathematica plots fit results
-plotOriginal=0;          #Mathematica plots original surface
-plotPolFig=0;            #Mathematica plots comparison at different poloidal planes
-export3DSurface=0;       #0 -> Don't export 3D toroidal surface, 1 -> Do
-exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
+plotFit=1;               #Mathematica plots fit results
+plotOriginal=1;          #Mathematica plots original surface
+plotPolFig=1;            #Mathematica plots comparison at different poloidal planes
+export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
+exportBFieldSurface=1;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
 quasisymmetry=0;         #1 -> run quasisymmetric SENAC
 #======QUASISYMMETRY PARAMETERS=====
 runQSmatlab=0;			 #run QS matlab script to get new delta and mu
@@ -40,22 +40,22 @@ plotRegcoilOriginal=0;   #Mathematica plots coils for original surface
 ordern=2;                #Near-Axis Expansion Order (has to be greater than 2)
 nModes=2;                #number of fourier components in mu, delta and B0
 nsurfaces=4;             #number of surfaces to read and compare from VMEC
-nthetaM=15;              #resolution in theta for fit and Mercier's coordinates
-nphiM=20;                #resolution in phi for fit and Mercier's coordinates
-maxiterations=150;      #max number of iterations for fit
+nthetaM=20;              #resolution in theta for fit and Mercier's coordinates
+nphiM=25;                #resolution in phi for fit and Mercier's coordinates
+maxiterations=250;      #max number of iterations for fit
 keepfit=0;               #use the same fit results for outer surfaces as inner surface
 readlowfit=0;            #use the fit results of lower order to construct higher order fit
 deltac0=0.0;             #initial point for deltac0 between -pi and pi
-deltal0=0.0;             #initial point for deltal
-deltalmin=5.0;         #minimum deltal to help fit
-deltalmax=5.0;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
-muc0=0.2;                #initial point for muc0
+deltal0=1.0;             #initial point for deltal
+deltalmin=0.0;         #minimum deltal to help fit
+deltalmax=0.0;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
+muc0=0.5;                #initial point for muc0
 mucMin=0.1;              #minimum muc0 to help fit
 mucMax=0.8;              #maximum muc0 to help fit
-maxm=8;                  #Maximum poloidal Fourier mode m to output to VMEC
-maxn=8;                  #Maximum toroidal Fourier mode n to output to VMEC
-maxRecursTheta=50;       #Theta resolution in numerical integration in Mercier to VMEC
-maxRecursPhi=300;        #Phi resolution in numerical integration
+maxm=12;                  #Maximum poloidal Fourier mode m to output to VMEC
+maxn=12;                  #Maximum toroidal Fourier mode n to output to VMEC
+maxRecursTheta=100;       #Theta resolution in numerical integration in Mercier to VMEC
+maxRecursPhi=350;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
 nPlotTheta=50;           #number of interpolating points in theta
 nPlotPhi=80;             #number of interpolating points in phi
@@ -124,7 +124,7 @@ fi
 if (( $runVMECofFit == 1)); then
 	echo "-----------------------"
 	echo "Running VMEC from fit"
-	./vmec/xvmec2000 data/${proj}/input.${proj}_SENACtoVMEC_ordern${ordern}_nmodes${nModes}.txt | tee -a data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
+	mpirun -n 4 ./vmec/xvmec2000 data/${proj}/input.${proj}_SENACtoVMEC_ordern${ordern}_nmodes${nModes}.txt | tee -a data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
 	if test -f "threed1.${proj}_SENACtoVMEC_ordern${ordern}_nmodes${nModes}.txt"; then
     	rm threed1.${proj}_SENACtoVMEC_ordern${ordern}_nmodes${nModes}.txt; rm timings.txt; rm mercier.${proj}_SENACtoVMEC_ordern${ordern}_nmodes${nModes}.txt; rm parvmecinfo.txt; rm wout_${proj}_SENACtoVMEC_ordern${ordern}_nmodes${nModes}.txt.txt; rm jxbout_${proj}_SENACtoVMEC_ordern${ordern}_nmodes${nModes}.txt.nc; rm fort.8
 	fi

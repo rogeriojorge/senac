@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
 muDefined       = 0;
-VMECdatasets    = Import[vmecOutput, {"Datasets", {"iotaf", "rmnc", "zmns","ns","nfp","phi","bmnc","xm","xn","raxis_cc","zaxis_cs","xn_nyq","xm_nyq","ctor","am","ac","ai","DWell","gmnc"}}];
+VMECdatasets    = Import[vmecOutput, {"Datasets", {"iotaf", "rmnc", "zmns","ns","nfp","phi","bmnc","xm","xn","raxis_cc","zaxis_cs","xn_nyq","xm_nyq","ctor","am","ac","ai","DWell","gmnc","vp"}}];
 rmnc            = VMECdatasets[[2]];
 zmns            = VMECdatasets[[3]];
 nns             = VMECdatasets[[4]]-1;
@@ -21,6 +21,7 @@ torCurVMEC      = ctor*mu0const*VMECdatasets[[16]][[1]]/Last[psiiVMEC];
 (*ai              = VMECdatasets[[17]];*)
 DWellTemp       = VMECdatasets[[18]];
 gmnc            = VMECdatasets[[19]];
+vp              = VMECdatasets[[20]];
 
 surface1=15;
 
