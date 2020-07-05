@@ -3,8 +3,8 @@
 timestart = AbsoluteTime[]; WriteString[$Output, "    Creating RBC and ZBS interpolation functions... "];
 RBCtoVMECTable=ParallelTable[{{theta, phi}, Cos[phi]*FluxSurfacenFitVMEC[theta, phi, nsurfaces][[1]] + Sin[phi]*FluxSurfacenFitVMEC[theta, phi, nsurfaces][[2]]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.5}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.5}];
 ZBStoVMECTable=ParallelTable[{{theta, phi}, FluxSurfacenFitVMEC[theta, phi, nsurfaces][[3]]}, {theta, 0, 2*pi, 2*pi/maxRecursTheta/1.2}, {phi, 0, 2*pi, 2*pi/maxRecursPhi/1.2}];
-RBCtoVMECInterp=Interpolation[Flatten[RBCtoVMECTable, 1], Method -> "Spline", InterpolationOrder -> 3];
-ZBStoVMECInterp=Interpolation[Flatten[ZBStoVMECTable, 1], Method -> "Spline", InterpolationOrder -> 3];
+RBCtoVMECInterp=Interpolation[Flatten[RBCtoVMECTable, 1], Method -> "Spline", InterpolationOrder -> 2];
+ZBStoVMECInterp=Interpolation[Flatten[ZBStoVMECTable, 1], Method -> "Spline", InterpolationOrder -> 2];
 WriteString[$Output, "Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s."];
 
 timestart = AbsoluteTime[]; WriteString[$Output, "\n    RBCmn Evaluation... "];

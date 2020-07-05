@@ -22,7 +22,7 @@ torCurVMEC      = ctor*mu0const*VMECdatasets[[16]][[1]]/Last[psiiVMEC];
 DWellTemp       = VMECdatasets[[18]];
 gmnc            = VMECdatasets[[19]];
 
-surface1=5;
+surface1=15;
 
 vmecOutputnRAXIS[phi_] = Chop[Sum[vmecOutputRaxis[[nn]] Cos[-vmecNFP (nn - 1) phi], {nn, 1, Length[vmecOutputRaxis]}], 10^-6];
 vmecOutputnZAXIS[phi_] = Chop[Sum[vmecOutputZaxis[[nn]] Sin[-vmecNFP (nn - 1) phi], {nn, 1, Length[vmecOutputZaxis]}], 10^-6];
