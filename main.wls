@@ -167,7 +167,7 @@ If[muDefined==1,
 If[FileExistsQ[vmecOutput],
   psia = Last[psiiVMEC];
   shalf = Table[(1. (i - 1/2))/(nns - 1), {i, 1, nns - 1, 1}];
-  data = Drop[(*gmnc[[All, 1]]*)vp, 1];
+  data = Drop[gmnc[[All, 1]], 1];
   fitRes = Fit[Transpose@{shalf[[1 ;; 21]], data[[1 ;; 21]]}, {1, x, x^2},x][[2]] /. x -> 1;
   Vwell0VMEC = -((2*pi)^2)*fitRes/psia^2;
 ]
