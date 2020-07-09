@@ -46,7 +46,7 @@ If[FileExistsQ[vmecOutput],
   printv = printv <> nl;
 ]
 
-Do[If[m == 0 && n < 0 || Chop[RBCmn[[m + 1, n + maxn + 1]], 10^-8] == 0 && Chop[ZBSmn[[m + 1, n + maxn + 1]], 10^-8] == 0,
+Do[If[m == 0 && n < 0 || Chop[RBCmn[[m + 1, n + maxn + 1]], 10^(-chopResolution)] == 0 && Chop[ZBSmn[[m + 1, n + maxn + 1]], 10^(-chopResolution)] == 0,
   Null,
   printv = printv <>
     rbcs[n, m] <> 

@@ -15,7 +15,7 @@ Table[
   timestart = AbsoluteTime[];WriteString[$Output, "      Computing thetaMercierFunc..."];
   ycomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[iradius][theta,phi]], t0VMEC[phiAxis[iradius][theta,phi]]];
   xcomponent[theta_, phi_] = Dot[FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[iradius][theta,phi]], k0VMEC[phiAxis[iradius][theta,phi]]];
-  thetaMercierFunc[theta_, phi_, iradius] = Chop[ArcTan[xcomponent[theta, phi], ycomponent[theta, phi]], 10^-8];
+  thetaMercierFunc[theta_, phi_, iradius] = Chop[ArcTan[xcomponent[theta, phi], ycomponent[theta, phi]], 10^(-chopResolution)];
   timestartMercierAngle=timestartMercierAngle+AbsoluteTime[]-timestart;Clear[thetaMercierTable];
   WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
 
@@ -27,12 +27,12 @@ If[iradius>1 && keepfit==1,
   ,
   If[readFit==1, 
     timestart=AbsoluteTime[];WriteString[$Output, "      Importing fitting parameters..."];
-    fitParams[iradius] = Chop[ToExpression[Import[fitParamsFile[ordern], {"Lines", iradius}]],10^-8];
+    fitParams[iradius] = Chop[ToExpression[Import[fitParamsFile[ordern], {"Lines", iradius}]],10^(-chopResolution)];
     WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
     ,
     (*Compute Rho from VMEC*)
     rhoSurf[theta_, phi_] = FluxSurfaceVMEC[theta, phi, iradius] - closedcurvVMEC[phiAxis[iradius][theta,phi]];
-    rhonVMEC2[theta_, phi_] = Chop[Dot[rhoSurf[theta, phi], k0VMEC[phiAxis[iradius][theta,phi]]]^2 + Dot[rhoSurf[theta, phi], t0VMEC[phiAxis[iradius][theta,phi]]]^2, 10^-8];
+    rhonVMEC2[theta_, phi_] = Chop[Dot[rhoSurf[theta, phi], k0VMEC[phiAxis[iradius][theta,phi]]]^2 + Dot[rhoSurf[theta, phi], t0VMEC[phiAxis[iradius][theta,phi]]]^2, 10^(-chopResolution)];
 
     (*Flux Surface After Fitting for mu and delta*)
     timestart = AbsoluteTime[];WriteString[$Output, "      Computing dataVMEC..."];
@@ -71,7 +71,7 @@ If[iradius>1 && keepfit==1,
       {theta,phi}, Method -> {"NMinimize"}, MaxIterations -> maxiterations, AccuracyGoal -> 5, PrecisionGoal -> 5
       ];
       WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart]<>"s\n"];
-      fitParams[iradius] = Chop[If[FileExistsQ[fitParamsFile[ordern-1]] && readlowfit==1, Flatten[Append[nlm,ToExpression[Import[fitParamsFile[ordern-1], {"Lines", iradius}]]]], nlm],10^-8];
+      fitParams[iradius] = Chop[If[FileExistsQ[fitParamsFile[ordern-1]] && readlowfit==1, Flatten[Append[nlm,ToExpression[Import[fitParamsFile[ordern-1], {"Lines", iradius}]]]], nlm],10^(-chopResolution)];
     WriteString[$Output, "    Best fit parameters of surface "<>ToString[iradius]<>" - "<>ToString[fitParams[iradius]]<>"\n"];
     timestartFit=timestartFit+AbsoluteTime[]-timestart;
   ];

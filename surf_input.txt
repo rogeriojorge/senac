@@ -1,5 +1,5 @@
  NFP =   3
- PHIEDGE  1.0
+ PHIEDGE  0.01
  RAXIS =  4.0
  ZAXIS =  0.
  mu = 0.73

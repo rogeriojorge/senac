@@ -7,6 +7,7 @@ surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
 surfInputQS=${currentDIR}"/quasisymmetry/surf_input_QS.txt"; #input file with surface parameters
 vmecInput=${currentDIR}"/vmec/vmec_input_template.txt"; #template VMEC input file
 vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
+chopResolution=14; #Number of digits to keep for internal calculations and outputs
 #======SENAC=====
 runSENAC=1;              #1-> runs SENAC mathematica
 readFit=0;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
@@ -118,7 +119,7 @@ if (( $runSENAC == 1)); then
 	echo "-----------------------"
 	echo "Running SENAC Mathematica"
 	rm -f data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
-	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi $nPlotTheta $nPlotPhi $plotPointsFig $maxRecursPlot $ImageSizePlot $ImageResolutionPlot $nfigsSurf $nPlots $nthetapointsBsurface $nphipointsBsurface $npointsPolPlots $exportBFieldSurface $keepfit $export3DSurface $readlowfit $plotPolFig $quasisymmetry $surfInputQS $phiedge $Bzero | tee data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
+	wolframscript -noprompt -script main.wls $proj $surfInput $readFit $outputToVMEC $vmecInput $vmecOutput $ordern $nsurfaces $nthetaM $nphiM $deltac0 $deltal0 $deltalmin $deltalmax $muc0 $mucMin $mucMax $nModes $maxiterations $plotFit $plotOriginal $maxm $maxn $maxRecursTheta $maxRecursPhi $nPlotTheta $nPlotPhi $plotPointsFig $maxRecursPlot $ImageSizePlot $ImageResolutionPlot $nfigsSurf $nPlots $nthetapointsBsurface $nphipointsBsurface $npointsPolPlots $exportBFieldSurface $keepfit $export3DSurface $readlowfit $plotPolFig $quasisymmetry $surfInputQS $phiedge $Bzero $chopResolution | tee data/${proj}/senac_${proj}_output_order${ordern}_nmodes${nModes}.txt
 fi
 #======RUN VMEC=====
 if (( $runVMECofFit == 1)); then
