@@ -18,7 +18,7 @@ R = R0+epsilonR.*cos(NFP.*phi);
 x = R.*cos(phi);
 y = R.*sin(phi);
 %z = 0.4.*sin(1.*NFP.*phi)-0.0693047.*sin(2.*NFP.*phi)+0.00480132.*sin(3.*NFP.*phi)-0.000227014.*sin(4.*NFP.*phi);
-z = -epsilonZ.*sin(NFP.*phi);
+z = epsilonZ.*sin(NFP.*phi);
 %Derivatives of closed curve vector
 r = [x; y; z];
 dr = gradient(r,2*pi/(nphi-1));
@@ -29,6 +29,7 @@ dddr = gradient(ddr,2*pi/(nphi-1));
 %Curvature
 curv = sqrt(sum(cross(dr,ddr).^2))./sqrt(sum(dr.^2)).^3;
 curv(end-1)=curv(end-2);curv(end)=curv(end-1);curv(1)=curv(end);curv(2)=curv(1);
+dcurv = gradient(curv,2*pi/(nphi-1));
 %Torsion
 tors = dot(dr,cross(ddr,dddr))./sum(cross(dr,ddr).^2);
 tors(end)=tors(end-1);tors(1)=tors(end);tors(2)=tors(1);
@@ -87,8 +88,7 @@ sprime = sprime';tors=tors';curv=curv';
 tol=1.e-15;totalIt=50;totalLineSearch=15;deltaold=0;tic;
 for i=1:totalIt
     [f,Jacf] = qs_residual_sigma(D,sigma,tors,curv,sprime,etab,nNormal,iota,L,N,sigma0);
-    Jacf
-    return;
+    Jacf;
     deltay = -Jacf\f;
     if i>5 && norm((deltay-deltaold))/sqrt(N)<tol
         break
@@ -107,9 +107,26 @@ for i=1:totalIt
     iota  = iota+deltay(N+1);
     deltaold = deltay;
 end
-plot(phi,sigma);
+%plot(phi,sigma);
 timeT=toc;
 disp(['iota = ',num2str(iota),' after ',num2str(timeT),'s and ',num2str(i),' iterations. N = ',num2str(nNormal)]);
+
+B0=1;
+lambda=0;
+pprime0=0;
+
+Vpptemp=sprime./(32.*B0^3.*L^2.*pi.*etab^2) ...
+   .*(-((B0.*(16.*(nNormal-iota)^2-L^2.*lambda^2).*(etab^4+curv.^4.*(1+sigma.^2)))./curv.^2) ...
+   +L^2.*(32.*pi.*pprime0.*etab^2-16.*B0.*etab^4-(B0.*etab^4.*lambda^2)./curv.^2 ...
+         +B0.*lambda^2.*curv.^2.*(-1-sigma.^2+(16.*etab^4)./(etab^4+curv.^4.*(1+sigma.^2)))) ...
+   +16.*B0.*L^2.*curv.^2.*(1+etab^4./curv.^4+sigma.^2).*tors.^2 ...
+   +32.*B0.*L.*(nNormal-iota).*curv.*sigma.*(1+etab^4./curv.^4+sigma.^2).*(dcurv'./sprime) ...
+   +16.*B0.*(1+etab^4./curv.^4+sigma.^2).*((nNormal-iota)^2.*curv.^2.*(1+etab^4./curv.^4+sigma.^2) ...
+                                    +2.*L.*etab^2.*(-nNormal+iota).*tors+L^2.*(dcurv'./sprime).^2));
+
+Vpp = 4*pi*pi*trapz(phi,Vpptemp)
+
+%return;
 %find mu and delta
 mu=0.7+0.001.*cos(NFP.*x);
 if nNormal~=0
@@ -163,7 +180,7 @@ fid = fopen('surf_input_QS.txt','w');
 fprintf(fid,'NFP = %d\n', NFP);
 fprintf(fid,'RAXIS = %5f %5f\n', R0, epsilonR);
 fprintf(fid, 'ZAXIS = %5f', 0.0);
-fprintf(fid, ' %5f\n', -epsilonZ);
+fprintf(fid, ' %5f\n', epsilonZ);
 fprintf(fid, 'mu = %5f', muvalues(1));
 for i=1:8
     fprintf(fid, ' %5f', muvalues(2*i));

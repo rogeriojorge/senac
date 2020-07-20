@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="QAxys1"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="Landreman51"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -17,17 +17,17 @@ plotOriginal=1;          #Mathematica plots original surface
 plotPolFig=1;            #Mathematica plots comparison at different poloidal planes
 export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
 exportBFieldSurface=1;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
-quasisymmetry=0;         #1 -> run quasisymmetric SENAC
+quasisymmetry=1;         #1 -> run quasisymmetric SENAC
 #======QUASISYMMETRY PARAMETERS=====
-runQSmatlab=0;			 #run QS matlab script to get new delta and mu
-NFP=0;					 #number of field periods
+runQSmatlab=1;			 #run QS matlab script to get new delta and mu
+NFP=3;					 #number of field periods
 phiedge=0.01; 			 #toroidal flux in the edge
 Bzero=1.0;			     #magnetic field on axis
-nphi=400;				 #resolution in phi
+nphi=500;				 #resolution in phi
 R0=1;                    #major radius
-epsilonR=0.04;           #bumpiness of the axis in R
-epsilonZ=0.04;           #bumpiness of the axis in Z
-etab=0.7;                #eta bar
+epsilonR=0.045;           #bumpiness of the axis in R
+epsilonZ=-0.045;           #bumpiness of the axis in Z
+etab=0.9;                #eta bar
 sigma0=0;                #initial condition for sigma (0 if stellarator symmetric)
 iota0=0.3;               #initial guess for iota0
 #======VMEC=====
@@ -113,7 +113,7 @@ if (( $runSENAC == 1)); then
 		echo 'etab = '$etab';' >> inconds.m
 		echo 'sigma0 = '$sigma0';' >> inconds.m
 		echo 'iota0 = '$iota0';' >> inconds.m
-		matlab -nodisplay -nodesktop -nosplash -r "QSsol;exit;"
+		/Applications/MATLAB_R2019a.app/bin/matlab -nodisplay -nodesktop -nosplash -r "QSsol;exit;"
 		cd ..
 	fi
 	echo "-----------------------"
