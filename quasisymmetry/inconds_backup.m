@@ -1,5 +1,5 @@
 NFP = 3;
-nphi = 400;
+nphi = 500;
 R0 = 1;
 epsilonR = 0.045;
 epsilonZ = -0.045;

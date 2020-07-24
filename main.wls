@@ -85,7 +85,7 @@ If[FileExistsQ[vmecOutput],
 
 (*VMEC Axis Frenet-Serret Frame*)
 timestart1 = AbsoluteTime[]; WriteString[$Output, "  Computing VMEC's Frenet-Serret Frame and Surfaces..."]; Off[Simplify::time];
-curvVMEC[t_] = Chop[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/ComplexExpand[Norm[closedcurvVMEC'[t]]^3, 10^(-chopResolution)]]//Re;
+curvVMEC[t_] = Chop[ComplexExpand@Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]/ComplexExpand[Norm[closedcurvVMEC'[t]]^3, 10^(-chopResolution)]];
 torsVMEC[t_] = Chop[Dot[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]], closedcurvVMEC'''[t]]/ComplexExpand[Norm[Cross[closedcurvVMEC'[t], closedcurvVMEC''[t]]]]^2, 10^(-chopResolution)];
 sprimeVMEC[t_] = Chop[Simplify[Chop[ComplexExpand[Norm[closedcurvVMEC'[t]]], 10^(-chopResolution)], TimeConstraint -> 0.01], 10^(-chopResolution)];
 b0VMEC[t_] = Simplify[Chop[closedcurvVMEC'[t]/sprimeVMEC[t], 10^(-chopResolution)], TimeConstraint -> 0.01];
@@ -111,6 +111,13 @@ Table[
 , {t, 0, 2*pi, 2*pi/vmecNFP/15}];
 WriteString[$Output, " N="<>ToString[nNormal]<>" Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 
+(*Solve for psi3 if this is unknown*)
+timestart1 = AbsoluteTime[]; WriteString[$Output, "  Solving for psi3..."]; Off[Simplify::time];
+If[!FileExistsQ[vmecOutput] && ToExpression@psi31Table[[3]]==0,
+	Get[StringJoin[currentPath,"src/solve_psi3.wls"]];
+];
+WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
+
 (*Obtain Desired Surface in Mercier's Coordinates*)
 If[muDefined==0,
   (*Construct Rho of Psi*)
@@ -124,7 +131,7 @@ If[muDefined==0,
   ,
   timestart1 = AbsoluteTime[]; WriteString[$Output, "  Constructing Mercier's theta and rho..."];
   psin[theta_, phi_, 2]=pi*B0[phi]*(1 + mu[phi]*Cos[2 (theta + delta[phi])])/Sqrt[1 - mu[phi]^2];
-  psin[theta_, phi_, 3]=pi*B0[phi]*(psi31[phi]*Cos[theta]+psi32[phi]*Sin[theta]+psi33[phi]*Cos[3*theta]+psi34[phi]*Sin[3*theta]);
+  psin[theta_, phi_, 3]=(psi31[phi]*Cos[theta]+psi32[phi]*Sin[theta]+psi33[phi]*Cos[3*theta]+psi34[phi]*Sin[3*theta]);
   rho[theta_, phi_]=Sqrt[vmecPSI[[nsurfaces]]/psin[theta, phi, 2]] - vmecPSI[[nsurfaces]]*psin[theta, phi, 3]/(2*psin[theta, phi, 2]^2);
   rhotrue[theta_, phi_]:=x/.Solve[{psin[theta, phi, 2]*x^2+psin[theta, phi, 3]*x^3==vmecPSI[[nsurfaces]], x>0},x,Reals][[1]];
   FluxSurfacenFitVMEC[theta_, s_, 1] := Chop[closedcurvVMEC[s] + (rho[theta, s])*(Cos[theta]*k0VMEC[s] + Sin[theta]*t0VMEC[s]), 10^(-chopResolution)]//Quiet;
@@ -207,10 +214,10 @@ If[muDefined==1,
   B0R[phi_]    = B0[phi];
   deltaR[phi_] = delta[phi];
   muR[phi_]    = mu[phi];
-  Psi31c[phi_] = Pi*B0[phi]*(Cos[  deltaR[s]]*psi31[phi] - psi32[phi]*Sin[deltaR[s]]);
-  Psi31s[phi_] = Pi*B0[phi]*(Cos[  deltaR[s]]*psi32[phi] + psi31[phi]*Sin[deltaR[s]]);
-  Psi33c[phi_] = Pi*B0[phi]*(Cos[3*deltaR[s]]*psi33[phi] - psi34[phi]*Sin[3 deltaR[s]]);
-  Psi33s[phi_] = Pi*B0[phi]*(Cos[3*deltaR[s]]*psi34[phi] + psi33[phi]*Sin[3 deltaR[s]]);
+  Psi31c[phi_] = (Cos[  deltaR[phi]]*psi31[phi] - psi32[phi]*Sin[deltaR[phi]]);
+  Psi31s[phi_] = (Cos[  deltaR[phi]]*psi32[phi] + psi31[phi]*Sin[deltaR[phi]]);
+  Psi33c[phi_] = (Cos[3*deltaR[phi]]*psi33[phi] - psi34[phi]*Sin[3 deltaR[phi]]);
+  Psi33s[phi_] = (Cos[3*deltaR[phi]]*psi34[phi] + psi33[phi]*Sin[3 deltaR[phi]]);
   Vpp = GaussLegendreQuadrature[VppTemp[phi]*sprimeVMEC[phi], {phi, 0, 2*pi}, 250, 20];
   Print["  Magnetic well: from near-axis = "<>ToString[Vpp]<>If[FileExistsQ[vmecOutput],", from VMEC = "<>ToString[Vwell0VMEC],""]];
   printv = printv <> "Magnetic well near-axis" <> nl;

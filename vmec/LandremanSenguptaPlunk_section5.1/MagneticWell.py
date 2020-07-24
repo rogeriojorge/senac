@@ -39,8 +39,8 @@ for j in range(N):
     plt.xlabel('s')
     plt.ylabel(r'$gmnc_{0,0}$')
 
-    degree = 2
-    max_index=20
+    degree = 3
+    max_index=10
     p = np.polyfit(s_half[:max_index], gmnc[1:max_index+1,0], degree)
     print("p: ",p)
     plt.plot(s_half, np.polyval(p,s_half),'-')

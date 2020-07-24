@@ -7,11 +7,11 @@
  DELT = 0.8
  TCON0 = 2.
  NCURR =   1
- MPOL =  12   NTOR =  9
+ MPOL =  12   NTOR =  20
  !NZETA =  40
- NS_ARRAY =     8      12      16      32      49      101     151     201
- NITER_ARRAY =  3500   3500    3000    2500    2500    3500    3500    3500
- FTOL_ARRAY =   1.0E-9 1.0E-11 1.0E-11 1.0E-15 1.0E-17 1.0E-25 1.0E-30 1.0E-17
+ NS_ARRAY =     8      16      32      49      101     151     201
+ NITER_ARRAY =  3500   3000    2500    2500    3500    3500    3500
+ FTOL_ARRAY =   1.0E-9 1.0E-11 1.0E-15 1.0E-17 1.0E-25 1.0E-30 1.0E-17
  !NITER = 3500
  NSTEP = 200
  CURTOR = 0.

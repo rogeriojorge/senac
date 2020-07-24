@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="Landreman51"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="Landreman511"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -11,17 +11,17 @@ chopResolution=14; #Number of digits to keep for internal calculations and outpu
 #======SENAC=====
 runSENAC=1;              #1-> runs SENAC mathematica
 readFit=0;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
-outputToVMEC=0;          #compute Fourier Modes and output to VMEC
+outputToVMEC=1;          #compute Fourier Modes and output to VMEC
 plotFit=1;               #Mathematica plots fit results
 plotOriginal=1;          #Mathematica plots original surface
 plotPolFig=1;            #Mathematica plots comparison at different poloidal planes
 export3DSurface=1;       #0 -> Don't export 3D toroidal surface, 1 -> Do
-exportBFieldSurface=1;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
-quasisymmetry=1;         #1 -> run quasisymmetric SENAC
+exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
+quasisymmetry=0;         #1 -> run quasisymmetric SENAC
 #======QUASISYMMETRY PARAMETERS=====
-runQSmatlab=1;			 #run QS matlab script to get new delta and mu
+runQSmatlab=0;			 #run QS matlab script to get new delta and mu
 NFP=3;					 #number of field periods
-phiedge=0.01; 			 #toroidal flux in the edge
+phiedge=0.001; 			 #toroidal flux in the edge
 Bzero=1.0;			     #magnetic field on axis
 nphi=500;				 #resolution in phi
 R0=1;                    #major radius
@@ -31,7 +31,7 @@ etab=0.9;                #eta bar
 sigma0=0;                #initial condition for sigma (0 if stellarator symmetric)
 iota0=0.3;               #initial guess for iota0
 #======VMEC=====
-runVMECofFit=0;          #run VMEC for fit
+runVMECofFit=1;          #run VMEC for fit
 #======REGCOIL=====
 runREGCOILfit=0;         #run REGCOIL for fit
 plotRegcoilFit=0;        #Mathematica plots coils for fit
@@ -55,8 +55,8 @@ mucMin=0.0;              #minimum muc0 to help fit
 mucMax=0.8;              #maximum muc0 to help fit
 maxm=12;                  #Maximum poloidal Fourier mode m to output to VMEC
 maxn=12;                  #Maximum toroidal Fourier mode n to output to VMEC
-maxRecursTheta=100;       #Theta resolution in numerical integration in Mercier to VMEC
-maxRecursPhi=350;        #Phi resolution in numerical integration
+maxRecursTheta=60;       #Theta resolution in numerical integration in Mercier to VMEC
+maxRecursPhi=320;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
 nPlotTheta=50;           #number of interpolating points in theta
 nPlotPhi=80;             #number of interpolating points in phi

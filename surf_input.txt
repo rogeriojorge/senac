@@ -1,10 +1,10 @@
  NFP =   3
- PHIEDGE  0.01
+ PHIEDGE  0.001
  RAXIS =  4.0
  ZAXIS =  0.
- mu = 0.73
+ mu = 0.7
  delta = -3.
- B0 = 4.0
+ B0 = 1.0
  psi31 = 0.
  psi32 = 0.
  psi33 = 0.
