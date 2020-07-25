@@ -112,11 +112,11 @@ Table[
 WriteString[$Output, " N="<>ToString[nNormal]<>" Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 
 (*Solve for psi3 if this is unknown*)
-timestart1 = AbsoluteTime[]; WriteString[$Output, "  Solving for psi3..."]; Off[Simplify::time];
 If[!FileExistsQ[vmecOutput] && ToExpression@psi31Table[[3]]==0,
+  timestart1 = AbsoluteTime[]; WriteString[$Output, "  Solving for psi3..."]; Off[Simplify::time];
 	Get[StringJoin[currentPath,"src/solve_psi3.wls"]];
+  WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 ];
-WriteString[$Output, " Successful in "<>ToString[AbsoluteTime[]-timestart1]<>"s\n"];
 
 (*Obtain Desired Surface in Mercier's Coordinates*)
 If[muDefined==0,
@@ -176,7 +176,8 @@ If[FileExistsQ[vmecOutput],
   psia = Last[psiiVMEC];
   shalf = Table[(1. (i - 1/2))/(nns - 1), {i, 1, nns - 1, 1}];
   data = Drop[gmnc[[All, 1]], 1];
-  fitRes = Fit[Transpose@{shalf[[1 ;; 21]], data[[1 ;; 21]]}, {1, x, x^2},x][[2]] /. x -> 1;
+  fitResult = Fit[Transpose@{shalf[[1 ;; 30]], data[[2 ;; 31]]}, {1, x, x^2, x^3, x^4},x];
+  fitRes = fitResult[[2]] /. x -> 1;
   Vwell0VMEC = -((2*pi)^2)*fitRes/psia^2;
 ]
 
@@ -236,10 +237,10 @@ If[muDefined==1,
     lambda       = torCurVMEC;
     PsiI         = vmecPSI[[iradius]];
     If[ordern>2,
-      Psi31c[phi_] = (B0R[phi]^(3/2))*Sum[Cos[m*vmecNFP*phi + deltaR[phi]]*psic[3, 1, m] /. fitParams[iradius], {m, 0, nModes}];
-      Psi31s[phi_] = (B0R[phi]^(3/2))*Sum[Sin[m*vmecNFP*phi + deltaR[phi]]*psic[3, 1, m] /. fitParams[iradius], {m, 0, nModes}];
-      Psi33c[phi_] = (B0R[phi]^(3/2))*Sum[Cos[m*vmecNFP*phi + deltaR[phi]]*psic[3, 3, m] /. fitParams[iradius], {m, 0, nModes}];
-      Psi33s[phi_] = (B0R[phi]^(3/2))*Sum[Sin[m*vmecNFP*phi + deltaR[phi]]*psic[3, 3, m] /. fitParams[iradius], {m, 0, nModes}];
+      Psi31c[phi_] = (B0R[phi]^(3/2))*Sum[Cos[m*vmecNFP*phi +   deltaR[phi]]*psic[3, 1, m] /. fitParams[iradius], {m, 0, nModes}];
+      Psi31s[phi_] = (B0R[phi]^(3/2))*Sum[Sin[m*vmecNFP*phi +   deltaR[phi]]*psic[3, 1, m] /. fitParams[iradius], {m, 0, nModes}];
+      Psi33c[phi_] = (B0R[phi]^(3/2))*Sum[Cos[m*vmecNFP*phi + 3*deltaR[phi]]*psic[3, 3, m] /. fitParams[iradius], {m, 0, nModes}];
+      Psi33s[phi_] = (B0R[phi]^(3/2))*Sum[Sin[m*vmecNFP*phi + 3*deltaR[phi]]*psic[3, 3, m] /. fitParams[iradius], {m, 0, nModes}];
       ,Psi31c[phi_] = 0;Psi31s[phi_] = 0;Psi33c[phi_] = 0;Psi33s[phi_] = 0;
     ];
     VpptempI=GaussLegendreQuadrature[VppTemp[phi]*sprimeVMEC[phi], {phi, 0, 2*pi}, 200, 15];

@@ -23,7 +23,7 @@ DWellTemp       = VMECdatasets[[18]];
 gmnc            = VMECdatasets[[19]];
 vp              = VMECdatasets[[20]];
 
-surface1=15;
+surface1=2;
 
 vmecOutputnRAXIS[phi_] = Chop[Sum[vmecOutputRaxis[[nn]] Cos[-vmecNFP (nn - 1) phi], {nn, 1, Length[vmecOutputRaxis]}], 10^-6];
 vmecOutputnZAXIS[phi_] = Chop[Sum[vmecOutputZaxis[[nn]] Sin[-vmecNFP (nn - 1) phi], {nn, 1, Length[vmecOutputZaxis]}], 10^-6];

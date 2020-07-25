@@ -37,10 +37,10 @@ If[FileExistsQ[surfInput],
 		psi32Table    = StringSplit[FindList[surfInput, "psi32"]][[1]];
 		psi33Table    = StringSplit[FindList[surfInput, "psi33"]][[1]];
 		psi34Table    = StringSplit[FindList[surfInput, "psi34"]][[1]];
-		psi31[phi_] = Sum[Internal`StringToDouble@psi31Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[psi31Table][[1]] - 3}];
-		psi32[phi_] = Sum[Internal`StringToDouble@psi32Table[[nn + 3]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[psi32Table][[1]] - 3}];
-		psi33[phi_] = Sum[Internal`StringToDouble@psi33Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[psi33Table][[1]] - 3}];
-		psi34[phi_] = Sum[Internal`StringToDouble@psi34Table[[nn + 3]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[psi34Table][[1]] - 3}];
+		psi31[phi_] = pi*B0[phi]*Sum[Internal`StringToDouble@psi31Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[psi31Table][[1]] - 3}];
+		psi32[phi_] = pi*B0[phi]*Sum[Internal`StringToDouble@psi32Table[[nn + 3]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[psi32Table][[1]] - 3}];
+		psi33[phi_] = pi*B0[phi]*Sum[Internal`StringToDouble@psi33Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[psi33Table][[1]] - 3}];
+		psi34[phi_] = pi*B0[phi]*Sum[Internal`StringToDouble@psi34Table[[nn + 3]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[psi34Table][[1]] - 3}];
 	];
 	,
  	WriteString[$Output, "  No surf_input file\n"]
