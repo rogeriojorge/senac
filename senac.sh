@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="test"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="testW7X"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
@@ -10,7 +10,7 @@ vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to re
 chopResolution=7; #Number of digits to keep for internal calculations and outputs
 #======SENAC=====
 runSENAC=1;              #1-> runs SENAC mathematica
-readFit=0;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
+readFit=1;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
 outputToVMEC=0;          #compute Fourier Modes and output to VMEC
 plotFit=0;               #Mathematica plots fit results
 plotOriginal=0;          #Mathematica plots original surface

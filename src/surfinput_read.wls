@@ -31,7 +31,7 @@ If[FileExistsQ[surfInput],
 		muTable    = StringSplit[FindList[surfInput, "mu"]][[1]];
 		deltaTable = StringSplit[FindList[surfInput, "delta"][[1]]];
 		mu[phi_] = Sum[Internal`StringToDouble@muTable[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[muTable][[1]] - 3}];
-		delta[phi_] = Internal`StringToDouble@deltaTable[[3]]*phi/2+Sum[Internal`StringToDouble@deltaTable[[nn + 3]] Sin[vmecNFP nn phi], {nn, 1, Dimensions[deltaTable][[1]] - 5}];
+		delta[phi_] = Internal`StringToDouble@deltaTable[[3]]*phi/2+Sum[Internal`StringToDouble@deltaTable[[nn + 3]] Sin[vmecNFP nn phi], {nn, 1, Dimensions[deltaTable][[1]] - 3}];
 		If[quasisymmetry==1,B0[phi_]=Bzero,B0Table    = StringSplit[FindList[surfInput, "B0"][[1]]];B0[phi_] = Sum[Internal`StringToDouble@B0Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[B0Table][[1]] - 3}]];
 		psi31Table    = StringSplit[FindList[surfInput, "psi31"]][[1]];
 		psi32Table    = StringSplit[FindList[surfInput, "psi32"]][[1]];
