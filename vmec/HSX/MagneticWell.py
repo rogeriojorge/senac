@@ -3,8 +3,8 @@
 import numpy as np
 from scipy.io import netcdf
 
-directory = '/Users/rogeriojorge/Dropbox/senac/vmec/'
-filenames = ['HSX/wout_HSX.nc']
+directory = ''
+filenames = ['wout_HSX.nc']
 
 N = len(filenames)
 
@@ -39,14 +39,15 @@ for j in range(N):
     plt.xlabel('s')
     plt.ylabel(r'$gmnc_{0,0}$')
 
-    degree = 2
-    max_index=20
+    degree = 7
+    max_index=50
     p = np.polyfit(s_half[:max_index], gmnc[1:max_index+1,0], degree)
     print("p: ",p)
     plt.plot(s_half, np.polyval(p,s_half),'-')
+    print(p[degree-1])
 
     # In the next line, the minus sign is from the fact that sign(Jacobian) is <0.
-    d2_volume_d_psi2 = -4*np.pi*np.pi/(psi_a*psi_a)*p[1]
+    d2_volume_d_psi2 = -1/(psi_a*psi_a)*p[degree-1]
     print("Magnetic well, for plotting:",d2_volume_d_psi2)
     d2_volume_d_psi2s.append(d2_volume_d_psi2)
 

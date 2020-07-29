@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="testW7X"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="LHD"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
 surfInputQS=${currentDIR}"/quasisymmetry/surf_input_QS.txt"; #input file with surface parameters
 vmecInput=${currentDIR}"/vmec/vmec_input_template.txt"; #template VMEC input file
 vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
-chopResolution=7; #Number of digits to keep for internal calculations and outputs
+chopResolution=5; #Number of digits to keep for internal calculations and outputs
 #======SENAC=====
 runSENAC=1;              #1-> runs SENAC mathematica
 readFit=1;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
@@ -39,20 +39,20 @@ runREGCOILoriginal=0;    #run REGCOIL for original/VMEC file
 plotRegcoilOriginal=0;   #Mathematica plots coils for original surface
 #======SENAC INPUT PARAMETERS=====
 ordern=3;                #Near-Axis Expansion Order (has to be greater than 2)
-nModes=5;                #number of fourier components in mu, delta and B0
-nsurfaces=1;             #number of surfaces to read and compare from VMEC
-nthetaM=20;              #resolution in theta for fit and Mercier's coordinates
-nphiM=30;                #resolution in phi for fit and Mercier's coordinates
-maxiterations=650;      #max number of iterations for fit
-keepfit=1;               #use the same fit results for outer surfaces as inner surface
+nModes=3;                #number of fourier components in mu, delta and B0
+nsurfaces=5;             #number of surfaces to read and compare from VMEC
+nthetaM=15;              #resolution in theta for fit and Mercier's coordinates
+nphiM=20;                #resolution in phi for fit and Mercier's coordinates
+maxiterations=950;      #max number of iterations for fit
+keepfit=0;               #use the same fit results for outer surfaces as inner surface
 readlowfit=1;            #use the fit results of lower order to construct higher order fit
 deltac0=0.0;             #initial point for deltac0 between -pi and pi
 deltal0=1.0;             #initial point for deltal
-deltalmin=-10.01;         #minimum deltal to help fit
-deltalmax=-10.01;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
-muc0=0.3;                #initial point for muc0
-mucMin=0.2;              #minimum muc0 to help fit
-mucMax=0.8;              #maximum muc0 to help fit
+deltalmin=-10.001;         #minimum deltal to help fit
+deltalmax=-9.999;         #maximum deltal to help fit (put equal to deltalmin to leave -1.2*vmecNFP<deltal<1.2*vmecNFP)
+muc0=0.37;                #initial point for muc0
+mucMin=0.3;              #minimum muc0 to help fit
+mucMax=0.45;              #maximum muc0 to help fit
 maxm=12;                  #Maximum poloidal Fourier mode m to output to VMEC
 maxn=12;                  #Maximum toroidal Fourier mode n to output to VMEC
 maxRecursTheta=60;       #Theta resolution in numerical integration in Mercier to VMEC

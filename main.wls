@@ -176,7 +176,7 @@ If[FileExistsQ[vmecOutput],
   psia = Last[psiiVMEC];
   shalf = Table[(1. (i - 1/2))/(nns - 1), {i, 1, nns - 1, 1}];
   data = Drop[gmnc[[All, 1]], 1];
-  fitResult = Fit[Transpose@{shalf[[1 ;; 30]], data[[2 ;; 31]]}, {1, x, x^2, x^3, x^4},x];
+  fitResult = Fit[Transpose@{shalf[[1 ;; 15]], data[[2 ;; 16]]}, {1, x, x^2, x^3, x^4},x];
   fitRes = fitResult[[2]] /. x -> 1;
   Vwell0VMEC = -((2*pi)^2)*fitRes/psia^2;
 ]
@@ -192,7 +192,7 @@ VppTemp[s_]=1/(4 Pi^2 B0R[s]^4 (1 - muR[s]^2)^(5/2)) (3 Pi (-1 + muR[s]^2)^2 (B0
 *)
 
 (* Expression without integration by parts*)
-(**)
+(*
 VppTemp[s_]=(1/(4 Pi^2 B0R[s]^3 (1 - muR[s]^2)^(5/2)))((-1 + muR[s]) (1 + muR[s]) (-8 curvVMEC[s] Sqrt[1 - muR[s]^2] (Cos[deltaR[s]] Psi31c[s] + 
         Sin[deltaR[s]] Psi31s[s]) + muR[s] (12 curvVMEC[s] Sqrt[1 - muR[s]^2] (Cos[deltaR[s]] (Psi31c[s] + Psi33c[s]) + Sin[deltaR[s]] (-Psi31s[s] + Psi33s[s])) 
         + Pi B0R'[s]*(sprimeVMEC[s]^(-1)) muR'[s]*(sprimeVMEC[s]^(-1))) - Pi (4 Pi pprime0 Sqrt[1 - muR[s]^2] + D[B0R'[s]*(sprimeVMEC[s]^(-1)),s]*(sprimeVMEC[s]^(-1))) 
@@ -202,10 +202,16 @@ VppTemp[s_]=(1/(4 Pi^2 B0R[s]^3 (1 - muR[s]^2)^(5/2)))((-1 + muR[s]) (1 + muR[s]
               8 (torsVMEC[s] - deltaR'[s]*(sprimeVMEC[s]^(-1)))^2) - 4 (torsVMEC[s] - deltaR'[s]*(sprimeVMEC[s]^(-1)))^2 + muR[s]^4 (lambda + 2 torsVMEC[s] - 
               2 deltaR'[s]*(sprimeVMEC[s]^(-1))) (lambda - 2 torsVMEC[s] + 2 deltaR'[s]*(sprimeVMEC[s]^(-1))) + 2 muR'[s]*(sprimeVMEC[s]^(-1))^2) 
               + (-1 + muR[s]^2) D[muR'[s]*(sprimeVMEC[s]^(-1)),s]*(sprimeVMEC[s]^(-1)))));
+**)
+
+(*New Simplified Expression from Latest Mathematica Notebook*)
 (**)
+pprime0VMEC=-pprime0VMEC;
+VppTemp[s_]=-(1/(8 pi^2 B0R[s]^4 (1-muR[s]^2)^(5/2)))(-((6 pi (-1+muR[s]^2)^2 B0R'[s]^2)/sprimeVMEC[s]^2)-2 B0R[s] (-1+muR[s]^2) (4 muR[s]^2 Sqrt[1-muR[s]^2] (pi^2 pprime0-Cos[deltaR[s]] curvVMEC[s] (Psi31c[s]+3 Psi33c[s])-curvVMEC[s] (Psi31s[s]-3 Psi33s[s]) Sin[deltaR[s]])-4 Sqrt[1-muR[s]^2] (pi^2 pprime0+2 curvVMEC[s] (Cos[deltaR[s]] Psi31c[s]+Psi31s[s] Sin[deltaR[s]]))+3 muR[s] (4 curvVMEC[s] Sqrt[1-muR[s]^2] (Cos[deltaR[s]] (Psi31c[s]+Psi33c[s])+(-Psi31s[s]+Psi33s[s]) Sin[deltaR[s]])+(pi B0R'[s] muR'[s])/sprimeVMEC[s]^2))+pi B0R[s]^2 (-2 lambda^2-4 curvVMEC[s]^2 (-1+Cos[2 deltaR[s]] muR[s]) (-1+muR[s]^2)^2-muR'[s]^2/sprimeVMEC[s]^2+(1/(sprimeVMEC[s]^3))muR[s] (2 muR[s] sprimeVMEC[s] (3 lambda^2 sprimeVMEC[s]^2-2 (-sprimeVMEC[s] torsVMEC[s]+deltaR'[s])^2+muR[s]^4 (sprimeVMEC[s] (lambda+2 torsVMEC[s])-2 deltaR'[s]) (sprimeVMEC[s] (lambda-2 torsVMEC[s])+2 deltaR'[s])-3 muR[s]^2 (lambda^2 sprimeVMEC[s]^2-2 (-sprimeVMEC[s] torsVMEC[s]+deltaR'[s])^2)+muR'[s]^2)+(-1+muR[s]^2) (muR'[s] sprimeVMEC'[s]-sprimeVMEC[s] muR''[s]))));
+(***)
 
 (*Compute DWell*)
-Laxis=GaussLegendreQuadrature[sprimeVMEC[phi], {phi, 0, 2*pi}, 250, 20];
+Laxis=GaussLegendreQuadrature[sprimeVMEC[phi], {phi, 0, 2*pi}, 150, 20];
 DwellTemp[s_]=(pprime0/((2*pi)^1))*(Laxis/(4*pi*PsiI))*(VppP/Laxis-pprime0/(B0R[s]^3));
 
 (*Integrate them over s to get final answer*)
@@ -219,7 +225,7 @@ If[muDefined==1,
   Psi31s[phi_] = (Cos[  deltaR[phi]]*psi32[phi] + psi31[phi]*Sin[deltaR[phi]]);
   Psi33c[phi_] = (Cos[3*deltaR[phi]]*psi33[phi] - psi34[phi]*Sin[3 deltaR[phi]]);
   Psi33s[phi_] = (Cos[3*deltaR[phi]]*psi34[phi] + psi33[phi]*Sin[3 deltaR[phi]]);
-  Vpp = GaussLegendreQuadrature[VppTemp[phi]*sprimeVMEC[phi], {phi, 0, 2*pi}, 250, 20];
+  Vpp = GaussLegendreQuadrature[VppTemp[phi]*sprimeVMEC[phi], {phi, 0, 2*pi}, 120, 20];
   Print["  Magnetic well: from near-axis = "<>ToString[Vpp]<>If[FileExistsQ[vmecOutput],", from VMEC = "<>ToString[Vwell0VMEC],""]];
   printv = printv <> "Magnetic well near-axis" <> nl;
   printv = printv <> ToString[Vpp] <> nl;
