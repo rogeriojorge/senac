@@ -266,7 +266,40 @@ If[muDefined==1,
   printv = printv <> "Dwell VMEC" <> nl;
   printv = printv <> ToString[DWellVMEC] <> nl;
 ];
+pprime0 = pprime0VMEC;
+lambda = torCurVMEC;
+B0[phi_] = B0VMEC /. fitParams[2];
+delta[phi_] = deltaVMEC /. fitParams[2];
+mu[phi_] = muVMEC /. fitParams[2];
+eta[phi_]    = ArcTanh[mu[phi]];
+AccuracyDesired=10;
 
+sol = NDSolve[
+    {
+     G1cR'[phi]/sprimeVMEC[phi] ==
+         (2 pprime0 curvVMEC[phi] Exp[-eta[phi]] Cos[delta[phi]])/B0[phi]^(3/2) -
+        (G1sR[phi]/2) Sech[eta[phi]] (lambda + 2 delta'[phi]/sprimeVMEC[phi] - 2 torsVMEC[phi]),
+     G1sR'[phi]/sprimeVMEC[phi] ==
+         (2 pprime0 curvVMEC[phi] Exp[-eta[phi]] Sin[delta[phi]])/B0[phi]^(3/2) -
+        (G1cR[phi]/2) Sech[eta[phi]] (lambda + 2 delta'[phi]/sprimeVMEC[phi] - 2 torsVMEC[phi]),
+     G1cR[0] == G1cR[2 Pi], G1sR[0] == G1sR[2 Pi]
+        }, {G1cR[phi], G1sR[phi]}, {phi, 0, 2 Pi},
+    Method -> "ImplicitRungeKutta", AccuracyGoal -> AccuracyDesired, PrecisionGoal -> AccuracyDesired
+        ][[1]];
+
+G1c[phi_]=G1cR[phi]/.sol;
+G1s[phi_]=G1sR[phi]/.sol;
+
+SecondMercierCrit=GaussLegendreQuadrature[
+        sprimeVMEC[phi]*(pprime0^2/B0[phi]^3
+                       +(Exp[eta[phi]] G1c[phi]^2+G1s[phi]^2)/(1 + Exp[eta[phi]]))
+        , {phi, 0, 2 Pi}];
+Print["   Pressure Gradient   "<>ToString[pprime0]];
+Print["   Xi Squared Term:   "<>ToString[SecondMercierCrit]];
+LowestMercierCrit = pprime0*Vpp - SecondMercierCrit;
+Print["   Lowest order criterion:   "<>ToString[LowestMercierCrit]];
+Bsquared = GaussLegendreQuadrature[-sprimeVMEC[phi]*(-1+mu[phi]^2+2*(1-mu[phi]^2)^(1/2))/(4*Pi^2*B0[phi]*(-1+mu[phi]^2)),{phi,0,2*Pi}]
+Print["   B squared term   "<>ToString[Bsquared]];
 fitFile = OpenAppend[StringJoin[currentPath,"data/",ToString[proj],"/",ToString[proj],"_fit_parameters_ordern_"<>ToString[ordern]<>".txt"]];
 WriteString[fitFile, printv];Close[fitFile];
 
