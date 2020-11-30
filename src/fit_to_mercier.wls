@@ -50,7 +50,7 @@ If[iradius>1 && keepfit==1,
           If[FileExistsQ[fitParamsFile[ordern-1]] && readlowfit==1,
             {modelVMEC/.ToExpression[Import[fitParamsFile[ordern-1], {"Lines", 1}]]}
           ,
-            {modelVMEC, mucMin < (muVMEC/.phi->0) < mucMax, mucMin < (muVMEC/.phi->pi) < mucMax, 0.01<B0c[0], 0.01 < (B0VMEC/.phi->0), 0.01 < (B0VMEC/.phi->pi), deltalmin <= deltal <= deltalmax,
+            {modelVMEC, mucMin < (muVMEC/.phi->0) < mucMax, mucMin < (muVMEC/.phi->pi) < mucMax, 0.01<B0c[0], 0.01 < (B0VMEC/.phi->0), 0.01 < (B0VMEC/.phi->pi),(* deltalmin <= deltal <= deltalmax,*)
               Flatten[Table[{{-pi < deltas[i] < pi}},{i,1,nModes}]]}
           ],1],xa],
         If[FileExistsQ[fitParamsFile[ordern-1]] && readlowfit==1,
@@ -61,7 +61,7 @@ If[iradius>1 && keepfit==1,
         }, 1],xa]
         ,
         DeleteCases[Flatten[{
-          {{deltal, deltal0}, {B0c[0], B0Est}, {muc[0], muc0}}, 
+          {(*{deltal, deltal0},*) {B0c[0], B0Est}, {muc[0], muc0}}, 
           Flatten[Table[{{B0c[i],0.01*B0Est},{muc[i],0.01*Min[Abs[mucMin],Abs[mucMax]]},{deltas[i],0.01}}, {i, 1, nModes}], 1], 
           If[ordern > 2, Flatten[Table[Table[Table[If[EvenQ[n], 
             {{psic[n, 2 i, j], 10}}, {{psic[n, 2 i + 1, j], 10}}
