@@ -10,8 +10,8 @@ If[FileExistsQ[surfInput],
 		torCurVMEC = StringCases[StringDelete[FindList[surfInput, "torCurr"][[1]], " "], x : NumberString :> ToExpression[x]][[1]];
 		pprime0VMEC = StringCases[StringDelete[FindList[surfInput, "pressGr"][[1]], " "], x : NumberString :> ToExpression[x]][[1]];
 	];
-	nRAXIS[phi_] = Sum[Internal`StringToDouble@vmecRAXIS[[nn + 3]]*Cos[vmecNFP nn phi], {nn, 0, Dimensions[vmecRAXIS][[1]] - 3}];
-	nZAXIS[phi_] = Sum[Internal`StringToDouble@vmecZAXIS[[nn + 3]]*Sin[vmecNFP nn phi], {nn, 0, Dimensions[vmecZAXIS][[1]] - 3}];
+	nRAXIS[phi_] = Sum[Internal`StringToMReal@vmecRAXIS[[nn + 3]]*Cos[vmecNFP nn phi], {nn, 0, Dimensions[vmecRAXIS][[1]] - 3}];
+	nZAXIS[phi_] = Sum[Internal`StringToMReal@vmecZAXIS[[nn + 3]]*Sin[vmecNFP nn phi], {nn, 0, Dimensions[vmecZAXIS][[1]] - 3}];
 	closedcurvVMEC[phi_] = {nRAXIS[phi] Cos[phi], nRAXIS[phi] Sin[phi], nZAXIS[phi]};
 	(*Check if surface parameters or Fourier components are given*)
 	If[SameQ[Find[OpenRead[surfInput],"mu"], EndOfFile], 
@@ -30,17 +30,17 @@ If[FileExistsQ[surfInput],
 		muDefined=1; WriteString[$Output, " Mercier's Parameters Defined in file..."];
 		muTable    = StringSplit[FindList[surfInput, "mu"]][[1]];
 		deltaTable = StringSplit[FindList[surfInput, "delta"][[1]]];
-		mu[phi_] = Sum[Internal`StringToDouble@muTable[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[muTable][[1]] - 3}];
-		delta[phi_] = Internal`StringToDouble@deltaTable[[3]]*phi/2+Sum[Internal`StringToDouble@deltaTable[[nn + 3]] Sin[vmecNFP nn phi], {nn, 1, Dimensions[deltaTable][[1]] - 3}];
-		If[quasisymmetry==1,B0[phi_]=Bzero,B0Table    = StringSplit[FindList[surfInput, "B0"][[1]]];B0[phi_] = Sum[Internal`StringToDouble@B0Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[B0Table][[1]] - 3}]];
+		mu[phi_] = Sum[Internal`StringToMReal@muTable[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[muTable][[1]] - 3}];
+		delta[phi_] = Internal`StringToMReal@deltaTable[[3]]*phi/2+Sum[Internal`StringToMReal@deltaTable[[nn + 3]] Sin[vmecNFP nn phi], {nn, 1, Dimensions[deltaTable][[1]] - 3}];
+		If[quasisymmetry==1,B0[phi_]=Bzero,B0Table    = StringSplit[FindList[surfInput, "B0"][[1]]];B0[phi_] = Sum[Internal`StringToMReal@B0Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[B0Table][[1]] - 3}]];
 		psi31Table    = StringSplit[FindList[surfInput, "psi31"]][[1]];
 		psi32Table    = StringSplit[FindList[surfInput, "psi32"]][[1]];
 		psi33Table    = StringSplit[FindList[surfInput, "psi33"]][[1]];
 		psi34Table    = StringSplit[FindList[surfInput, "psi34"]][[1]];
-		psi31[phi_] = pi*B0[phi]*Sum[Internal`StringToDouble@psi31Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[psi31Table][[1]] - 3}];
-		psi32[phi_] = pi*B0[phi]*Sum[Internal`StringToDouble@psi32Table[[nn + 3]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[psi32Table][[1]] - 3}];
-		psi33[phi_] = pi*B0[phi]*Sum[Internal`StringToDouble@psi33Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[psi33Table][[1]] - 3}];
-		psi34[phi_] = pi*B0[phi]*Sum[Internal`StringToDouble@psi34Table[[nn + 3]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[psi34Table][[1]] - 3}];
+		psi31[phi_] = pi*B0[phi]*Sum[Internal`StringToMReal@psi31Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[psi31Table][[1]] - 3}];
+		psi32[phi_] = pi*B0[phi]*Sum[Internal`StringToMReal@psi32Table[[nn + 3]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[psi32Table][[1]] - 3}];
+		psi33[phi_] = pi*B0[phi]*Sum[Internal`StringToMReal@psi33Table[[nn + 3]] Cos[vmecNFP nn phi], {nn, 0, Dimensions[psi33Table][[1]] - 3}];
+		psi34[phi_] = pi*B0[phi]*Sum[Internal`StringToMReal@psi34Table[[nn + 3]] Sin[vmecNFP nn phi], {nn, 0, Dimensions[psi34Table][[1]] - 3}];
 	];
 	,
  	WriteString[$Output, "  No surf_input file\n"]

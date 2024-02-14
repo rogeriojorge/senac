@@ -39,10 +39,10 @@ If[FileExistsQ[vmecOutput],
   Do[printv = printv <> " " <> ToString[DecimalForm[vmecOutputZaxis[[i]]]], {i, 1, Length[vmecOutputZaxis]}];
   printv = printv <> nl;
 ,
-  Do[printv = printv <> " " <> ToString[DecimalForm[Internal`StringToDouble@vmecRAXIS[[i + 3]]]], {i, 0, Dimensions[vmecRAXIS][[1]] - 3}];
+  Do[printv = printv <> " " <> ToString[DecimalForm[Internal`StringToMReal@vmecRAXIS[[i + 3]]]], {i, 0, Dimensions[vmecRAXIS][[1]] - 3}];
   printv = printv <> nl;
   printv = printv <> " ZAXIS = ";
-  Do[printv = printv <> " " <> ToString[DecimalForm[Internal`StringToDouble@vmecZAXIS[[i + 3]]]], {i, 0, Dimensions[vmecZAXIS][[1]] - 3}];
+  Do[printv = printv <> " " <> ToString[DecimalForm[Internal`StringToMReal@vmecZAXIS[[i + 3]]]], {i, 0, Dimensions[vmecZAXIS][[1]] - 3}];
   printv = printv <> nl;
 ]
 

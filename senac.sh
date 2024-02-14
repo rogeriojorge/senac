@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 # version 1.0 - R. Jorge IREAP/UMD September 2019
-proj="LandremanSengupta2019_section5.3"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
+proj="QS_paper_2"; # project name for input/output files, with vmec output vmec/wout_"proj".nc
 #================
 currentDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 surfInput=${currentDIR}"/surf_input.txt"; #input file with surface parameters
-surfInputQS=${currentDIR}"/quasisymmetry/surf_input_QS.txt"; #input file with surface parameters
+surfInputQS=${currentDIR}"/quasisymmetry/surf_input_QS_NFP2.txt"; #input file with surface parameters
 vmecInput=${currentDIR}"/vmec/vmec_input_template.txt"; #template VMEC input file
 vmecOutput=${currentDIR}"/vmec/${proj}/wout_${proj}.nc"; #VMEC output file to read
-chopResolution=8; #Number of digits to keep for internal calculations and outputs
+chopResolution=10; #Number of digits to keep for internal calculations and outputs
 #======SENAC=====
 runSENAC=1;              #1-> runs SENAC mathematica
 readFit=1;    		     #1 -> reads fit parameters from text file, no fitting done, 0 -> Do fit
-outputToVMEC=0;          #compute Fourier Modes and output to VMEC
+outputToVMEC=1;          #compute Fourier Modes and output to VMEC
 plotFit=0;               #Mathematica plots fit results
 plotOriginal=0;          #Mathematica plots original surface
 plotPolFig=0;            #Mathematica plots comparison at different poloidal planes
 export3DSurface=0;       #0 -> Don't export 3D toroidal surface, 1 -> Do
 exportBFieldSurface=0;   #0 -> Don't export figure of magnetic field on surface, 1 -> Do
-quasisymmetry=0;         #1 -> run quasisymmetric SENAC
+quasisymmetry=1;         #1 -> run quasisymmetric SENAC
 #======QUASISYMMETRY PARAMETERS=====
 runQSmatlab=0;			 #run QS matlab script to get new delta and mu
 NFP=3;					 #number of field periods
@@ -55,8 +55,8 @@ mucMin=0.5;              #minimum muc0 to help fit
 mucMax=0.6;             #maximum muc0 to help fit
 maxm=12;                 #Maximum poloidal Fourier mode m to output to VMEC
 maxn=12;                 #Maximum toroidal Fourier mode n to output to VMEC
-maxRecursTheta=60;       #Theta resolution in numerical integration in Mercier to VMEC
-maxRecursPhi=320;        #Phi resolution in numerical integration
+maxRecursTheta=100;       #Theta resolution in numerical integration in Mercier to VMEC
+maxRecursPhi=400;        #Phi resolution in numerical integration
 #======PLOTTING PARAMETERS=====
 nPlotTheta=50;           #number of interpolating points in theta
 nPlotPhi=80;             #number of interpolating points in phi
